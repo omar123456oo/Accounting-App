@@ -1,3 +1,4 @@
+import { RegisterBody, registerOffice } from './mock-register';
 import { HttpErrorResponse, HttpEvent, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Observable, from, of, switchMap, throwError } from 'rxjs';
 import { AuthUser } from '../auth/auth.models';
@@ -58,6 +59,10 @@ export class MockBackend {
     switch (`${req.method} ${path}`) {
       case `POST ${API}/login`:
         return this.login(body);
+      case `POST ${API}/register`: {
+        const result = registerOffice(body as RegisterBody, this.lang);
+        return result.status === 201 ? this.ok(result.body, 201) : this.error(422, { message: Object.values(result.errors)[0]?.[0], errors: result.errors });
+      }
       case `POST ${API}/logout`:
         this.sessionUserId = null;
         return this.ok(null, 204);

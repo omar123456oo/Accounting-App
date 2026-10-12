@@ -1,0 +1,138 @@
+<app-auth-layout>
+  <div class="auth-form">
+    @if (verificationRequired() === null) {
+      <h1 class="auth-title">{{ 'register.title' | translate }}</h1>
+      <p class="auth-welcome">{{ 'register.welcome' | translate }}</p>
+
+      @if (failed()) {
+        <div class="alert alert-danger" role="alert" id="register-error">{{ 'errors.generic' | translate }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-label]="'register.title' | translate" [attr.aria-busy]="submitting()">
+        <div class="mb-3">
+          <label for="officeName" class="form-label">{{ 'register.officeName' | translate }}</label>
+          <input
+            id="officeName"
+            type="text"
+            class="form-control"
+            formControlName="officeName"
+            autocomplete="organization"
+            autofocus
+            required
+            [class.is-invalid]="form.controls.officeName.invalid && form.controls.officeName.touched"
+            [attr.aria-invalid]="form.controls.officeName.invalid && form.controls.officeName.touched"
+            aria-describedby="officeName-error"
+          />
+          <app-field-error [control]="form.controls.officeName" id="officeName-error" />
+        </div>
+
+        <div class="mb-3">
+          <label for="name" class="form-label">{{ 'register.name' | translate }}</label>
+          <input
+            id="name"
+            type="text"
+            class="form-control"
+            formControlName="name"
+            autocomplete="name"
+            required
+            [class.is-invalid]="form.controls.name.invalid && form.controls.name.touched"
+            [attr.aria-invalid]="form.controls.name.invalid && form.controls.name.touched"
+            aria-describedby="name-error"
+          />
+          <app-field-error [control]="form.controls.name" id="name-error" />
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">{{ 'login.email' | translate }}</label>
+          <input
+            id="email"
+            type="email"
+            class="form-control"
+            formControlName="email"
+            autocomplete="username"
+            required
+            [class.is-invalid]="form.controls.email.invalid && form.controls.email.touched"
+            [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched"
+            aria-describedby="email-error"
+          />
+          <app-field-error [control]="form.controls.email" id="email-error" />
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">{{ 'login.password' | translate }}</label>
+          <div class="password-wrap">
+            <input
+              id="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              class="form-control"
+              formControlName="password"
+              autocomplete="new-password"
+              required
+              [class.is-invalid]="form.controls.password.invalid && form.controls.password.touched"
+              [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched"
+              aria-describedby="password-hint password-error"
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              (click)="showPassword.set(!showPassword())"
+              [attr.aria-pressed]="showPassword()"
+              [attr.aria-label]="(showPassword() ? 'login.hidePassword' : 'login.showPassword') | translate"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
+                <circle cx="12" cy="12" r="3" />
+                @if (showPassword()) {
+                  <path d="M4 20 20 4" />
+                }
+              </svg>
+            </button>
+          </div>
+          <div id="password-hint" class="form-text" aria-live="polite">
+            {{ 'register.passwordHint' | translate: { min: minLength, count: passwordLength } }}
+          </div>
+          <app-field-error [control]="form.controls.password" id="password-error" />
+        </div>
+
+        <div class="mb-3">
+          <label for="passwordConfirmation" class="form-label">{{ 'register.passwordConfirmation' | translate }}</label>
+          <input
+            id="passwordConfirmation"
+            [type]="showPassword() ? 'text' : 'password'"
+            class="form-control"
+            formControlName="passwordConfirmation"
+            autocomplete="new-password"
+            required
+            [class.is-invalid]="mismatch || (form.controls.passwordConfirmation.invalid && form.controls.passwordConfirmation.touched)"
+            [attr.aria-invalid]="mismatch || (form.controls.passwordConfirmation.invalid && form.controls.passwordConfirmation.touched)"
+            aria-describedby="passwordConfirmation-error"
+          />
+          @if (mismatch) {
+            <div class="invalid-feedback d-block" id="passwordConfirmation-mismatch" role="alert">{{ 'register.mismatch' | translate }}</div>
+          }
+          <app-field-error [control]="form.controls.passwordConfirmation" id="passwordConfirmation-error" />
+        </div>
+
+        <button type="submit" class="btn btn-submit w-100" [disabled]="submitting()">
+          @if (submitting()) {
+            <span class="spinner" aria-hidden="true"></span>
+          }
+          {{ 'register.submit' | translate }}
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        {{ 'register.haveAccount' | translate }}
+        <a routerLink="/login">{{ 'login.submit' | translate }}</a>
+      </p>
+    } @else {
+      <div class="auth-done" role="status" id="register-success">
+        <h1 class="auth-title">{{ 'register.doneTitle' | translate }}</h1>
+        <p class="auth-welcome">
+          {{ (verificationRequired() ? 'register.doneVerify' : 'register.doneReady') | translate }}
+        </p>
+        <a routerLink="/login" class="btn btn-submit w-100">{{ 'login.submit' | translate }}</a>
+      </div>
+    }
+  </div>
+</app-auth-layout>

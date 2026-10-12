@@ -1,0 +1,60 @@
+:host {
+  display: block;
+}
+
+.login {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-block-size: 100vh;
+  background: #f6f7f5;
+}
+
+.login-art-pane {
+  display: none;
+}
+
+.login-form-pane {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.login-card {
+  inline-size: 100%;
+  max-inline-size: 26rem;
+}
+
+.login-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-end: 3rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.brand-mark {
+  inline-size: 2rem;
+  block-size: 2rem;
+}
+
+.brand-name {
+  font-weight: 700;
+  color: #0d2b33;
+}
+
+
+@media (width >= 62rem) {
+  .login {
+    grid-template-columns: minmax(26rem, 5fr) 6fr;
+  }
+
+  .login-art-pane {
+    display: block;
+  }
+}

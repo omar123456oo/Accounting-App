@@ -1,16 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ValidationErrorBody } from '../../../core/auth/auth.models';
 import { AuthService } from '../../../core/auth/auth.service';
 import { FieldError } from '../../../shared/components/field-error/field-error';
-import { LanguageSwitch } from '../../../shared/components/language-switch/language-switch';
+import { AuthLayout } from '../auth-layout/auth-layout';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, TranslatePipe, FieldError, LanguageSwitch],
+  imports: [ReactiveFormsModule, TranslatePipe, FieldError, AuthLayout, RouterLink],
   templateUrl: './login.html',
 })
 export class Login {
@@ -26,6 +26,7 @@ export class Login {
   protected readonly otpRequired = signal(false);
   protected readonly locked = signal(false);
   protected readonly submitting = signal(false);
+  protected readonly showPassword = signal(false);
   private readonly otpInput = viewChild<ElementRef<HTMLInputElement>>('otpInput');
 
   protected submit(): void {

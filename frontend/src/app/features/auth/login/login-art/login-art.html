@@ -1,0 +1,51 @@
+<figure class="art" aria-hidden="true">
+  <svg class="art-svg" viewBox="0 0 480 440" role="presentation" focusable="false">
+    <defs>
+      <pattern id="ledger-rules" width="48" height="48" patternUnits="userSpaceOnUse">
+        <path d="M0 47.5H48M47.5 0V48" fill="none" stroke="#fff" stroke-opacity=".05" />
+      </pattern>
+      <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#E3C377" />
+        <stop offset="1" stop-color="#B58A33" />
+      </linearGradient>
+    </defs>
+
+    <rect width="480" height="440" fill="url(#ledger-rules)" />
+    <circle class="glow" cx="240" cy="190" r="170" />
+
+    <!-- stand -->
+    <path class="stand" d="M240 120V372M196 372H284M210 372L240 340L270 372" />
+    <circle cx="240" cy="120" r="9" fill="url(#brass)" />
+
+    <!-- beam -->
+    <g class="beam">
+      <path class="beam-bar" d="M108 120H372" />
+      <circle cx="108" cy="120" r="5" fill="url(#brass)" />
+      <circle cx="372" cy="120" r="5" fill="url(#brass)" />
+    </g>
+
+    <!-- debit pan -->
+    <g class="pan pan-start">
+      <path class="string" d="M108 120L68 214M108 120L148 214" />
+      <path class="dish" d="M56 214H160Q158 244 108 244Q58 244 56 214Z" />
+      <rect class="coin" x="80" y="196" width="56" height="9" rx="2" />
+      <rect class="coin" x="86" y="187" width="44" height="9" rx="2" />
+      <text class="pan-label" x="108" y="268" text-anchor="middle">{{ 'login.art.debit' | translate }}</text>
+    </g>
+
+    <!-- credit pan -->
+    <g class="pan pan-end">
+      <path class="string" d="M372 120L332 214M372 120L412 214" />
+      <path class="dish" d="M320 214H424Q422 244 372 244Q322 244 320 214Z" />
+      <rect class="coin" x="344" y="196" width="56" height="9" rx="2" />
+      <rect class="coin" x="350" y="187" width="44" height="9" rx="2" />
+      <text class="pan-label" x="372" y="268" text-anchor="middle">{{ 'login.art.credit' | translate }}</text>
+    </g>
+
+    <text class="equals" x="240" y="414" text-anchor="middle">=</text>
+  </svg>
+  <figcaption class="caption">
+    <strong>{{ 'login.art.headline' | translate }}</strong>
+    <span>{{ 'login.art.sub' | translate }}</span>
+  </figcaption>
+</figure>

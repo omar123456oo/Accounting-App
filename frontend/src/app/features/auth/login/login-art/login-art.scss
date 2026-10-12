@@ -1,0 +1,152 @@
+:host {
+  display: block;
+  block-size: 100%;
+}
+
+.art {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+  block-size: 100%;
+  margin: 0;
+  padding: 2.5rem;
+  color: #e9f0ee;
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgb(27 79 156 / 55%), transparent 60%),
+    #0d2b33;
+  overflow: hidden;
+}
+
+.art-svg {
+  inline-size: min(100%, 30rem);
+  margin-inline: auto;
+  overflow: visible;
+}
+
+.glow {
+  fill: rgb(201 162 75 / 10%);
+}
+
+.stand,
+.string,
+.beam-bar {
+  fill: none;
+  stroke: #d9e4e1;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.string {
+  stroke-width: 1.5;
+  stroke-opacity: 0.7;
+}
+
+.beam-bar {
+  stroke-width: 6;
+}
+
+.dish {
+  fill: #163e49;
+  stroke: #c9a24b;
+  stroke-width: 2.5;
+}
+
+.coin {
+  fill: #c9a24b;
+}
+
+.pan-label {
+  fill: #d9e4e1;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.equals {
+  fill: #c9a24b;
+  font-size: 34px;
+  font-weight: 700;
+  opacity: 0;
+}
+
+.caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-inline-size: 26rem;
+  margin-inline: auto;
+  text-align: start;
+
+  strong {
+    font-size: 1.35rem;
+    font-weight: 700;
+  }
+
+  span {
+    color: #b9cbc7;
+  }
+}
+
+/* Single orchestrated moment: the beam swings and settles level. */
+@media (prefers-reduced-motion: no-preference) {
+  .beam {
+    transform-origin: 240px 120px;
+    animation: settle 2.6s cubic-bezier(0.3, 1.4, 0.5, 1) 0.3s both;
+  }
+
+  .pan-start {
+    animation: settle-start 2.6s cubic-bezier(0.3, 1.4, 0.5, 1) 0.3s both;
+  }
+
+  .pan-end {
+    animation: settle-end 2.6s cubic-bezier(0.3, 1.4, 0.5, 1) 0.3s both;
+  }
+
+  .equals {
+    animation: reveal 0.6s ease-out 2.4s forwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .equals {
+    opacity: 1;
+  }
+}
+
+@keyframes settle {
+  from {
+    transform: rotate(-9deg);
+  }
+
+  to {
+    transform: rotate(0);
+  }
+}
+
+@keyframes settle-start {
+  from {
+    transform: translateY(20px);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes settle-end {
+  from {
+    transform: translateY(-20px);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes reveal {
+  to {
+    opacity: 1;
+  }
+}

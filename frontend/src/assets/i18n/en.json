@@ -44,7 +44,9 @@
     },
     "welcome": "Sign in to continue to your office.",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "newHere": "New to the platform?",
+    "register": "Create an office account"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -1317,5 +1319,19 @@
         "recurring": "Recurring"
       }
     }
+  },
+  "register": {
+    "title": "Create your office account",
+    "welcome": "Set up your accounting office and its owner account.",
+    "officeName": "Office name",
+    "name": "Your full name",
+    "passwordConfirmation": "Confirm password",
+    "passwordHint": "At least {{min}} characters. {{count}} entered.",
+    "mismatch": "The passwords do not match.",
+    "submit": "Create office account",
+    "haveAccount": "Already have an account?",
+    "doneTitle": "Office account created",
+    "doneVerify": "We sent a confirmation link to your email address. Confirm it, then sign in.",
+    "doneReady": "Your office account is ready. Sign in to continue."
   }
 }

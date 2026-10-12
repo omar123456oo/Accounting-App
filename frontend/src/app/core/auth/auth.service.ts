@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, catchError, finalize, map, of, switchMap, tap } from 'rxjs';
-import { AuthUser, LoginResponse } from './auth.models';
+import { AuthUser, LoginResponse, RegisterRequest, RegisterResponse } from './auth.models';
 
 const API = '/api/v1/auth';
 
@@ -27,6 +27,13 @@ export class AuthService {
       map((res) => res.user),
       tap((user) => this.state.set(user)),
     );
+  }
+
+  /** Registers a new accounting office and its owner account. It never signs the user in. */
+  register(request: RegisterRequest): Observable<RegisterResponse> {
+    return this.http
+      .get('/sanctum/csrf-cookie')
+      .pipe(switchMap(() => this.http.post<RegisterResponse>(`${API}/register`, request)));
   }
 
   logout(): Observable<void> {
