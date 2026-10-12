@@ -1,0 +1,29 @@
+{
+  "app": { "name": "Accounting" },
+  "nav": {
+    "dashboard": "Dashboard",
+    "journals": "Journal entries",
+    "reports": "Reports",
+    "settings": "Settings",
+    "logout": "Sign out",
+    "language": "العربية"
+  },
+  "login": {
+    "title": "Sign in",
+    "email": "Email address",
+    "password": "Password",
+    "otp": "Verification code",
+    "submit": "Sign in"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "unauthorized": "Your session has expired. Please sign in again.",
+    "forbidden": "You do not have permission to do this.",
+    "locked": "Your account is temporarily locked. Try again later."
+  },
+  "validation": {
+    "required": "This field is required.",
+    "email": "Enter a valid email address.",
+    "minlength": "Must be at least {{min}} characters."
+  }
+}
