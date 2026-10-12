@@ -14,9 +14,11 @@ function render(permissions: string[]) {
   return Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('a')).map((a) => a.getAttribute('href'));
 }
 
+const STATEMENTS = ['/app/statements/income', '/app/statements/balance', '/app/statements/cashflow', '/app/statements/equity'];
+
 describe('Sidebar', () => {
   it('lists only the entries the user may see', () => {
-    expect(render(['journals.view', 'reports.view'])).toEqual(['/app', '/app/accounting/journals', '/app/accounting/reports']);
+    expect(render(['journals.view', 'reports.view'])).toEqual(['/app', '/app/accounting/journals', '/app/accounting/reports', ...STATEMENTS]);
   });
 
   it('shows the clients entry only with clients.view', () => {
@@ -33,7 +35,7 @@ describe('Sidebar', () => {
   });
 
   it.each([
-    [['ledger.view', 'journals.view', 'reports.view'], ['/app', '/app/accounting/accounts', '/app/accounting/periods', '/app/accounting/journals', '/app/accounting/reports']],
+    [['ledger.view', 'journals.view', 'reports.view'], ['/app', '/app/accounting/accounts', '/app/accounting/periods', '/app/accounting/journals', '/app/accounting/reports', ...STATEMENTS]],
     [['ledger.view'], ['/app', '/app/accounting/accounts', '/app/accounting/periods']],
     [['ledger.manage_accounts', 'journals.create'], ['/app']],
   ])('lists the accounting group in order, filtered by permission: %j', (permissions, expected) => {
@@ -43,7 +45,7 @@ describe('Sidebar', () => {
   it.each([
     [['invoices.view'], ['/app', '/app/invoicing/invoices', '/app/invoicing/payments']],
     [['bills.view', 'suppliers.manage', 'expenses.claim'], ['/app', '/app/payables/bills', '/app/payables/suppliers', '/app/payables/expenses']],
-    [['mappings.manage'], ['/app', '/app/accounting/settings/mappings']],
+    [['mappings.manage'], ['/app', '/app/accounting/settings/mappings', '/app/statements/mapping']],
     [['tax.rates.manage'], ['/app', '/app/accounting/settings/tax-rates']],
     [['payments.record', 'invoices.create', 'bills.create'], ['/app']],
   ])('lists the receivables, payables and settings entries only with their permissions: %j', (permissions, expected) => {

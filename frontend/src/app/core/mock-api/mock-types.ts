@@ -19,6 +19,8 @@ export interface MockResult {
   body?: unknown;
   errors?: FieldErrors;
   error?: MockMessageKey;
+  /** Extra JSON fields of an error body (for example the list that blocks a period lock), next to the message. */
+  details?: Record<string, unknown>;
 }
 
 /** A slice of the staff API. Handlers authorise exactly as the real server must; the UI only hides controls. */
@@ -26,7 +28,7 @@ export interface MockModule {
   handle(req: MockRequest, user: DemoUser): MockResult | Promise<MockResult>;
 }
 
-export const fail = (status: number, error: MockMessageKey): MockResult => ({ status, error });
+export const fail = (status: number, error: MockMessageKey, details?: Record<string, unknown>): MockResult => ({ status, error, ...(details ? { details } : {}) });
 export const invalid = (errors: FieldErrors): MockResult => ({ status: 422, errors });
 export const ok = (body: unknown, status = 200): MockResult => ({ status, body });
 export const clean = <T extends object>(o: T): T => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as T;

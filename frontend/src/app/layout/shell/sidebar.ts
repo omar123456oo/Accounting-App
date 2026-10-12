@@ -17,6 +17,9 @@ import { NAV_ITEMS } from './nav.config';
           }
           <li class="nav-item">
             <a class="nav-link" [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: item.route === '/app' }">
+              @if (item.icon) {
+                <i class="fa-solid fa-{{ item.icon }} fa-fw me-2" aria-hidden="true"></i>
+              }
               {{ item.labelKey | translate }}
             </a>
           </li>

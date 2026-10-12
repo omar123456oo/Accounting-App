@@ -1,8 +1,10 @@
+import { AuditSink } from './mock-audit-sink';
 import { LedgerEntity, LedgerSummary } from '../../features/accounting/accounting.models';
 import { MockClients } from './mock-clients';
 import { handleCommercial } from './mock-commercial';
 import { commercialSummary } from './mock-commercial-reports';
 import { handleTaxRates } from './mock-commercial-settings';
+import { handleStatements } from './mock-fs';
 import { handleAccounts } from './mock-ledger-accounts';
 import { seedLedgerStore } from './mock-ledger-data';
 import { handleJournals, handleTemplates } from './mock-ledger-journals';
@@ -21,7 +23,13 @@ const stable = (v: unknown): string => JSON.stringify(v, (_k, x) => (x && typeof
 export class MockLedger implements MockModule {
   readonly store: LedgerStore = seedLedgerStore();
 
-  constructor(private readonly clients: MockClients) {}
+  constructor(
+    private readonly clients: MockClients,
+    audit: AuditSink,
+  ) {
+    // Seeding is not a user action and leaves no trail; every request after this is audited.
+    this.store.compliance.audit = audit;
+  }
 
   handle(req: MockRequest, user: DemoUser): MockResult {
     if (user.profile.type !== 'staff') return fail(403, 'forbidden');
@@ -52,6 +60,8 @@ export class MockLedger implements MockModule {
         return handleReports(ctx, rest);
       case 'commercial':
         return handleCommercial(ctx, rest);
+      case 'statements':
+        return handleStatements(ctx, rest);
       default:
         return fail(404, 'notFound');
     }

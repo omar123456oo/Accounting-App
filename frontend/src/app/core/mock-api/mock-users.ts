@@ -14,6 +14,12 @@ import { AuthUser } from '../auth/auth.models';
  *   (commercial permissions) accountant: invoices.view/create/issue, payments.record, bills.view/create, expenses.claim, suppliers.manage;
  *                           chief: invoices.view/create/issue/approve, payments.record, bills.view/create/approve, expenses.claim,
  *                           suppliers.manage, mappings.manage; owner and MFA staff: everything, including tax.rates.manage
+ *   (Phase 5) owner and MFA staff also hold every compliance permission (tax.*, eta.* incl. eta.simulate, closing.*, bank.manage, audit.view);
+ *           accountant: tax.view/prepare, eta.view/prepare, closing.view, bank.manage;
+ *           chief: tax.view/prepare/review, eta.view/prepare/review, closing.view/manage, bank.manage, periods.manage/reopen
+ *   tax@demo.test         / Tax-Demo-123!          staff, office-wide tax specialist: tax.* (view, prepare, review, settings, record_outcome) and eta.* except
+ *                                                 eta.simulate, tax.rates.manage, read access to ledgers, reports, invoices and bills; NO journals.post
+ *   auditor@demo.test     / Auditor-Demo-123!      staff, office-wide, read-only: view permissions only, including audit.view; cannot change anything
  *   client@demo.test      / Client-Demo-123!       client portal user
  *   mfa@demo.test         / Mfa-Demo-12345!        staff with MFA enabled; one-time code is DEMO_OTP
  */
@@ -67,6 +73,20 @@ const ALL_PERMISSIONS = [
   'suppliers.manage',
   'tax.rates.manage',
   'mappings.manage',
+  'tax.view',
+  'tax.prepare',
+  'tax.review',
+  'tax.settings',
+  'tax.record_outcome',
+  'eta.view',
+  'eta.prepare',
+  'eta.review',
+  'eta.record',
+  'eta.simulate',
+  'closing.view',
+  'closing.manage',
+  'bank.manage',
+  'audit.view',
 ];
 
 export const DEMO_USERS: DemoUser[] = [
@@ -83,7 +103,7 @@ export const DEMO_USERS: DemoUser[] = [
     role: 'accountant',
     password: 'Accountant-Demo-123!',
     mfaEnabled: false,
-    profile: { id: 'u-accountant', name: 'Demo Accountant', type: 'staff', permissions: ['journals.view', 'journals.create', 'ledger.view', 'reports.view', 'clients.view', 'clients.update', 'documents.view', 'documents.upload', 'tasks.view', 'tasks.manage', 'invoices.view', 'invoices.create', 'invoices.issue', 'payments.record', 'bills.view', 'bills.create', 'expenses.claim', 'suppliers.manage'] },
+    profile: { id: 'u-accountant', name: 'Demo Accountant', type: 'staff', permissions: ['journals.view', 'journals.create', 'ledger.view', 'reports.view', 'clients.view', 'clients.update', 'documents.view', 'documents.upload', 'tasks.view', 'tasks.manage', 'invoices.view', 'invoices.create', 'invoices.issue', 'payments.record', 'bills.view', 'bills.create', 'expenses.claim', 'suppliers.manage', 'tax.view', 'tax.prepare', 'eta.view', 'eta.prepare', 'closing.view', 'bank.manage'] },
   },
   {
     email: 'chief@demo.test',
@@ -95,7 +115,33 @@ export const DEMO_USERS: DemoUser[] = [
       id: 'u-chief',
       name: 'Demo Chief Accountant',
       type: 'staff',
-      permissions: ['journals.view', 'journals.create', 'journals.approve', 'journals.approve_high', 'journals.post', 'ledger.view', 'ledger.manage_accounts', 'periods.manage', 'periods.reopen', 'reports.view', 'clients.view', 'clients.update', 'clients.approve_onboarding', 'documents.view', 'documents.upload', 'documents.review', 'tasks.view', 'tasks.manage', 'workflows.approve', 'invoices.view', 'invoices.create', 'invoices.issue', 'invoices.approve', 'payments.record', 'bills.view', 'bills.create', 'bills.approve', 'expenses.claim', 'suppliers.manage', 'mappings.manage'],
+      permissions: ['journals.view', 'journals.create', 'journals.approve', 'journals.approve_high', 'journals.post', 'ledger.view', 'ledger.manage_accounts', 'periods.manage', 'periods.reopen', 'reports.view', 'clients.view', 'clients.update', 'clients.approve_onboarding', 'documents.view', 'documents.upload', 'documents.review', 'tasks.view', 'tasks.manage', 'workflows.approve', 'invoices.view', 'invoices.create', 'invoices.issue', 'invoices.approve', 'payments.record', 'bills.view', 'bills.create', 'bills.approve', 'expenses.claim', 'suppliers.manage', 'mappings.manage', 'tax.view', 'tax.prepare', 'tax.review', 'eta.view', 'eta.prepare', 'eta.review', 'closing.view', 'closing.manage', 'bank.manage'],
+    },
+  },
+  {
+    email: 'tax@demo.test',
+    role: 'accountant',
+    password: 'Tax-Demo-123!',
+    mfaEnabled: false,
+    officeWide: true,
+    profile: {
+      id: 'u-tax',
+      name: 'Demo Tax Specialist',
+      type: 'staff',
+      permissions: ['ledger.view', 'reports.view', 'journals.view', 'clients.view', 'documents.view', 'documents.upload', 'tasks.view', 'invoices.view', 'bills.view', 'tax.rates.manage', 'tax.view', 'tax.prepare', 'tax.review', 'tax.settings', 'tax.record_outcome', 'eta.view', 'eta.prepare', 'eta.review', 'eta.record', 'closing.view'],
+    },
+  },
+  {
+    email: 'auditor@demo.test',
+    role: 'accountant',
+    password: 'Auditor-Demo-123!',
+    mfaEnabled: false,
+    officeWide: true,
+    profile: {
+      id: 'u-auditor',
+      name: 'Demo Auditor',
+      type: 'staff',
+      permissions: ['ledger.view', 'reports.view', 'journals.view', 'clients.view', 'documents.view', 'tasks.view', 'invoices.view', 'bills.view', 'tax.view', 'eta.view', 'closing.view', 'audit.view'],
     },
   },
   {

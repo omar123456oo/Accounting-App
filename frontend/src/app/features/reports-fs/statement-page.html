@@ -1,0 +1,100 @@
+<app-page-header [title]="'fs.tabs.' + kind | translate">
+  <button type="button" class="btn btn-outline-secondary no-print" [disabled]="!view()" (click)="exportCsv()"><i class="fa-solid fa-file-csv me-1" aria-hidden="true"></i>{{ 'accounting.reports.exportCsv' | translate }}</button>
+  <button type="button" class="btn btn-outline-secondary no-print" [disabled]="!view()" (click)="print()"><i class="fa-solid fa-print me-1" aria-hidden="true"></i>{{ 'accounting.reports.print' | translate }}</button>
+</app-page-header>
+
+<div class="alert alert-info py-2 small" role="note"><i class="fa-solid fa-circle-info me-1" aria-hidden="true"></i>{{ 'fs.notCertified' | translate }}</div>
+
+<app-statement-filters [periods]="periods()" [years]="years()" [options]="options()" [initial]="params()" (runReport)="run($event)" />
+
+<p class="print-only">{{ money.ledgerLabel(ctx.active()) }} - {{ 'fs.tabs.' + kind | translate }}</p>
+
+<div [attr.aria-busy]="loading()">
+  @if (failed()) {
+    <div class="alert alert-danger" role="alert">{{ 'clients.loadFailed' | translate }}</div>
+  } @else if (view(); as v) {
+    <app-report-banner [includesUnposted]="v.includesUnposted" />
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+      <span class="text-body-secondary">{{ money.date(v.from) }} - {{ money.date(v.to) }}</span>
+      <span id="fs-finalized"><app-status-badge [label]="(v.finalized ? 'fs.finalized' : 'fs.notFinalized') | translate" [tone]="v.finalized ? 'success' : 'warning'" /></span>
+      @if (v.compare; as c) {
+        <span class="text-body-secondary">{{ 'fs.comparedWith' | translate: { from: money.date(c.from), to: money.date(c.to) } }}</span>
+      }
+    </div>
+    @if (v.dimensionFiltered) {
+      <div class="alert alert-warning py-2" role="status"><i class="fa-solid fa-filter me-1" aria-hidden="true"></i>{{ 'fs.dimensionNote' | translate }}</div>
+    }
+    @if (v.defaultedAccounts > 0) {
+      <p class="small text-body-secondary">{{ 'fs.defaulted' | translate: { count: v.defaultedAccounts } }}</p>
+    }
+    @if (v.check.kind !== 'none') {
+      <div id="fs-check" role="status" class="mb-3 fw-semibold" [class]="v.check.reconciled ? 'text-success' : 'text-danger'">
+        @if (v.check.reconciled) {
+          <i class="fa-solid fa-circle-check me-1" aria-hidden="true"></i>{{ 'fs.check.' + v.check.kind + '.ok' | translate }}
+        } @else {
+          <i class="fa-solid fa-triangle-exclamation me-1" aria-hidden="true"></i>{{ 'fs.check.' + v.check.kind + '.bad' | translate: { amount: money.exact(v.check.difference) } }}
+        }
+      </div>
+    }
+    <div class="table-responsive">
+      <table class="table table-sm align-middle report-table" id="fs-table">
+        <caption class="visually-hidden">{{ 'fs.tabs.' + kind | translate }}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ 'fs.col.line' | translate }}</th>
+            @for (c of v.columns; track c.key) {
+              <th scope="col" class="text-end">{{ format.label(c) }}</th>
+              @if (v.compare) {
+                <th scope="col" class="text-end">{{ 'fs.compareColumn' | translate }}</th>
+                <th scope="col" class="text-end">{{ 'fs.variance' | translate }}</th>
+                <th scope="col" class="text-end">{{ 'fs.variancePct' | translate }}</th>
+              }
+            }
+          </tr>
+        </thead>
+        @for (s of v.sections; track s.key) {
+          <tbody>
+            <tr class="table-light"><th scope="rowgroup" [attr.colspan]="1 + v.columns.length * (v.compare ? 4 : 1)">{{ format.label(s) }}</th></tr>
+            @for (r of s.rows; track r.key) {
+              <tr [class.fw-bold]="r.kind !== 'line'" [attr.data-key]="r.key">
+                <th scope="row" class="fw-normal" [class.fw-bold]="r.kind !== 'line'">
+                  @if (r.accounts && r.accounts.length > 0) {
+                    <button type="button" class="btn btn-link btn-sm p-0 me-1 text-decoration-none no-print" [attr.aria-expanded]="open().has(r.key)" [attr.aria-controls]="'acc-' + r.key" (click)="toggle(r.key)">
+                      <i class="fa-solid" [class.fa-chevron-down]="open().has(r.key)" [class.fa-chevron-right]="!open().has(r.key)" [class.fa-flip-horizontal]="!open().has(r.key) && isRtl()" aria-hidden="true"></i>
+                      <span class="visually-hidden">{{ 'fs.showAccounts' | translate: { name: format.label(r) } }}</span>
+                    </button>
+                  }
+                  {{ format.label(r) }}
+                </th>
+                @for (val of r.values; track $index) {
+                  <td dir="ltr" class="text-end" [attr.data-col]="$index">{{ format.signed(val) }}</td>
+                  @if (v.compare) {
+                    <td dir="ltr" class="text-end">{{ format.signed(r.compare?.[$index] ?? '0') }}</td>
+                    <td dir="ltr" class="text-end">{{ format.signed(r.variance?.[$index] ?? '0') }}</td>
+                    <td dir="ltr" class="text-end">{{ format.percent(r.variancePct?.[$index] ?? null) }}</td>
+                  }
+                }
+              </tr>
+              @if (r.accounts && open().has(r.key)) {
+                @for (a of r.accounts; track a.accountId) {
+                  <tr [id]="$first ? 'acc-' + r.key : null" class="small">
+                    <td class="ps-4">
+                      <a [routerLink]="['/app/accounting/reports/general-ledger']" [queryParams]="{ accountId: a.accountId, from: v.from, to: v.to }">{{ a.code }}</a>
+                      {{ money.name(a) }}
+                    </td>
+                    <td dir="ltr" class="text-end">{{ format.signed(a.amount) }}</td>
+                    @if (v.compare) {
+                      <td colspan="3"></td>
+                    }
+                  </tr>
+                }
+              }
+            }
+          </tbody>
+        }
+      </table>
+    </div>
+  } @else if (loading()) {
+    <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+  }
+</div>

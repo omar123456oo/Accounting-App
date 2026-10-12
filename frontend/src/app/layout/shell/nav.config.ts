@@ -6,6 +6,8 @@ export interface NavItem {
   permission?: string;
   /** Items sharing a group are listed together under a heading with this translation key. */
   groupKey?: string;
+  /** Font Awesome icon name without the fa- prefix, shown next to the label. */
+  icon?: string;
 }
 
 export const NAV_ITEMS: readonly NavItem[] = [
@@ -25,5 +27,10 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { labelKey: 'nav.bills', route: '/app/payables/bills', permission: 'bills.view', groupKey: 'nav.payables' },
   { labelKey: 'nav.suppliers', route: '/app/payables/suppliers', permission: 'suppliers.manage', groupKey: 'nav.payables' },
   { labelKey: 'nav.expenses', route: '/app/payables/expenses', permission: 'expenses.claim', groupKey: 'nav.payables' },
+  { labelKey: 'nav.incomeStatement', route: '/app/statements/income', permission: 'reports.view', groupKey: 'nav.statements', icon: 'chart-line' },
+  { labelKey: 'nav.balanceSheet', route: '/app/statements/balance', permission: 'reports.view', groupKey: 'nav.statements', icon: 'scale-balanced' },
+  { labelKey: 'nav.cashFlow', route: '/app/statements/cashflow', permission: 'reports.view', groupKey: 'nav.statements', icon: 'money-bill-transfer' },
+  { labelKey: 'nav.equityChanges', route: '/app/statements/equity', permission: 'reports.view', groupKey: 'nav.statements', icon: 'landmark' },
+  { labelKey: 'nav.statementMapping', route: '/app/statements/mapping', permission: 'mappings.manage', groupKey: 'nav.statements', icon: 'sitemap' },
   { labelKey: 'nav.settings', route: '/app/settings', permission: 'settings.manage' },
 ];

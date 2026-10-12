@@ -3,6 +3,7 @@ import { sum } from '../money/money';
 import { endOfMonth, firstOfMonthAfter } from './mock-clock';
 import { NORMAL_BY_CATEGORY, STARTER_CHART } from './mock-ledger-template';
 import { CommercialStore } from './mock-commercial-store';
+import { ComplianceStore } from './mock-compliance-store';
 import { MockRequest, MockResult } from './mock-types';
 import { DEMO_USERS, DemoUser } from './mock-users';
 
@@ -54,6 +55,7 @@ export class LedgerStore {
   journals: StoredJournal[] = [];
   templates: RecurringTemplate[] = [];
   readonly commercial = new CommercialStore();
+  readonly compliance = new ComplianceStore();
   readonly idempotency = new Map<string, StoredIdempotency>();
   private readonly sequences = new Map<string, number>();
   private seq = 1000;

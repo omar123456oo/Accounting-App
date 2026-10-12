@@ -1,4 +1,5 @@
 import { MockApprovals } from './mock-approvals';
+import { MockAudit } from './mock-audit';
 import { MockClients } from './mock-clients';
 import { MockDocuments } from './mock-documents';
 import { MockLedger } from './mock-ledger';
@@ -11,17 +12,22 @@ type Route = [RegExp, MockModule];
 
 /** Owns the staff-side mock modules and routes a path below /api/v1/staff to the one that serves it. */
 export class MockStaff {
-  private readonly clients = new MockClients();
-  private readonly documents = new MockDocuments(this.clients);
-  private readonly onboarding = new MockOnboarding(this.clients, this.documents);
-  private readonly routes: Route[] = [
-    [/^clients\/[^/]+\/onboarding(\/|$)/, this.onboarding],
-    [/^(clients\/[^/]+\/(documents|document-requests)|documents|document-requests)(\/|$)/, this.documents],
-    [/^tasks(\/|$)/, new MockTasks(this.clients)],
-    [/^approvals(\/|$)/, new MockApprovals(this.onboarding)],
-    [/^ledger(\/|$)/, new MockLedger(this.clients)],
-    [/^(clients|assignable-users)(\/|$)/, this.clients],
-  ];
+  private readonly routes: Route[];
+
+  constructor(audit: MockAudit) {
+    const clients = new MockClients();
+    const documents = new MockDocuments(clients);
+    const onboarding = new MockOnboarding(clients, documents);
+    this.routes = [
+      [/^clients\/[^/]+\/onboarding(\/|$)/, onboarding],
+      [/^(clients\/[^/]+\/(documents|document-requests)|documents|document-requests)(\/|$)/, documents],
+      [/^tasks(\/|$)/, new MockTasks(clients)],
+      [/^approvals(\/|$)/, new MockApprovals(onboarding)],
+      [/^ledger(\/|$)/, new MockLedger(clients, audit)],
+      [/^audit(\/|$)/, audit],
+      [/^(clients|assignable-users)(\/|$)/, clients],
+    ];
+  }
 
   /** True when some module serves the path; other paths fall through to a plain 404. */
   serves(path: string): boolean {

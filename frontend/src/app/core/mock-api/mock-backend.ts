@@ -3,6 +3,7 @@ import { HttpErrorResponse, HttpEvent, HttpRequest, HttpResponse } from '@angula
 import { Observable, from, of, switchMap, throwError } from 'rxjs';
 import { AuthUser } from '../auth/auth.models';
 import { DEMO_OTP, DEMO_USERS, DemoUser } from './mock-users';
+import { MockAudit } from './mock-audit';
 import { MockStaff } from './mock-staff';
 import { MockResult } from './mock-types';
 import { MockMessageKey, mockMessage } from './mock-messages';
@@ -28,7 +29,8 @@ export class MockBackend {
   private readonly mfaEnabled = new Set(DEMO_USERS.filter((u) => u.mfaEnabled).map((u) => u.profile.id));
   private mfaPending = false;
   private lang: string | null = null;
-  private readonly staff = new MockStaff();
+  private readonly audit = new MockAudit();
+  private readonly staff = new MockStaff(this.audit);
 
   /** Returns null when the URL is not served by the mock so the request can go on to the network. */
   handle(req: HttpRequest<unknown>): Observable<HttpEvent<unknown>> | null {
@@ -61,6 +63,7 @@ export class MockBackend {
         return this.login(body);
       case `POST ${API}/register`: {
         const result = registerOffice(body as RegisterBody, this.lang);
+        if (result.status === 201) this.audit.record({ action: 'auth.register', entityType: 'user', entityId: (body as RegisterBody).email?.trim().toLowerCase() ?? '', actorName: (body as RegisterBody).name });
         return result.status === 201 ? this.ok(result.body, 201) : this.error(422, { message: Object.values(result.errors)[0]?.[0], errors: result.errors });
       }
       case `POST ${API}/logout`:
@@ -109,13 +112,16 @@ export class MockBackend {
     }
     this.failures.delete(email);
     this.sessionUserId = user.profile.id;
+    this.audit.record({ actorId: user.profile.id, actorName: user.profile.name, action: 'auth.login', entityType: 'user', entityId: user.profile.id });
     return this.ok({ user: this.profileOf(user) });
   }
 
   private recordFailure(email: string, errors: Record<string, MockMessageKey[]>): Observable<HttpEvent<unknown>> {
     const count = (this.failures.get(email) ?? 0) + 1;
     this.failures.set(email, count);
+    this.audit.record({ action: 'auth.login_failed', entityType: 'user', entityId: email, after: { attempt: count } });
     if (count >= MAX_FAILURES) {
+      this.audit.record({ action: 'auth.lockout', entityType: 'user', entityId: email });
       this.lockedUntil.set(email, Date.now() + LOCK_MS);
       this.failures.delete(email);
     }
@@ -165,7 +171,7 @@ export class MockBackend {
 
   private respond(r: MockResult): Observable<HttpEvent<unknown>> {
     if (r.errors) return this.invalid(r.errors);
-    if (r.error) return this.fail(r.status, r.error);
+    if (r.error) return r.details ? this.error(r.status, { message: mockMessage(this.lang, r.error), ...r.details }) : this.fail(r.status, r.error);
     return this.ok(r.body ?? null, r.status);
   }
 

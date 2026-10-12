@@ -27,7 +27,13 @@
     "suppliers": "Suppliers",
     "expenses": "Expenses",
     "mappings": "Account mappings",
-    "taxRates": "Tax rates"
+    "taxRates": "Tax rates",
+    "statements": "Statements",
+    "incomeStatement": "Income statement",
+    "balanceSheet": "Balance sheet",
+    "cashFlow": "Cash flow",
+    "equityChanges": "Changes in equity",
+    "statementMapping": "Statement mapping"
   },
   "login": {
     "title": "Sign in",
@@ -1333,5 +1339,60 @@
     "doneTitle": "Office account created",
     "doneVerify": "We sent a confirmation link to your email address. Confirm it, then sign in.",
     "doneReady": "Your office account is ready. Sign in to continue."
+  },
+  "fs": {
+    "sections": "Financial statements",
+    "tabs": {
+      "income": "Income statement",
+      "balance": "Balance sheet",
+      "cashflow": "Cash flow statement",
+      "equity": "Statement of changes in equity",
+      "mapping": "Statement mapping"
+    },
+    "notCertified": "Starter statement mapping. This is not a legal certification: an accountant must review the mapping and the statements before anyone relies on them.",
+    "defaulted": "{{count}} accounts follow the starter template because no choice was saved for them.",
+    "finalized": "Finalized: all periods are locked",
+    "notFinalized": "Not finalized: the range includes unlocked periods",
+    "fiscalYear": "Fiscal year",
+    "compare": "Add a comparative period",
+    "compareFrom": "Comparative from",
+    "compareTo": "Comparative to",
+    "comparedWith": "Compared with {{from}} - {{to}}",
+    "compareColumn": "Comparative",
+    "variance": "Variance",
+    "variancePct": "Variance %",
+    "branch": "Branch",
+    "costCenter": "Cost centre",
+    "all": "All",
+    "dimensionNote": "Filtered by branch or cost centre: this is a slice of the books and does not reconcile with the whole trial balance.",
+    "showAccounts": "Show the accounts of {{name}}",
+    "col": {
+      "line": "Line"
+    },
+    "check": {
+      "balance_equation": {
+        "ok": "Assets = liabilities + equity: reconciled.",
+        "bad": "NOT reconciled: assets differ from liabilities + equity by {{amount}}."
+      },
+      "cash_reconciliation": {
+        "ok": "Net change in cash equals the cash movement in the ledger: reconciled.",
+        "bad": "NOT reconciled: the net change in cash differs from the ledger cash movement by {{amount}}."
+      },
+      "equity_reconciliation": {
+        "ok": "Closing equity equals assets minus liabilities: reconciled.",
+        "bad": "NOT reconciled: closing equity differs from assets minus liabilities by {{amount}}."
+      }
+    },
+    "mapping": {
+      "category": "Category",
+      "line": "Statement line",
+      "lineFor": "Statement line of {{name}}",
+      "source": "Source",
+      "template": "Starter template",
+      "saved": "Saved choice",
+      "confirmedBy": "Last saved by {{name}} on {{at}}.",
+      "notConfirmed": "Nobody has saved this mapping yet: every account follows the starter template.",
+      "savedMsg": "The mapping was saved."
+    }
   }
 }

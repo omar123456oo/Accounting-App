@@ -15,6 +15,7 @@ export const SHELL_ROUTES: Routes = [
       { path: 'tasks', loadChildren: () => import('../../features/workflows/workflows.routes').then((m) => m.TASK_ROUTES), canActivate: [permissionGuard], data: { permission: 'tasks.view' } },
       { path: 'approvals', canActivate: [permissionGuard], data: { permission: 'workflows.approve' }, loadComponent: () => import('../../features/workflows/approvals/approvals-inbox').then((m) => m.ApprovalsInbox) },
       { path: 'accounting', loadChildren: () => import('../../features/accounting/accounting.routes').then((m) => m.ACCOUNTING_ROUTES) },
+      { path: 'statements', loadChildren: () => import('../../features/reports-fs/fs.routes').then((m) => m.FS_ROUTES), canActivate: [permissionGuard], data: { permission: 'reports.view' } },
       { path: 'invoicing', loadChildren: () => import('../../features/invoicing/invoicing.routes').then((m) => m.INVOICING_ROUTES), canActivate: [permissionGuard], data: { permission: 'invoices.view' } },
       { path: 'payables', loadChildren: () => import('../../features/payables/payables.routes').then((m) => m.PAYABLES_ROUTES), canActivate: [permissionGuard], data: { permission: 'bills.view' } },
       { path: 'settings', canActivate: [permissionGuard], data: { permission: 'settings.manage' }, loadComponent: comingSoon },

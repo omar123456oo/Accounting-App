@@ -1,4 +1,6 @@
-export type MockMessageKey = 'invalidCredentials' | 'otpRequired' | 'otpInvalid' | 'locked' | 'csrf' | 'unauthenticated' | 'notFound' | 'required' | 'forbidden' | 'invalidTransition' | 'digitsOnly' | 'invalidDecimal' | 'invalidChoice' | 'invalidDate' | 'invalidNumber' | 'invalidEmail'
+import { COMPLIANCE_MESSAGES, ComplianceKey } from './mock-messages-compliance';
+
+type BaseKey = 'invalidCredentials' | 'otpRequired' | 'otpInvalid' | 'locked' | 'csrf' | 'unauthenticated' | 'notFound' | 'required' | 'forbidden' | 'invalidTransition' | 'digitsOnly' | 'invalidDecimal' | 'invalidChoice' | 'invalidDate' | 'invalidNumber' | 'invalidEmail'
   | 'conflict'
   | 'stageOrder'
   | 'checklistNotReceived'
@@ -61,7 +63,9 @@ export type MockMessageKey = 'invalidCredentials' | 'otpRequired' | 'otpInvalid'
   | 'docNotOpen'
   | `mappingMissing:${string}`;
 
-type StaticKey = Exclude<MockMessageKey, `mappingMissing:${string}`>;
+export type MockMessageKey = BaseKey | ComplianceKey;
+
+type StaticKey = Exclude<BaseKey, `mappingMissing:${string}`>;
 
 const MESSAGES: Record<'ar' | 'en', Record<StaticKey, string>> = {
   en: {
@@ -259,5 +263,5 @@ export function mockMessage(lang: string | null, key: MockMessageKey): string {
     const name = MAPPING_LABELS[l][key.slice('mappingMissing:'.length)] ?? key.slice('mappingMissing:'.length);
     return l === 'en' ? `The account mapping is missing: ${name}. Configure it in the account mappings first.` : `ربط الحساب غير مضبوط: ${name}. اضبطه في شاشة ربط الحسابات أولًا.`;
   }
-  return MESSAGES[l][key as StaticKey];
+  return (COMPLIANCE_MESSAGES[l] as Record<string, string>)[key] ?? MESSAGES[l][key as StaticKey];
 }
