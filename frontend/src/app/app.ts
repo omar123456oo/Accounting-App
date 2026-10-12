@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
-import { LanguageSwitch } from './shared/components/language-switch/language-switch';
+import { MockBanner } from './shared/components/mock-banner/mock-banner';
+import { ToastContainer } from './shared/components/toast/toast-container';
 
 @Component({
-  imports: [RouterOutlet, TranslatePipe, LanguageSwitch],
+  imports: [RouterOutlet, MockBanner, ToastContainer],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',

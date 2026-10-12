@@ -1,0 +1,69 @@
+<main class="container py-5" style="max-inline-size: 28rem">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h1 class="h4 mb-0">{{ 'login.title' | translate }}</h1>
+    <app-language-switch />
+  </div>
+
+  @if (locked()) {
+    <div class="alert alert-danger" role="alert" id="lockout-message">{{ 'errors.locked' | translate }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-label]="'login.title' | translate" [attr.aria-busy]="submitting()">
+    <div class="mb-3">
+      <label for="email" class="form-label">{{ 'login.email' | translate }}</label>
+      <input
+        id="email"
+        type="email"
+        class="form-control"
+        formControlName="email"
+        autocomplete="username"
+        autofocus
+        required
+        [class.is-invalid]="form.controls.email.invalid && form.controls.email.touched"
+        [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched"
+        aria-describedby="email-error"
+      />
+      <app-field-error [control]="form.controls.email" id="email-error" />
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">{{ 'login.password' | translate }}</label>
+      <input
+        id="password"
+        type="password"
+        class="form-control"
+        formControlName="password"
+        autocomplete="current-password"
+        required
+        [class.is-invalid]="form.controls.password.invalid && form.controls.password.touched"
+        [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched"
+        aria-describedby="password-error"
+      />
+      <app-field-error [control]="form.controls.password" id="password-error" />
+    </div>
+
+    @if (otpRequired()) {
+      <div class="mb-3">
+        <label for="otp" class="form-label">{{ 'login.otp' | translate }}</label>
+        <input
+          #otpInput
+          id="otp"
+          type="text"
+          inputmode="numeric"
+          class="form-control"
+          formControlName="otp"
+          autocomplete="one-time-code"
+          maxlength="6"
+          required
+          [class.is-invalid]="form.controls.otp.invalid && form.controls.otp.touched"
+          [attr.aria-invalid]="form.controls.otp.invalid && form.controls.otp.touched"
+          aria-describedby="otp-error otp-hint"
+        />
+        <div id="otp-hint" class="form-text">{{ 'login.otpHint' | translate }}</div>
+        <app-field-error [control]="form.controls.otp" id="otp-error" />
+      </div>
+    }
+
+    <button type="submit" class="btn btn-primary w-100" [disabled]="submitting()">{{ 'login.submit' | translate }}</button>
+  </form>
+</main>

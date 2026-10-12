@@ -4,10 +4,12 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { App } from './app';
 
 describe('App', () => {
-  it('renders the language switch', async () => {
+  it('renders the routed outlet, the toast area and the mock-mode banner', async () => {
     TestBed.configureTestingModule({ imports: [App], providers: [provideRouter([]), provideTranslateService()] });
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
-    expect(fixture.nativeElement.querySelector('app-language-switch button')).toBeTruthy();
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('app-toast-container')).toBeTruthy();
+    expect(el.querySelector('app-mock-banner [role="status"]')).toBeTruthy();
   });
 });

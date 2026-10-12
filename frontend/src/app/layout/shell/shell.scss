@@ -1,0 +1,14 @@
+.shell {
+  display: flex;
+  min-block-size: 100vh;
+}
+
+.shell-sidebar {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.shell-main {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}

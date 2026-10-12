@@ -1,19 +1,25 @@
 {
-  "app": { "name": "Accounting" },
+  "app": {
+    "name": "Accounting"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "journals": "Journal entries",
     "reports": "Reports",
     "settings": "Settings",
     "logout": "Sign out",
-    "language": "العربية"
+    "language": "العربية",
+    "main": "Main navigation",
+    "userMenu": "User menu",
+    "signedInAs": "Signed in as"
   },
   "login": {
     "title": "Sign in",
     "email": "Email address",
     "password": "Password",
     "otp": "Verification code",
-    "submit": "Sign in"
+    "submit": "Sign in",
+    "otpHint": "Enter the 6-digit code from your authenticator app."
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -25,5 +31,29 @@
     "required": "This field is required.",
     "email": "Enter a valid email address.",
     "minlength": "Must be at least {{min}} characters."
+  },
+  "common": {
+    "close": "Close",
+    "comingSoon": "This section arrives in a later phase."
+  },
+  "mock": {
+    "banner": "DEMO MODE: mock data"
+  },
+  "dashboard": {
+    "laterPhases": "Dashboard widgets arrive in later phases."
+  },
+  "portal": {
+    "title": "Client portal",
+    "welcome": "Welcome,",
+    "laterPhases": "Portal features arrive in later phases."
+  },
+  "mfa": {
+    "title": "Set up two-step verification",
+    "instructions": "Add this key to your authenticator app, then enter the 6-digit code it shows to confirm.",
+    "secret": "Secret key",
+    "link": "Authenticator link",
+    "confirm": "Confirm",
+    "done": "Two-step verification is now enabled.",
+    "continue": "Continue"
   }
 }

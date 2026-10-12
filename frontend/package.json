@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "lint:css": "stylelint \"src/**/*.scss\"",
+    "e2e": "playwright test"
   },
   "private": true,
   "packageManager": "npm@12.1.0",
@@ -28,8 +30,11 @@
     "@angular/build": "^22.2.2",
     "@angular/cli": "^22.2.2",
     "@angular/compiler-cli": "^22.2.0",
+    "@playwright/test": "^1.64.0",
     "jsdom": "^30.0.0",
+    "postcss-scss": "^4.0.9",
     "prettier": "^3.8.1",
+    "stylelint": "^17.16.0",
     "typescript": "~6.0.2",
     "vitest": "^5.0.0"
   }

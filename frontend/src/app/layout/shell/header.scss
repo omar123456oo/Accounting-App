@@ -1,0 +1,11 @@
+.user-menu {
+  position: relative;
+}
+
+.panel {
+  position: absolute;
+  inset-block-start: calc(100% + 0.25rem);
+  inset-inline-end: 0;
+  min-inline-size: 12rem;
+  z-index: 1050;
+}

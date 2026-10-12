@@ -1,0 +1,25 @@
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideTranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../core/auth/auth.service';
+import { Sidebar } from './sidebar';
+
+function render(permissions: string[]) {
+  TestBed.configureTestingModule({
+    imports: [Sidebar],
+    providers: [provideRouter([]), provideTranslateService(), { provide: AuthService, useValue: { can: (p: string) => permissions.includes(p) } }],
+  });
+  const fixture = TestBed.createComponent(Sidebar);
+  fixture.detectChanges();
+  return Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('a')).map((a) => a.getAttribute('href'));
+}
+
+describe('Sidebar', () => {
+  it('lists only the entries the user may see', () => {
+    expect(render(['journals.view', 'reports.view'])).toEqual(['/app', '/app/journals', '/app/reports']);
+  });
+
+  it('always shows the dashboard', () => {
+    expect(render([])).toEqual(['/app']);
+  });
+});
