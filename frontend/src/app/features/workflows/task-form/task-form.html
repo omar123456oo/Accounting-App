@@ -1,0 +1,85 @@
+@if (notFound()) {
+  <div class="alert alert-danger" role="alert">{{ 'tasks.notFound' | translate }}</div>
+  <a routerLink="/app/tasks">{{ 'tasks.back' | translate }}</a>
+} @else if (loading()) {
+  <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+} @else {
+  <app-page-header [title]="(editing ? 'tasks.edit' : 'tasks.new') | translate" />
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-label]="(editing ? 'tasks.edit' : 'tasks.new') | translate">
+    <div class="row g-3">
+      <div class="col-12 col-md-8">
+        <label for="task-title" class="form-label">{{ 'tasks.fields.title' | translate }} *</label>
+        <input id="task-title" class="form-control" formControlName="title" [class.is-invalid]="form.controls.title.invalid && form.controls.title.touched" />
+        <app-field-error [control]="form.controls.title" />
+      </div>
+      <div class="col-12 col-md-4">
+        <label for="task-due" class="form-label">{{ 'tasks.fields.dueDate' | translate }} *</label>
+        <input id="task-due" type="date" class="form-control" formControlName="dueDate" [class.is-invalid]="form.controls.dueDate.invalid && form.controls.dueDate.touched" />
+        <app-field-error [control]="form.controls.dueDate" />
+      </div>
+      <div class="col-12">
+        <label for="task-description" class="form-label">{{ 'tasks.fields.description' | translate }}</label>
+        <textarea id="task-description" class="form-control" rows="3" formControlName="description"></textarea>
+      </div>
+      <div class="col-12 col-md-4">
+        <label for="task-client" class="form-label">{{ 'tasks.fields.client' | translate }}</label>
+        <select id="task-client" class="form-select" formControlName="clientId">
+          <option value="">{{ 'tasks.noClient' | translate }}</option>
+          @for (c of clients(); track c.id) {
+            <option [value]="c.id">{{ c.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-12 col-md-4">
+        <label for="task-assignee" class="form-label">{{ 'tasks.fields.assignee' | translate }} *</label>
+        <select id="task-assignee" class="form-select" formControlName="assigneeId" [attr.aria-describedby]="editing ? 'task-assignee-hint' : null">
+          @for (u of users(); track u.id) {
+            <option [value]="u.id">{{ u.name }}</option>
+          }
+        </select>
+        @if (editing) {
+          <div id="task-assignee-hint" class="form-text">{{ 'tasks.assigneeHint' | translate }}</div>
+        }
+        <app-field-error [control]="form.controls.assigneeId" />
+      </div>
+      <div class="col-6 col-md-2">
+        <label for="task-priority" class="form-label">{{ 'tasks.fields.priority' | translate }} *</label>
+        <select id="task-priority" class="form-select" formControlName="priority">
+          @for (p of priorities; track p) {
+            <option [value]="p">{{ 'tasks.priority.' + p | translate }}</option>
+          }
+        </select>
+      </div>
+      @if (editing) {
+        <div class="col-6 col-md-2">
+          <label for="task-status" class="form-label">{{ 'tasks.fields.status' | translate }}</label>
+          <select id="task-status" class="form-select" formControlName="status">
+            @for (s of statuses; track s) {
+              <option [value]="s">{{ 'tasks.status.' + s | translate }}</option>
+            }
+          </select>
+          <app-field-error [control]="form.controls.status" />
+        </div>
+      }
+      <fieldset class="col-12">
+        <legend class="form-label fs-6">{{ 'tasks.fields.dependsOn' | translate }}</legend>
+        @if (others().length === 0) {
+          <p class="text-body-secondary mb-0">{{ 'tasks.noOthers' | translate }}</p>
+        }
+        @for (t of others(); track t.id) {
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" [id]="'dep-' + t.id" [checked]="depends().includes(t.id)" (change)="toggle(t.id, $any($event.target).checked)" />
+            <label class="form-check-label" [for]="'dep-' + t.id">{{ t.title }} ({{ 'tasks.status.' + t.status | translate }})</label>
+          </div>
+        }
+      </fieldset>
+    </div>
+    @if (serverError(); as message) {
+      <div class="alert alert-danger mt-3" role="alert">{{ message }}</div>
+    }
+    <div class="d-flex gap-2 mt-3">
+      <button type="submit" class="btn btn-primary" [disabled]="submitting()">{{ 'common.save' | translate }}</button>
+      <a class="btn btn-outline-secondary" [routerLink]="id ? ['/app/tasks', id] : ['/app/tasks']">{{ 'common.cancel' | translate }}</a>
+    </div>
+  </form>
+}

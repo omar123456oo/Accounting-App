@@ -22,17 +22,18 @@ export interface Cell {
 
 export interface ColumnDef<R> {
   labelKey: string;
-  cell: (row: R, fmt: ClientFormat) => Cell;
+  /** Method syntax on purpose: bivariant, so ResourceConfig<ClientContact> is usable as ResourceConfig<unknown>. */
+  cell(row: R, fmt: ClientFormat): Cell;
 }
 
-export interface ResourceConfig<R = any> {
+export interface ResourceConfig<R = unknown> {
   resource: SubResource;
   /** Translation prefix for title/add/empty/delete messages, e.g. "clients.contacts". */
   prefix: string;
   fields: readonly FieldDef[];
   columns: readonly ColumnDef<R>[];
   /** Text that identifies a row in the delete confirmation. */
-  label: (row: R) => string;
+  label(row: R): string;
 }
 
 const plain = (text: string | undefined): Cell => ({ text: text ?? '' });

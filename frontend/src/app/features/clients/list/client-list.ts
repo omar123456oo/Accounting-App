@@ -29,6 +29,7 @@ export class ClientList {
     { key: 'legalForm', labelKey: 'clients.fields.legalForm', sortable: true },
     { key: 'status', labelKey: 'clients.fields.status', sortable: true },
     { key: 'createdAt', labelKey: 'clients.fields.createdAt', sortable: true },
+    { key: 'actions', labelKey: 'common.actions' },
   ];
 
   protected readonly params = signal<ClientListParams>({ page: 1, pageSize: 10, sort: 'legalName', dir: 'asc', includeArchived: false });

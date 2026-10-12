@@ -1,13 +1,13 @@
 import { HttpErrorResponse, HttpEvent, HttpRequest, HttpResponse } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, from, of, switchMap, throwError } from 'rxjs';
 import { AuthUser } from '../auth/auth.models';
 import { DEMO_OTP, DEMO_USERS, DemoUser } from './mock-users';
-import { MockClients, MockResult } from './mock-clients';
+import { MockStaff } from './mock-staff';
+import { MockResult } from './mock-types';
 import { MockMessageKey, mockMessage } from './mock-messages';
 
 const API = '/api/v1/auth';
 const STAFF_API = '/api/v1/staff/';
-const CLIENT_PATH = /^\/api\/v1\/staff\/(clients|assignable-users)(\/|$)/;
 const MAX_FAILURES = 5;
 const LOCK_MS = 15 * 60 * 1000;
 const COOKIE = 'XSRF-TOKEN';
@@ -27,7 +27,7 @@ export class MockBackend {
   private readonly mfaEnabled = new Set(DEMO_USERS.filter((u) => u.mfaEnabled).map((u) => u.profile.id));
   private mfaPending = false;
   private lang: string | null = null;
-  private readonly clients = new MockClients();
+  private readonly staff = new MockStaff();
 
   /** Returns null when the URL is not served by the mock so the request can go on to the network. */
   handle(req: HttpRequest<unknown>): Observable<HttpEvent<unknown>> | null {
@@ -47,8 +47,12 @@ export class MockBackend {
     if (req.method !== 'GET' && !this.csrfValid(req)) {
       return this.fail(419, 'csrf');
     }
-    if (CLIENT_PATH.test(path)) {
-      return this.withUser((u) => this.respond(this.clients.handle({ method: req.method, path: path.slice(STAFF_API.length), query: new URL(req.urlWithParams, 'http://mock.local').searchParams, body: (req.body ?? {}) as Record<string, unknown> }, u)));
+    if (path.startsWith(STAFF_API) && this.staff.serves(path.slice(STAFF_API.length))) {
+      const request = { method: req.method, path: path.slice(STAFF_API.length), query: new URL(req.urlWithParams, 'http://mock.local').searchParams, body: this.bodyOf(req.body) };
+      return this.withUser((u) => {
+        const result = this.staff.handle(request, u);
+        return result instanceof Promise ? from(result).pipe(switchMap((r) => this.respond(r))) : this.respond(result);
+      });
     }
     const body = (req.body ?? {}) as Body;
     switch (`${req.method} ${path}`) {
@@ -120,6 +124,21 @@ export class MockBackend {
     this.mfaPending = false;
     this.mfaEnabled.add(user.profile.id);
     return this.ok({ confirmed: true });
+  }
+
+  /** A multipart upload becomes a record: plain fields as strings, `name[]` fields as arrays, files as Blobs. */
+  private bodyOf(body: unknown): Record<string, unknown> {
+    if (!(body instanceof FormData)) return (body ?? {}) as Record<string, unknown>;
+    const record: Record<string, unknown> = {};
+    body.forEach((value, key) => {
+      if (key.endsWith('[]')) {
+        const name = key.slice(0, -2);
+        record[name] = [...((record[name] as unknown[] | undefined) ?? []), value];
+      } else {
+        record[key] = value;
+      }
+    });
+    return record;
   }
 
   private profileOf(user: DemoUser): AuthUser {

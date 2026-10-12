@@ -12,7 +12,10 @@
     "main": "Main navigation",
     "userMenu": "User menu",
     "signedInAs": "Signed in as",
-    "clients": "Clients"
+    "clients": "Clients",
+    "documents": "Documents",
+    "tasks": "Tasks",
+    "approvals": "Approvals"
   },
   "login": {
     "title": "Sign in",
@@ -53,7 +56,16 @@
     "banner": "DEMO MODE: mock data"
   },
   "dashboard": {
-    "laterPhases": "Dashboard widgets arrive in later phases."
+    "laterPhases": "Dashboard widgets arrive in later phases.",
+    "work": {
+      "title": "My work",
+      "none": "Nothing to show for your role yet.",
+      "nothing": "Nothing waiting.",
+      "openTasks": "My open tasks",
+      "overdueTasks": "My overdue tasks",
+      "pendingApprovals": "Pending approvals",
+      "documentsToReview": "Documents awaiting review"
+    }
   },
   "portal": {
     "title": "Client portal",
@@ -171,7 +183,9 @@
       "bankAccounts": "Bank accounts",
       "agreements": "Agreements",
       "notes": "Communication",
-      "history": "History"
+      "history": "History",
+      "onboarding": "Onboarding",
+      "documents": "Documents"
     },
     "contacts": {
       "title": "Contacts",
@@ -226,5 +240,238 @@
       "message": "You have unsaved changes. Leave without saving?",
       "leave": "Leave"
     }
+  },
+  "onboarding": {
+    "title": "Client onboarding",
+    "open": "Onboarding",
+    "none": "This client has no onboarding case.",
+    "start": "Start onboarding",
+    "stagesLabel": "Onboarding stages",
+    "stage": {
+      "document_collection": "Document collection",
+      "verification": "Verification",
+      "approval": "Approval",
+      "completed": "Completed (active client)",
+      "rejected": "Rejected"
+    },
+    "stageState": {
+      "done": "done",
+      "current": "current",
+      "upcoming": "upcoming"
+    },
+    "templateNote": "The checklist starts from an editable template. It is not legal advice: the office decides which documents it needs, and a specialist should confirm what Egyptian rules require.",
+    "checklist": "Document checklist",
+    "item": "Item",
+    "required": "Required",
+    "document": "Linked document",
+    "linkDocument": "Linked document for {{item}}",
+    "noDocument": "No document linked",
+    "itemStatus": {
+      "missing": "Missing",
+      "received": "Received",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "itemAction": {
+      "missing": "Reset",
+      "received": "Mark received",
+      "approved": "Approve",
+      "rejected": "Reject"
+    },
+    "newItem": "New checklist item",
+    "addItem": "Add item",
+    "confirmations": "Confirmations",
+    "identityVerified": "Identity of the authorized representative is verified",
+    "engagementAccepted": "The client accepted the engagement",
+    "actions": {
+      "toVerification": "Submit for verification",
+      "toApproval": "Submit verification for approval",
+      "sendBack": "Send back to document collection",
+      "approve": "Approve and activate client",
+      "reject": "Reject"
+    },
+    "fourEyesNote": "You submitted this verification, so a different person must approve it.",
+    "awaitingApproval": "Waiting for approval. Verification submitted by {{name}}.",
+    "completedNote": "Onboarding is complete and the client is active.",
+    "history": "Workflow history",
+    "event": {
+      "started": "{{actor}} started onboarding.",
+      "advanced": "{{actor}} moved the case from {{from}} to {{to}}.",
+      "rejected": "{{actor}} sent the case back from {{from}} to {{to}}."
+    },
+    "rejectTitle": "Send back",
+    "rejectMessage": "The case returns to document collection and the confirmations are cleared. Explain what must be fixed.",
+    "comment": "Comment",
+    "commentOptional": "Comment (optional)",
+    "approveTitle": "Approve onboarding",
+    "approveMessage": "The client becomes active. This cannot be undone from here.",
+    "template": {
+      "commercialRegister": "Commercial register",
+      "taxCard": "Tax card",
+      "representativeId": "ID of the authorized representative",
+      "engagementLetter": "Signed engagement letter"
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "upload": "Upload document",
+    "uploadButton": "Upload",
+    "newVersion": "New version",
+    "newVersionNote": "The file is added as the next version. Earlier versions stay available and the document returns to review.",
+    "file": "File",
+    "fileHint": "PDF, XLSX, CSV, PNG or JPG, up to {{max}} MB. The server checks the file again and scans it.",
+    "fileError": {
+      "empty": "The file is empty.",
+      "tooLarge": "The file is larger than 10 MB.",
+      "extension": "Only PDF, XLSX, CSV, PNG and JPG files are allowed.",
+      "mime": "The file type reported by the browser does not match its extension.",
+      "signature": "The file content does not match its extension."
+    },
+    "client": "Client",
+    "chooseClient": "Choose a client",
+    "fields": {
+      "name": "Name",
+      "category": "Category",
+      "year": "Year",
+      "periodLabel": "Period (for example 2026-09 or Q3)",
+      "expiryDate": "Expiry date",
+      "tags": "Tags",
+      "description": "Description",
+      "reviewStatus": "Review"
+    },
+    "tagsHint": "Separate tags with commas.",
+    "fulfilsRequest": "Fulfils a request",
+    "noRequest": "None",
+    "category": {
+      "onboarding": "Onboarding",
+      "bookkeeping": "Bookkeeping",
+      "payroll": "Payroll",
+      "tax": "Tax",
+      "other": "Other"
+    },
+    "review": {
+      "pending": "Awaiting review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "expiry": {
+      "expiring_soon": "Expires soon",
+      "expired": "Expired"
+    },
+    "version": "Version",
+    "versions": "Versions",
+    "fileName": "File name",
+    "size": "Size",
+    "uploadedBy": "Uploaded by",
+    "sha256": "SHA-256",
+    "current": "Current",
+    "download": "Download",
+    "details": "Details",
+    "reviewComments": "Review comments",
+    "noReviewComments": "No review comments yet.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approveTitle": "Approve document",
+    "rejectTitle": "Reject document",
+    "commentOptional": "Comment (optional)",
+    "rejectComment": "Reason for rejection",
+    "search": "Search by name, client or tag",
+    "expiringOnly": "Expiring or expired only",
+    "empty": "No documents match your filters.",
+    "requests": {
+      "title": "Missing documents",
+      "add": "Request a document",
+      "label": "What is needed",
+      "dueDate": "Due date",
+      "send": "Send request",
+      "empty": "No document requests.",
+      "due": "due",
+      "overdue": "Overdue",
+      "uploadFor": "Upload",
+      "cancel": "Cancel request",
+      "status": {
+        "open": "Open",
+        "fulfilled": "Fulfilled",
+        "cancelled": "Cancelled"
+      }
+    }
+  },
+  "tasks": {
+    "title": "Tasks",
+    "new": "New task",
+    "edit": "Edit task",
+    "search": "Search tasks",
+    "scope": "Show",
+    "scopeMine": "My tasks",
+    "scopeAll": "All visible tasks",
+    "statusOpen": "Open (not finished)",
+    "overdueOnly": "Overdue only",
+    "overdue": "Overdue",
+    "empty": "No tasks match your filters.",
+    "notFound": "This task was not found or you do not have access to it.",
+    "back": "Back to tasks",
+    "noClient": "No client",
+    "assigneeHint": "Use Reassign on the task page to change the assignee. A reason is required.",
+    "noOthers": "There are no other tasks to depend on.",
+    "moveTo": "Mark as {{status}}",
+    "reassign": "Reassign",
+    "chooseAssignee": "Choose a person",
+    "reason": "Reason",
+    "reassignButton": "Reassign task",
+    "comments": "Comments",
+    "noComments": "No comments yet.",
+    "addComment": "Add a comment",
+    "postComment": "Post comment",
+    "history": "History",
+    "fields": {
+      "title": "Title",
+      "description": "Description",
+      "client": "Client",
+      "assignee": "Assignee",
+      "priority": "Priority",
+      "dueDate": "Due date",
+      "status": "Status",
+      "dependsOn": "Depends on"
+    },
+    "status": {
+      "todo": "To do",
+      "in_progress": "In progress",
+      "blocked": "Blocked",
+      "done": "Done",
+      "cancelled": "Cancelled"
+    },
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "event": {
+      "created": "{{actor}} created the task.",
+      "updated": "{{actor}} edited the task.",
+      "status_changed": "{{actor}} changed the status from {{from}} to {{to}}.",
+      "reassigned": "{{actor}} reassigned the task from {{from}} to {{to}}.",
+      "commented": "{{actor}} commented."
+    }
+  },
+  "approvals": {
+    "title": "Approvals",
+    "show": "Show",
+    "empty": "No approval items here.",
+    "kind": "Type",
+    "kinds": {
+      "onboarding": "Client onboarding"
+    },
+    "requestedBy": "Requested by",
+    "requestedAt": "Requested",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "approve": "Approve",
+    "reject": "Reject",
+    "approveTitle": "Approve",
+    "rejectTitle": "Reject"
   }
 }

@@ -11,6 +11,9 @@ export const SHELL_ROUTES: Routes = [
     children: [
       { path: '', pathMatch: 'full', loadComponent: () => import('../../features/dashboard/dashboard').then((m) => m.Dashboard) },
       { path: 'clients', loadChildren: () => import('../../features/clients/clients.routes').then((m) => m.CLIENT_ROUTES), canActivate: [permissionGuard], data: { permission: 'clients.view' } },
+      { path: 'documents', loadChildren: () => import('../../features/documents/documents.routes').then((m) => m.DOCUMENT_ROUTES), canActivate: [permissionGuard], data: { permission: 'documents.view' } },
+      { path: 'tasks', loadChildren: () => import('../../features/workflows/workflows.routes').then((m) => m.TASK_ROUTES), canActivate: [permissionGuard], data: { permission: 'tasks.view' } },
+      { path: 'approvals', canActivate: [permissionGuard], data: { permission: 'workflows.approve' }, loadComponent: () => import('../../features/workflows/approvals/approvals-inbox').then((m) => m.ApprovalsInbox) },
       { path: 'journals', canActivate: [permissionGuard], data: { permission: 'journals.view' }, loadComponent: comingSoon },
       { path: 'reports', canActivate: [permissionGuard], data: { permission: 'reports.view' }, loadComponent: comingSoon },
       { path: 'settings', canActivate: [permissionGuard], data: { permission: 'settings.manage' }, loadComponent: comingSoon },

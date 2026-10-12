@@ -1,4 +1,19 @@
-export type MockMessageKey = 'invalidCredentials' | 'otpRequired' | 'otpInvalid' | 'locked' | 'csrf' | 'unauthenticated' | 'notFound' | 'required' | 'forbidden' | 'invalidTransition' | 'digitsOnly' | 'invalidDecimal' | 'invalidChoice' | 'invalidDate' | 'invalidNumber' | 'invalidEmail';
+export type MockMessageKey = 'invalidCredentials' | 'otpRequired' | 'otpInvalid' | 'locked' | 'csrf' | 'unauthenticated' | 'notFound' | 'required' | 'forbidden' | 'invalidTransition' | 'digitsOnly' | 'invalidDecimal' | 'invalidChoice' | 'invalidDate' | 'invalidNumber' | 'invalidEmail'
+  | 'conflict'
+  | 'stageOrder'
+  | 'checklistNotReceived'
+  | 'checklistNotApproved'
+  | 'identityRequired'
+  | 'engagementRequired'
+  | 'fourEyes'
+  | 'dependencyOpen'
+  | 'dependencyInvalid'
+  | 'alreadyDecided'
+  | 'fileTooLarge'
+  | 'fileType'
+  | 'fileMime'
+  | 'fileSignature'
+  | 'fileEmpty';
 
 const MESSAGES: Record<'ar' | 'en', Record<MockMessageKey, string>> = {
   en: {
@@ -18,6 +33,21 @@ const MESSAGES: Record<'ar' | 'en', Record<MockMessageKey, string>> = {
     invalidDate: 'Enter a valid date (YYYY-MM-DD).',
     invalidNumber: 'Enter a valid number.',
     invalidEmail: 'Enter a valid email address.',
+    conflict: 'This action conflicts with the current state.',
+    stageOrder: 'Stages must be completed in order.',
+    checklistNotReceived: 'Every required checklist item must be received first.',
+    checklistNotApproved: 'Every required checklist item must be approved first.',
+    identityRequired: 'The identity must be verified first.',
+    engagementRequired: 'The engagement must be accepted first.',
+    fourEyes: 'The person who submitted the verification cannot also approve it.',
+    dependencyOpen: 'Finish the tasks this task depends on first.',
+    dependencyInvalid: 'A task cannot depend on itself or create a dependency cycle.',
+    alreadyDecided: 'This item has already been decided.',
+    fileTooLarge: 'The file is larger than 10 MB.',
+    fileType: 'Only PDF, XLSX, CSV, PNG and JPG files are allowed.',
+    fileMime: 'The file type declared by the browser does not match its extension.',
+    fileSignature: 'The file content does not match its extension.',
+    fileEmpty: 'The file is empty.',
   },
   ar: {
     invalidCredentials: 'بيانات الدخول غير صحيحة.',
@@ -36,6 +66,21 @@ const MESSAGES: Record<'ar' | 'en', Record<MockMessageKey, string>> = {
     invalidDate: 'أدخل تاريخًا صحيحًا (YYYY-MM-DD).',
     invalidNumber: 'أدخل رقمًا صحيحًا.',
     invalidEmail: 'أدخل بريدًا إلكترونيًا صحيحًا.',
+    conflict: 'هذا الإجراء يتعارض مع الحالة الحالية.',
+    stageOrder: 'يجب إكمال المراحل بالترتيب.',
+    checklistNotReceived: 'يجب استلام كل بنود القائمة المطلوبة أولًا.',
+    checklistNotApproved: 'يجب اعتماد كل بنود القائمة المطلوبة أولًا.',
+    identityRequired: 'يجب التحقق من الهوية أولًا.',
+    engagementRequired: 'يجب قبول التعاقد أولًا.',
+    fourEyes: 'لا يجوز لمن قدّم التحقق أن يعتمده بنفسه.',
+    dependencyOpen: 'أنهِ المهام التي تعتمد عليها هذه المهمة أولًا.',
+    dependencyInvalid: 'لا يمكن أن تعتمد المهمة على نفسها أو تُكوّن حلقة اعتماد.',
+    alreadyDecided: 'تم البت في هذا العنصر مسبقًا.',
+    fileTooLarge: 'حجم الملف أكبر من 10 ميغابايت.',
+    fileType: 'المسموح فقط بملفات PDF وXLSX وCSV وPNG وJPG.',
+    fileMime: 'نوع الملف المعلن لا يطابق امتداده.',
+    fileSignature: 'محتوى الملف لا يطابق امتداده.',
+    fileEmpty: 'الملف فارغ.',
   },
 };
 

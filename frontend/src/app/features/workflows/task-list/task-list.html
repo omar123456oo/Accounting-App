@@ -1,0 +1,85 @@
+<app-page-header [title]="'tasks.title' | translate">
+  <a *appHasPermission="'tasks.manage'" class="btn btn-primary" routerLink="/app/tasks/new">{{ 'tasks.new' | translate }}</a>
+</app-page-header>
+
+<form class="row g-2 align-items-end mb-3" role="search" (submit)="search($event, q.value)">
+  <div class="col-12 col-md-3">
+    <label for="task-q" class="form-label">{{ 'tasks.search' | translate }}</label>
+    <input #q id="task-q" type="search" class="form-control" [value]="params().q ?? ''" />
+  </div>
+  <div class="col-6 col-md-2">
+    <label for="task-scope" class="form-label">{{ 'tasks.scope' | translate }}</label>
+    <select id="task-scope" class="form-select" (change)="patch({ mine: $any($event.target).value === 'mine' })">
+      <option value="mine" [selected]="params().mine">{{ 'tasks.scopeMine' | translate }}</option>
+      <option value="all" [selected]="!params().mine">{{ 'tasks.scopeAll' | translate }}</option>
+    </select>
+  </div>
+  <div class="col-6 col-md-2">
+    <label for="task-status" class="form-label">{{ 'tasks.fields.status' | translate }}</label>
+    <select id="task-status" class="form-select" (change)="patch({ status: $any($event.target).value })">
+      <option value="open" selected>{{ 'tasks.statusOpen' | translate }}</option>
+      <option value="">{{ 'clients.all' | translate }}</option>
+      @for (s of statuses; track s) {
+        <option [value]="s">{{ 'tasks.status.' + s | translate }}</option>
+      }
+    </select>
+  </div>
+  <div class="col-6 col-md-2">
+    <label for="task-priority" class="form-label">{{ 'tasks.fields.priority' | translate }}</label>
+    <select id="task-priority" class="form-select" (change)="patch({ priority: $any($event.target).value })">
+      <option value="">{{ 'clients.all' | translate }}</option>
+      @for (p of priorities; track p) {
+        <option [value]="p">{{ 'tasks.priority.' + p | translate }}</option>
+      }
+    </select>
+  </div>
+  <div class="col-12 col-md-3 d-flex align-items-center gap-3">
+    <button type="submit" class="btn btn-secondary">{{ 'clients.searchButton' | translate }}</button>
+    <div class="form-check mb-0">
+      <input id="task-overdue" type="checkbox" class="form-check-input" (change)="patch({ overdue: $any($event.target).checked || undefined })" />
+      <label for="task-overdue" class="form-check-label">{{ 'tasks.overdueOnly' | translate }}</label>
+    </div>
+  </div>
+</form>
+
+<div [attr.aria-busy]="loading()">
+  @if (failed()) {
+    <div class="alert alert-danger d-flex align-items-center justify-content-between" role="alert">
+      <span>{{ 'clients.loadFailed' | translate }}</span>
+      <button type="button" class="btn btn-outline-danger btn-sm" (click)="reload()">{{ 'common.retry' | translate }}</button>
+    </div>
+  } @else if (loading() && !result()) {
+    <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+  } @else if (result(); as page) {
+    @if (page.data.length === 0) {
+      <div class="alert alert-secondary" role="status">{{ 'tasks.empty' | translate }}</div>
+    } @else {
+      <app-data-table
+        [columns]="columns"
+        [rows]="page.data"
+        [caption]="'tasks.title' | translate"
+        [sort]="params().sort ?? ''"
+        [dir]="params().dir ?? 'asc'"
+        [page]="page.meta.page"
+        [pageSize]="page.meta.pageSize"
+        [total]="page.meta.total"
+        (sortChange)="onSort($event)"
+        (pageChange)="patch({ page: $event }, false)"
+      >
+        <ng-template let-row>
+          <td><a [routerLink]="['/app/tasks', row.id]">{{ row.title }}</a></td>
+          <td>{{ row.clientName ?? '—' }}</td>
+          <td>{{ row.assigneeName }}</td>
+          <td><app-status-badge [label]="'tasks.priority.' + row.priority | translate" [tone]="priorityTone[row.priority]" /></td>
+          <td>
+            {{ format.date(row.dueDate) }}
+            @if (row.overdue) {
+              <span class="badge text-bg-danger d-block mt-1"><span aria-hidden="true">⚠ </span>{{ 'tasks.overdue' | translate }}</span>
+            }
+          </td>
+          <td><app-status-badge [label]="'tasks.status.' + row.status | translate" [tone]="statusTone[row.status]" /></td>
+        </ng-template>
+      </app-data-table>
+    }
+  }
+</div>

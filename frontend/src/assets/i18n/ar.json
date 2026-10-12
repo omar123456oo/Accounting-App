@@ -12,7 +12,10 @@
     "main": "التنقل الرئيسي",
     "userMenu": "قائمة المستخدم",
     "signedInAs": "تم تسجيل الدخول باسم",
-    "clients": "العملاء"
+    "clients": "العملاء",
+    "documents": "المستندات",
+    "tasks": "المهام",
+    "approvals": "الموافقات"
   },
   "login": {
     "title": "تسجيل الدخول",
@@ -53,7 +56,16 @@
     "banner": "وضع تجريبي: بيانات وهمية"
   },
   "dashboard": {
-    "laterPhases": "ستتوفر عناصر لوحة التحكم في مراحل لاحقة."
+    "laterPhases": "ستتوفر عناصر لوحة التحكم في مراحل لاحقة.",
+    "work": {
+      "title": "عملي",
+      "none": "لا يوجد ما يُعرض لدورك حتى الآن.",
+      "nothing": "لا شيء في الانتظار.",
+      "openTasks": "مهامي المفتوحة",
+      "overdueTasks": "مهامي المتأخرة",
+      "pendingApprovals": "موافقات معلّقة",
+      "documentsToReview": "مستندات بانتظار المراجعة"
+    }
   },
   "portal": {
     "title": "بوابة العملاء",
@@ -171,7 +183,9 @@
       "bankAccounts": "الحسابات البنكية",
       "agreements": "الاتفاقيات",
       "notes": "التواصل",
-      "history": "السجل"
+      "history": "السجل",
+      "onboarding": "التهيئة",
+      "documents": "المستندات"
     },
     "contacts": {
       "title": "جهات الاتصال",
@@ -226,5 +240,238 @@
       "message": "لديك تغييرات غير محفوظة. هل تريد المغادرة دون حفظ؟",
       "leave": "مغادرة"
     }
+  },
+  "onboarding": {
+    "title": "تهيئة العميل",
+    "open": "التهيئة",
+    "none": "لا توجد حالة تهيئة لهذا العميل.",
+    "start": "بدء التهيئة",
+    "stagesLabel": "مراحل التهيئة",
+    "stage": {
+      "document_collection": "جمع المستندات",
+      "verification": "التحقق",
+      "approval": "الاعتماد",
+      "completed": "مكتملة (عميل نشط)",
+      "rejected": "مرفوضة"
+    },
+    "stageState": {
+      "done": "منتهية",
+      "current": "الحالية",
+      "upcoming": "قادمة"
+    },
+    "templateNote": "تبدأ القائمة من قالب قابل للتعديل. وهي ليست استشارة قانونية: يحدد المكتب المستندات التي يحتاجها، ويجب أن يؤكد مختص ما تتطلبه القواعد المصرية.",
+    "checklist": "قائمة المستندات",
+    "item": "البند",
+    "required": "مطلوب",
+    "document": "المستند المرتبط",
+    "linkDocument": "المستند المرتبط بالبند {{item}}",
+    "noDocument": "لا يوجد مستند مرتبط",
+    "itemStatus": {
+      "missing": "ناقص",
+      "received": "مستلم",
+      "approved": "معتمد",
+      "rejected": "مرفوض"
+    },
+    "itemAction": {
+      "missing": "إعادة تعيين",
+      "received": "تحديد كمستلم",
+      "approved": "اعتماد",
+      "rejected": "رفض"
+    },
+    "newItem": "بند جديد في القائمة",
+    "addItem": "إضافة بند",
+    "confirmations": "التأكيدات",
+    "identityVerified": "تم التحقق من هوية الممثل المفوض",
+    "engagementAccepted": "وافق العميل على التعاقد",
+    "actions": {
+      "toVerification": "إرسال للتحقق",
+      "toApproval": "إرسال التحقق للاعتماد",
+      "sendBack": "إعادة إلى جمع المستندات",
+      "approve": "اعتماد وتفعيل العميل",
+      "reject": "رفض"
+    },
+    "fourEyesNote": "أنت من قدّم هذا التحقق، لذا يجب أن يعتمده شخص آخر.",
+    "awaitingApproval": "بانتظار الاعتماد. قدّم التحقق {{name}}.",
+    "completedNote": "اكتملت التهيئة والعميل نشط.",
+    "history": "سجل سير العمل",
+    "event": {
+      "started": "بدأ {{actor}} التهيئة.",
+      "advanced": "نقل {{actor}} الحالة من {{from}} إلى {{to}}.",
+      "rejected": "أعاد {{actor}} الحالة من {{from}} إلى {{to}}."
+    },
+    "rejectTitle": "إعادة الحالة",
+    "rejectMessage": "تعود الحالة إلى جمع المستندات وتُمسح التأكيدات. اشرح ما يجب تصحيحه.",
+    "comment": "التعليق",
+    "commentOptional": "تعليق (اختياري)",
+    "approveTitle": "اعتماد التهيئة",
+    "approveMessage": "سيصبح العميل نشطًا. لا يمكن التراجع عن ذلك من هنا.",
+    "template": {
+      "commercialRegister": "السجل التجاري",
+      "taxCard": "البطاقة الضريبية",
+      "representativeId": "بطاقة هوية الممثل المفوض",
+      "engagementLetter": "خطاب التعاقد الموقّع"
+    }
+  },
+  "documents": {
+    "title": "المستندات",
+    "upload": "رفع مستند",
+    "uploadButton": "رفع",
+    "newVersion": "إصدار جديد",
+    "newVersionNote": "يُضاف الملف كإصدار تالٍ. تبقى الإصدارات السابقة متاحة ويعود المستند إلى المراجعة.",
+    "file": "الملف",
+    "fileHint": "ملفات PDF أو XLSX أو CSV أو PNG أو JPG حتى {{max}} ميغابايت. يفحص الخادم الملف مرة أخرى ويمسحه.",
+    "fileError": {
+      "empty": "الملف فارغ.",
+      "tooLarge": "حجم الملف أكبر من 10 ميغابايت.",
+      "extension": "المسموح فقط بملفات PDF وXLSX وCSV وPNG وJPG.",
+      "mime": "نوع الملف الذي أعلنه المتصفح لا يطابق امتداده.",
+      "signature": "محتوى الملف لا يطابق امتداده."
+    },
+    "client": "العميل",
+    "chooseClient": "اختر عميلًا",
+    "fields": {
+      "name": "الاسم",
+      "category": "التصنيف",
+      "year": "السنة",
+      "periodLabel": "الفترة (مثل 2026-09 أو Q3)",
+      "expiryDate": "تاريخ الانتهاء",
+      "tags": "الوسوم",
+      "description": "الوصف",
+      "reviewStatus": "المراجعة"
+    },
+    "tagsHint": "افصل الوسوم بفواصل.",
+    "fulfilsRequest": "يلبّي طلبًا",
+    "noRequest": "لا شيء",
+    "category": {
+      "onboarding": "التهيئة",
+      "bookkeeping": "مسك الدفاتر",
+      "payroll": "الرواتب",
+      "tax": "الضرائب",
+      "other": "أخرى"
+    },
+    "review": {
+      "pending": "بانتظار المراجعة",
+      "approved": "معتمد",
+      "rejected": "مرفوض"
+    },
+    "expiry": {
+      "expiring_soon": "ينتهي قريبًا",
+      "expired": "منتهي"
+    },
+    "version": "الإصدار",
+    "versions": "الإصدارات",
+    "fileName": "اسم الملف",
+    "size": "الحجم",
+    "uploadedBy": "رفعه",
+    "sha256": "SHA-256",
+    "current": "الحالي",
+    "download": "تنزيل",
+    "details": "التفاصيل",
+    "reviewComments": "تعليقات المراجعة",
+    "noReviewComments": "لا توجد تعليقات مراجعة بعد.",
+    "approve": "اعتماد",
+    "reject": "رفض",
+    "approveTitle": "اعتماد المستند",
+    "rejectTitle": "رفض المستند",
+    "commentOptional": "تعليق (اختياري)",
+    "rejectComment": "سبب الرفض",
+    "search": "ابحث بالاسم أو العميل أو الوسم",
+    "expiringOnly": "المنتهية أو القريبة من الانتهاء فقط",
+    "empty": "لا توجد مستندات مطابقة للتصفية.",
+    "requests": {
+      "title": "المستندات الناقصة",
+      "add": "طلب مستند",
+      "label": "المطلوب",
+      "dueDate": "تاريخ الاستحقاق",
+      "send": "إرسال الطلب",
+      "empty": "لا توجد طلبات مستندات.",
+      "due": "الاستحقاق",
+      "overdue": "متأخر",
+      "uploadFor": "رفع",
+      "cancel": "إلغاء الطلب",
+      "status": {
+        "open": "مفتوح",
+        "fulfilled": "مكتمل",
+        "cancelled": "ملغى"
+      }
+    }
+  },
+  "tasks": {
+    "title": "المهام",
+    "new": "مهمة جديدة",
+    "edit": "تعديل المهمة",
+    "search": "ابحث في المهام",
+    "scope": "عرض",
+    "scopeMine": "مهامي",
+    "scopeAll": "كل المهام المتاحة",
+    "statusOpen": "مفتوحة (غير منتهية)",
+    "overdueOnly": "المتأخرة فقط",
+    "overdue": "متأخرة",
+    "empty": "لا توجد مهام مطابقة للتصفية.",
+    "notFound": "لم يتم العثور على هذه المهمة أو لا تملك صلاحية الوصول إليها.",
+    "back": "العودة إلى المهام",
+    "noClient": "بدون عميل",
+    "assigneeHint": "استخدم إعادة الإسناد من صفحة المهمة لتغيير المسؤول. السبب مطلوب.",
+    "noOthers": "لا توجد مهام أخرى للاعتماد عليها.",
+    "moveTo": "تحديد كـ {{status}}",
+    "reassign": "إعادة الإسناد",
+    "chooseAssignee": "اختر شخصًا",
+    "reason": "السبب",
+    "reassignButton": "إعادة إسناد المهمة",
+    "comments": "التعليقات",
+    "noComments": "لا توجد تعليقات بعد.",
+    "addComment": "أضف تعليقًا",
+    "postComment": "نشر التعليق",
+    "history": "السجل",
+    "fields": {
+      "title": "العنوان",
+      "description": "الوصف",
+      "client": "العميل",
+      "assignee": "المسؤول",
+      "priority": "الأولوية",
+      "dueDate": "تاريخ الاستحقاق",
+      "status": "الحالة",
+      "dependsOn": "تعتمد على"
+    },
+    "status": {
+      "todo": "للتنفيذ",
+      "in_progress": "قيد التنفيذ",
+      "blocked": "معطّلة",
+      "done": "منتهية",
+      "cancelled": "ملغاة"
+    },
+    "priority": {
+      "low": "منخفضة",
+      "normal": "عادية",
+      "high": "عالية",
+      "urgent": "عاجلة"
+    },
+    "event": {
+      "created": "أنشأ {{actor}} المهمة.",
+      "updated": "عدّل {{actor}} المهمة.",
+      "status_changed": "غيّر {{actor}} الحالة من {{from}} إلى {{to}}.",
+      "reassigned": "أعاد {{actor}} إسناد المهمة من {{from}} إلى {{to}}.",
+      "commented": "علّق {{actor}}."
+    }
+  },
+  "approvals": {
+    "title": "الموافقات",
+    "show": "عرض",
+    "empty": "لا توجد عناصر موافقة هنا.",
+    "kind": "النوع",
+    "kinds": {
+      "onboarding": "تهيئة عميل"
+    },
+    "requestedBy": "طلبها",
+    "requestedAt": "تاريخ الطلب",
+    "status": {
+      "pending": "معلّقة",
+      "approved": "معتمدة",
+      "rejected": "مرفوضة"
+    },
+    "approve": "اعتماد",
+    "reject": "رفض",
+    "approveTitle": "اعتماد",
+    "rejectTitle": "رفض"
   }
 }

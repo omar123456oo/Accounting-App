@@ -23,6 +23,15 @@ describe('Sidebar', () => {
     expect(render(['clients.view'])).toEqual(['/app', '/app/clients']);
   });
 
+  it.each([
+    [['documents.view'], ['/app', '/app/documents']],
+    [['tasks.view'], ['/app', '/app/tasks']],
+    [['workflows.approve'], ['/app', '/app/approvals']],
+    [['tasks.manage', 'documents.upload'], ['/app']],
+  ])('shows documents, tasks and approvals only with their own permissions: %j', (permissions, expected) => {
+    expect(render(permissions)).toEqual(expected);
+  });
+
   it('always shows the dashboard', () => {
     expect(render([])).toEqual(['/app']);
   });

@@ -1,39 +1,23 @@
 import { isLegalTransition } from '../../features/clients/client-status';
 import { Client, ClientChangeEvent, ClientStatus, Page } from '../../features/clients/client.models';
-import { CLIENT_RULES, FieldErrors, SUB_RULES, pick, validate } from './mock-clients-rules';
+import { CLIENT_RULES, SUB_RULES, pick, validate } from './mock-clients-rules';
 import { ClientStore, seedClientStore } from './mock-clients-data';
 import { DEMO_USERS, DemoUser } from './mock-users';
-import { MockMessageKey } from './mock-messages';
+import { MockModule, MockRequest as MockClientRequest, MockResult, clean, fail, invalid, need } from './mock-types';
 
-export interface MockClientRequest {
-  method: string;
-  /** Path below /api/v1/staff, e.g. "clients/c-001/contacts". */
-  path: string;
-  query: URLSearchParams;
-  body: Record<string, unknown>;
-}
-export interface MockResult {
-  status: number;
-  body?: unknown;
-  errors?: FieldErrors;
-  error?: MockMessageKey;
-}
 
 const CRITICAL = ['legalName', 'taxRegistrationNo', 'commercialRegistrationNo', 'status', 'legalForm', 'assignedAccountantIds'] as const;
 const SORTABLE = ['legalName', 'status', 'legalForm', 'createdAt', 'updatedAt'] as const;
 const SUB = ['contacts', 'branches', 'bank-accounts', 'agreements', 'notes'] as const;
 type Sub = (typeof SUB)[number];
 
-const fail = (status: number, error: MockMessageKey): MockResult => ({ status, error });
-const invalid = (errors: FieldErrors): MockResult => ({ status: 422, errors });
 const show = (v: unknown): string => (Array.isArray(v) ? v.join(', ') : v === undefined || v === null ? '' : String(v));
-const clean = <T extends object>(o: T): T => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as T;
 
 /**
  * In-memory implementation of the client-management API contracts. Permissions and client-assignment scoping
  * are enforced here exactly as the server must: the UI only hides controls for convenience.
  */
-export class MockClients {
+export class MockClients implements MockModule {
   private readonly store: ClientStore = seedClientStore();
   private seq = 1000;
 
@@ -41,7 +25,8 @@ export class MockClients {
     if (user.profile.type !== 'staff') return fail(403, 'forbidden');
     const parts = req.path.split('/');
     if (parts[0] === 'assignable-users' && req.method === 'GET') {
-      return this.need(user, 'clients.view') ?? this.assignable();
+      // Task assignment needs the staff list too, so tasks.view is enough.
+      return (user.profile.permissions.includes('tasks.view') ? null : this.need(user, 'clients.view')) ?? this.assignable();
     }
     if (parts[0] !== 'clients') return fail(404, 'notFound');
     const [, id, sub, subId] = parts;
@@ -57,8 +42,27 @@ export class MockClients {
     return fail(404, 'notFound');
   }
 
-  private need(user: DemoUser, permission: string): MockResult | null {
-    return user.profile.permissions.includes(permission) ? null : fail(403, 'forbidden');
+  private need = need;
+
+  /** The client when it exists and the user may see it (office-wide or assigned); otherwise undefined, so callers answer 404. */
+  find(id: string, user: DemoUser): Client | undefined {
+    const client = this.store.clients.find((c) => c.id === id);
+    return client && this.visible(client, user) ? client : undefined;
+  }
+
+  /** Moves the client along the existing status rules and records the change in its history. False when the move is illegal. */
+  applyStatus(client: Client, to: ClientStatus, user: DemoUser): boolean {
+    if (!isLegalTransition(client.status, to)) return false;
+    const events = this.diff(client, { status: to }, user);
+    client.status = to;
+    client.updatedAt = new Date().toISOString();
+    this.store.history.push(...events);
+    return true;
+  }
+
+  /** Legal name for lists that show the client next to a document, task or approval. */
+  clientName(id: string): string {
+    return this.store.clients.find((c) => c.id === id)?.legalName ?? '';
   }
 
   private visible(client: Client, user: DemoUser): boolean {

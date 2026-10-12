@@ -1,0 +1,116 @@
+@if (notFound()) {
+  <div class="alert alert-danger" role="alert">{{ 'tasks.notFound' | translate }}</div>
+  <a routerLink="/app/tasks">{{ 'tasks.back' | translate }}</a>
+} @else if (task(); as t) {
+  <app-page-header [title]="t.title">
+    <a *appHasPermission="'tasks.manage'" class="btn btn-outline-secondary" [routerLink]="['/app/tasks', t.id, 'edit']">{{ 'common.edit' | translate }}</a>
+  </app-page-header>
+
+  <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <app-status-badge [label]="'tasks.status.' + t.status | translate" [tone]="statusTone[t.status]" />
+    <app-status-badge [label]="'tasks.priority.' + t.priority | translate" [tone]="priorityTone[t.priority]" />
+    @if (t.overdue) {
+      <span class="badge text-bg-danger"><span aria-hidden="true">⚠ </span>{{ 'tasks.overdue' | translate }}</span>
+    }
+    <span *appHasPermission="'tasks.manage'" class="d-inline-flex flex-wrap gap-2 ms-3">
+      @for (s of nextStatuses(); track s) {
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="setStatus(s)">{{ 'tasks.moveTo' | translate: { status: ('tasks.status.' + s | translate) } }}</button>
+      }
+    </span>
+  </div>
+
+  @if (error(); as message) {
+    <div class="alert alert-danger" role="alert">{{ message }}</div>
+  }
+
+  <dl class="row">
+    <dt class="col-sm-3">{{ 'tasks.fields.assignee' | translate }}</dt>
+    <dd class="col-sm-9">{{ t.assigneeName }}</dd>
+    <dt class="col-sm-3">{{ 'tasks.fields.dueDate' | translate }}</dt>
+    <dd class="col-sm-9">{{ format.date(t.dueDate) }}</dd>
+    <dt class="col-sm-3">{{ 'tasks.fields.client' | translate }}</dt>
+    <dd class="col-sm-9">
+      @if (t.clientId) {
+        <a [routerLink]="['/app/clients', t.clientId]">{{ t.clientName }}</a>
+      } @else {
+        —
+      }
+    </dd>
+    <dt class="col-sm-3">{{ 'tasks.fields.description' | translate }}</dt>
+    <dd class="col-sm-9">{{ t.description ?? '—' }}</dd>
+    <dt class="col-sm-3">{{ 'tasks.fields.dependsOn' | translate }}</dt>
+    <dd class="col-sm-9">
+      @if (t.dependsOnTaskIds.length === 0) {
+        —
+      } @else {
+        <ul class="list-unstyled mb-0">
+          @for (d of t.dependsOnTaskIds; track d) {
+            <li>
+              <a [routerLink]="['/app/tasks', d]">{{ depTitle(d) }}</a>
+              @if (titles()[d]; as dep) {
+                ({{ 'tasks.status.' + dep.status | translate }})
+              }
+            </li>
+          }
+        </ul>
+      }
+    </dd>
+  </dl>
+
+  <section class="mb-4" *appHasPermission="'tasks.manage'">
+    <h2 class="h5">{{ 'tasks.reassign' | translate }}</h2>
+    <form class="row g-2 align-items-start" [formGroup]="reassign" (ngSubmit)="doReassign()" novalidate [attr.aria-label]="'tasks.reassign' | translate">
+      <div class="col-12 col-md-3">
+        <label for="re-assignee" class="form-label">{{ 'tasks.fields.assignee' | translate }} *</label>
+        <select id="re-assignee" class="form-select" formControlName="assigneeId">
+          <option value="">{{ 'tasks.chooseAssignee' | translate }}</option>
+          @for (u of users(); track u.id) {
+            <option [value]="u.id">{{ u.name }}</option>
+          }
+        </select>
+        <app-field-error [control]="reassign.controls.assigneeId" />
+      </div>
+      <div class="col-12 col-md-6">
+        <label for="re-reason" class="form-label">{{ 'tasks.reason' | translate }} *</label>
+        <input id="re-reason" class="form-control" formControlName="reason" [class.is-invalid]="reassign.controls.reason.invalid && reassign.controls.reason.touched" />
+        <app-field-error [control]="reassign.controls.reason" />
+      </div>
+      <div class="col-12 col-md-3 pt-md-4"><button type="submit" class="btn btn-outline-primary mt-md-2">{{ 'tasks.reassignButton' | translate }}</button></div>
+    </form>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="h5">{{ 'tasks.comments' | translate }}</h2>
+    @if (t.comments.length === 0) {
+      <p class="text-body-secondary" role="status">{{ 'tasks.noComments' | translate }}</p>
+    } @else {
+      <ul class="list-unstyled">
+        @for (c of t.comments; track c.id) {
+          <li class="mb-2"><strong>{{ c.author }}</strong>, {{ format.dateTime(c.at) }}<span class="d-block">{{ c.body }}</span></li>
+        }
+      </ul>
+    }
+    <form *appHasPermission="'tasks.manage'" (ngSubmit)="addComment()" novalidate>
+      <label for="task-comment" class="form-label">{{ 'tasks.addComment' | translate }}</label>
+      <textarea id="task-comment" class="form-control" rows="2" [formControl]="comment" [class.is-invalid]="comment.invalid && comment.touched"></textarea>
+      <app-field-error [control]="comment" />
+      <button type="submit" class="btn btn-outline-primary mt-2">{{ 'tasks.postComment' | translate }}</button>
+    </form>
+  </section>
+
+  <section>
+    <h2 class="h5">{{ 'tasks.history' | translate }}</h2>
+    <ul class="list-unstyled">
+      @for (e of t.history; track $index) {
+        <li class="mb-1">
+          {{ format.dateTime(e.at) }}: {{ 'tasks.event.' + e.action | translate: params(e) }}
+          @if (e.reason) {
+            <q>{{ e.reason }}</q>
+          }
+        </li>
+      }
+    </ul>
+  </section>
+} @else {
+  <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+}

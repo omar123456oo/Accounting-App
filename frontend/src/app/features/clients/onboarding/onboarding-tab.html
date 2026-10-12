@@ -1,0 +1,173 @@
+<h2 class="h5 mb-3">{{ 'onboarding.title' | translate }}</h2>
+
+@if (failed()) {
+  <div class="alert alert-danger" role="alert">{{ 'clients.loadFailed' | translate }}</div>
+} @else if (loading()) {
+  <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+} @else if (kase(); as c) {
+  <ol class="list-unstyled d-flex flex-wrap gap-2 mb-3" [attr.aria-label]="'onboarding.stagesLabel' | translate">
+    @for (s of stages; track s) {
+      <li class="border rounded px-3 py-2" [class.fw-bold]="stageState(s) === 'current'">
+        {{ 'onboarding.stage.' + s | translate }}
+        <span class="visually-hidden">: {{ 'onboarding.stageState.' + stageState(s) | translate }}</span>
+        <span aria-hidden="true"> ({{ 'onboarding.stageState.' + stageState(s) | translate }})</span>
+      </li>
+    }
+  </ol>
+
+  @if (error(); as message) {
+    <div class="alert alert-danger" role="alert">{{ message }}</div>
+  }
+
+  <p class="text-body-secondary small">{{ 'onboarding.templateNote' | translate }}</p>
+
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <caption class="visually-hidden">{{ 'onboarding.checklist' | translate }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ 'onboarding.item' | translate }}</th>
+          <th scope="col">{{ 'onboarding.required' | translate }}</th>
+          <th scope="col">{{ 'clients.fields.status' | translate }}</th>
+          <th scope="col">{{ 'onboarding.document' | translate }}</th>
+          <th scope="col"><span class="visually-hidden">{{ 'common.actions' | translate }}</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of c.checklist; track item.id) {
+          @let label = labelOf(item);
+          <tr>
+            <th scope="row" class="fw-normal">{{ label.translate ? (label.text | translate) : label.text }}</th>
+            <td>{{ (item.required ? 'common.yes' : 'common.no') | translate }}</td>
+            <td><app-status-badge [label]="'onboarding.itemStatus.' + item.status | translate" [tone]="itemTone[item.status]" /></td>
+            <td>
+              @if (editable()) {
+                <span *appHasPermission="'clients.update'">
+                  <label [for]="'link-' + item.id" class="visually-hidden">{{ 'onboarding.linkDocument' | translate: { item: label.translate ? (label.text | translate) : label.text } }}</label>
+                  <select [id]="'link-' + item.id" class="form-select form-select-sm" (change)="link(item, $any($event.target).value)">
+                    <option value="" [selected]="!item.documentId">{{ 'onboarding.noDocument' | translate }}</option>
+                    @for (d of documents(); track d.id) {
+                      <option [value]="d.id" [selected]="d.id === item.documentId">{{ d.name }}</option>
+                    }
+                  </select>
+                </span>
+              } @else {
+                {{ docName(item.documentId) }}
+              }
+            </td>
+            <td class="text-end">
+              @if (editable()) {
+                <span *appHasPermission="'clients.update'" class="d-inline-flex flex-wrap gap-1">
+                  @for (s of itemActions(item); track s) {
+                    <button type="button" class="btn btn-outline-secondary btn-sm" [disabled]="busy()" (click)="setItem(item, s)">
+                      {{ 'onboarding.itemAction.' + s | translate }}<span class="visually-hidden"> {{ label.translate ? (label.text | translate) : label.text }}</span>
+                    </button>
+                  }
+                  @if (c.stage === 'document_collection') {
+                    <button type="button" class="btn btn-outline-danger btn-sm" [disabled]="busy()" (click)="removeItem(item)">
+                      {{ 'common.delete' | translate }}<span class="visually-hidden"> {{ label.translate ? (label.text | translate) : label.text }}</span>
+                    </button>
+                  }
+                </span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (c.stage === 'document_collection') {
+    <form *appHasPermission="'clients.update'" class="row g-2 align-items-end mb-3" (submit)="$event.preventDefault(); addItem()">
+      <div class="col-12 col-md-6">
+        <label for="onb-new-label" class="form-label">{{ 'onboarding.newItem' | translate }}</label>
+        <input id="onb-new-label" class="form-control" [value]="newLabel()" (input)="newLabel.set($any($event.target).value)" />
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="form-check">
+          <input id="onb-new-required" type="checkbox" class="form-check-input" [checked]="newRequired()" (change)="newRequired.set($any($event.target).checked)" />
+          <label for="onb-new-required" class="form-check-label">{{ 'onboarding.required' | translate }}</label>
+        </div>
+      </div>
+      <div class="col-6 col-md-3"><button type="submit" class="btn btn-outline-primary" [disabled]="busy() || !newLabel().trim()">{{ 'onboarding.addItem' | translate }}</button></div>
+    </form>
+  }
+
+  <fieldset class="mb-3" [disabled]="!editable() || busy()">
+    <legend class="h6">{{ 'onboarding.confirmations' | translate }}</legend>
+    <div class="form-check">
+      <input id="onb-identity" type="checkbox" class="form-check-input" [checked]="c.identityVerified" (change)="setFlag('identityVerified', $any($event.target).checked)" />
+      <label for="onb-identity" class="form-check-label">{{ 'onboarding.identityVerified' | translate }}</label>
+    </div>
+    <div class="form-check">
+      <input id="onb-engagement" type="checkbox" class="form-check-input" [checked]="c.engagementAccepted" (change)="setFlag('engagementAccepted', $any($event.target).checked)" />
+      <label for="onb-engagement" class="form-check-label">{{ 'onboarding.engagementAccepted' | translate }}</label>
+    </div>
+  </fieldset>
+
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    @if (next(); as n) {
+      <button *appHasPermission="'clients.update'" type="button" class="btn btn-primary" [disabled]="busy()" (click)="advance(n.to)">{{ n.label | translate }}</button>
+    }
+    @if (c.stage === 'verification') {
+      <button *appHasPermission="'clients.update'" type="button" class="btn btn-outline-danger" [disabled]="busy()" (click)="dialog.set('reject')">{{ 'onboarding.actions.sendBack' | translate }}</button>
+    }
+    @if (c.stage === 'approval') {
+      <ng-container *appHasPermission="'clients.approve_onboarding'">
+        <button type="button" class="btn btn-success" [disabled]="busy() || isSubmitter()" (click)="dialog.set('approve')">{{ 'onboarding.actions.approve' | translate }}</button>
+        <button type="button" class="btn btn-outline-danger" [disabled]="busy()" (click)="dialog.set('reject')">{{ 'onboarding.actions.reject' | translate }}</button>
+      </ng-container>
+      @if (isSubmitter()) {
+        <p class="w-100 text-body-secondary mb-0" role="status">{{ 'onboarding.fourEyesNote' | translate }}</p>
+      } @else {
+        <p class="w-100 text-body-secondary mb-0" role="status">{{ 'onboarding.awaitingApproval' | translate: { name: submitter()?.actor } }}</p>
+      }
+    }
+    @if (c.stage === 'completed') {
+      <p class="mb-0" role="status">{{ 'onboarding.completedNote' | translate }}</p>
+    }
+  </div>
+
+  <h3 class="h6">{{ 'onboarding.history' | translate }}</h3>
+  <ul class="list-unstyled">
+    @for (e of c.history; track $index) {
+      <li class="mb-1">
+        {{ format.dateTime(e.at) }}: {{ 'onboarding.event.' + e.action | translate: { actor: e.actor, from: e.from === 'none' ? '' : ('onboarding.stage.' + e.from | translate), to: 'onboarding.stage.' + e.to | translate } }}
+        @if (e.comment) {
+          <q>{{ e.comment }}</q>
+        }
+      </li>
+    }
+  </ul>
+
+  @if (dialog() === 'reject') {
+    <app-comment-dialog
+      [title]="'onboarding.rejectTitle' | translate"
+      [message]="'onboarding.rejectMessage' | translate"
+      [label]="'onboarding.comment' | translate"
+      [confirmLabel]="'onboarding.actions.reject' | translate"
+      [required]="true"
+      [danger]="true"
+      (confirmed)="reject($event)"
+      (cancelled)="dialog.set(null)"
+    />
+  }
+  @if (dialog() === 'approve') {
+    <app-comment-dialog
+      [title]="'onboarding.approveTitle' | translate"
+      [message]="'onboarding.approveMessage' | translate"
+      [label]="'onboarding.commentOptional' | translate"
+      [confirmLabel]="'onboarding.actions.approve' | translate"
+      (confirmed)="advance('completed', $event)"
+      (cancelled)="dialog.set(null)"
+    />
+  }
+} @else {
+  @if (error(); as message) {
+    <div class="alert alert-danger" role="alert">{{ message }}</div>
+  }
+  <div class="alert alert-secondary" role="status">{{ 'onboarding.none' | translate }}</div>
+  @if (canStart()) {
+    <button *appHasPermission="'clients.update'" type="button" class="btn btn-primary" [disabled]="busy()" (click)="start()">{{ 'onboarding.start' | translate }}</button>
+  }
+}

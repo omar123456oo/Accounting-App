@@ -36,7 +36,7 @@ test('owner creates a client, changes its status legally, sees history, and the 
   await page.locator('#client-q').fill('E2E');
   await page.getByRole('button', { name: 'بحث', exact: true }).click();
   await expect(page.locator('tbody tr')).toHaveCount(1);
-  await page.getByRole('link', { name: 'DEMO E2E شركة اختبار' }).click();
+  await page.getByRole('link', { name: 'DEMO E2E شركة اختبار', exact: true }).click();
 
   // A new client is a lead: only onboarding and closed are offered.
   await expect(page.getByRole('button', { name: /النقل إلى/ })).toHaveCount(2);

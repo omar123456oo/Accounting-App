@@ -1,0 +1,91 @@
+<app-modal [title]="(isVersion() ? 'documents.newVersion' : 'documents.upload') | translate" width="40rem" (closed)="cancelled.emit()">
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-label]="(isVersion() ? 'documents.newVersion' : 'documents.upload') | translate">
+    <div class="mb-3">
+      <label for="up-file" class="form-label">{{ 'documents.file' | translate }} *</label>
+      <input id="up-file" type="file" class="form-control" [accept]="accept" [class.is-invalid]="!!problem() || (attempted() && !file())" aria-describedby="up-file-hint up-file-error" (change)="onFile($event)" />
+      <div id="up-file-hint" class="form-text">{{ 'documents.fileHint' | translate: { max: maxMb } }}</div>
+      <div id="up-file-error" aria-live="assertive">
+        @if (problem(); as p) {
+          <div class="invalid-feedback d-block">{{ 'documents.fileError.' + p | translate }}</div>
+        } @else if (attempted() && !file()) {
+          <div class="invalid-feedback d-block">{{ 'validation.required' | translate }}</div>
+        }
+      </div>
+    </div>
+
+    @if (!isVersion()) {
+      <div class="row g-3">
+        @if (!clientId()) {
+          <div class="col-12">
+            <label for="up-client" class="form-label">{{ 'documents.client' | translate }} *</label>
+            <select id="up-client" class="form-select" formControlName="clientId" [class.is-invalid]="form.controls.clientId.invalid && (form.controls.clientId.touched || attempted())">
+              <option value="">{{ 'documents.chooseClient' | translate }}</option>
+              @for (c of clients(); track c.id) {
+                <option [value]="c.id">{{ c.name }}</option>
+              }
+            </select>
+            <app-field-error [control]="form.controls.clientId" />
+          </div>
+        }
+        <div class="col-12 col-md-6">
+          <label for="up-name" class="form-label">{{ 'documents.fields.name' | translate }} *</label>
+          <input id="up-name" class="form-control" formControlName="name" [class.is-invalid]="form.controls.name.invalid && (form.controls.name.touched || attempted())" />
+          <app-field-error [control]="form.controls.name" />
+        </div>
+        <div class="col-6 col-md-3">
+          <label for="up-category" class="form-label">{{ 'documents.fields.category' | translate }} *</label>
+          <select id="up-category" class="form-select" formControlName="category">
+            @for (c of categories; track c) {
+              <option [value]="c">{{ 'documents.category.' + c | translate }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <label for="up-year" class="form-label">{{ 'documents.fields.year' | translate }} *</label>
+          <input id="up-year" type="number" class="form-control" formControlName="year" min="2000" max="2100" [class.is-invalid]="form.controls.year.invalid" />
+          <app-field-error [control]="form.controls.year" />
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="up-period" class="form-label">{{ 'documents.fields.periodLabel' | translate }}</label>
+          <input id="up-period" class="form-control" formControlName="periodLabel" />
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="up-expiry" class="form-label">{{ 'documents.fields.expiryDate' | translate }}</label>
+          <input id="up-expiry" type="date" class="form-control" formControlName="expiryDate" />
+          <app-field-error [control]="form.controls.expiryDate" />
+        </div>
+        <div class="col-12">
+          <label for="up-tags" class="form-label">{{ 'documents.fields.tags' | translate }}</label>
+          <input id="up-tags" class="form-control" formControlName="tags" aria-describedby="up-tags-hint" />
+          <div id="up-tags-hint" class="form-text">{{ 'documents.tagsHint' | translate }}</div>
+        </div>
+        <div class="col-12">
+          <label for="up-description" class="form-label">{{ 'documents.fields.description' | translate }}</label>
+          <textarea id="up-description" class="form-control" rows="2" formControlName="description"></textarea>
+        </div>
+        @if (openRequests().length) {
+          <div class="col-12">
+            <label for="up-request" class="form-label">{{ 'documents.fulfilsRequest' | translate }}</label>
+            <select id="up-request" class="form-select" formControlName="requestId">
+              <option value="">{{ 'documents.noRequest' | translate }}</option>
+              @for (r of openRequests(); track r.id) {
+                <option [value]="r.id">{{ r.label }}</option>
+              }
+            </select>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="text-body-secondary">{{ 'documents.newVersionNote' | translate }}</p>
+    }
+
+    @if (serverError(); as message) {
+      <div class="alert alert-danger mt-3" role="alert">{{ message }}</div>
+    }
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+      <button type="button" class="btn btn-outline-secondary" (click)="cancelled.emit()">{{ 'common.cancel' | translate }}</button>
+      <button type="submit" class="btn btn-primary" [disabled]="submitting() || checking()">{{ 'documents.uploadButton' | translate }}</button>
+    </div>
+  </form>
+</app-modal>

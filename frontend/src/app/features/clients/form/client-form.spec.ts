@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { throwError } from 'rxjs';
 import { ClientsApiService } from '../clients-api.service';
-import { clientTestProviders, settle, signInAs } from '../clients-test-utils';
+import { clientTestProviders, settle, signInAs } from '../../../testing/test-utils';
 import { ClientForm } from './client-form';
 
 async function render() {

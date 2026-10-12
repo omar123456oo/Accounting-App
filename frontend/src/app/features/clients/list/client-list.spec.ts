@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { ClientsApiService } from '../clients-api.service';
-import { clientTestProviders, settle, signInAs } from '../clients-test-utils';
+import { clientTestProviders, settle, signInAs } from '../../../testing/test-utils';
 import { ClientList } from './client-list';
 
 async function render(email = 'owner@demo.test', password = 'Owner-Demo-123!') {
@@ -73,5 +73,14 @@ describe('ClientList', () => {
     expect(rows.length).toBe(4);
     expect(rows.join(' ')).not.toContain('DEMO Pyramid Logistics');
     expect(el.querySelector('a[href="/app/clients/new"]')).toBeNull();
+  });
+
+  it('links leads and clients in onboarding to their onboarding tab, and nobody else', async () => {
+    const { el } = await render();
+    const links = Array.from(el.querySelectorAll<HTMLAnchorElement>('a[href*="tab=onboarding"]'));
+    expect(links.length).toBeGreaterThan(0);
+    expect(links.every((a) => a.getAttribute('href')!.startsWith('/app/clients/c-'))).toBe(true);
+    const rowsWithLink = Array.from(el.querySelectorAll('tbody tr')).filter((tr) => tr.querySelector('a[href*="tab=onboarding"]'));
+    expect(rowsWithLink.every((tr) => /clients\.status\.(lead|onboarding)/.test(tr.textContent ?? ''))).toBe(true);
   });
 });

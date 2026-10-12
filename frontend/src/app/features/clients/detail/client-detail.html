@@ -71,6 +71,12 @@
           <dd class="col-sm-8">{{ format.dateTime(c.updatedAt) }}</dd>
         </dl>
       }
+      @case ('onboarding') {
+        <app-onboarding-tab [clientId]="c.id" [clientStatus]="c.status" (clientChanged)="reload()" />
+      }
+      @case ('documents') {
+        <app-document-list [clientId]="c.id" />
+      }
       @case ('history') {
         <app-client-history [clientId]="c.id" [version]="c.updatedAt" />
       }

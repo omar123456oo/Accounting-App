@@ -69,6 +69,13 @@
           <td>{{ 'clients.legalForm.' + row.legalForm | translate }}</td>
           <td><app-status-badge [label]="'clients.status.' + row.status | translate" [tone]="toneOf(row.status)" /></td>
           <td>{{ format.dateTime(row.createdAt) }}</td>
+          <td>
+            @if (row.status === 'lead' || row.status === 'onboarding') {
+              <a [routerLink]="['/app/clients', row.id]" [queryParams]="{ tab: 'onboarding' }">
+                {{ 'onboarding.open' | translate }}<span class="visually-hidden"> {{ row.legalName }}</span>
+              </a>
+            }
+          </td>
         </ng-template>
       </app-data-table>
     }

@@ -1,0 +1,170 @@
+@if (embedded()) {
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="h5 mb-0">{{ 'documents.title' | translate }}</h2>
+    <button *appHasPermission="'documents.upload'" type="button" class="btn btn-primary btn-sm" (click)="dialog.set({ kind: 'upload' })">{{ 'documents.upload' | translate }}</button>
+  </div>
+  <app-document-requests
+    [clientId]="clientId()!"
+    [version]="requestsVersion()"
+    (loaded)="requests.set($event)"
+    (upload)="dialog.set({ kind: 'upload', requestId: $event })"
+  />
+} @else {
+  <app-page-header [title]="'documents.title' | translate">
+    <button *appHasPermission="'documents.upload'" type="button" class="btn btn-primary" (click)="dialog.set({ kind: 'upload' })">{{ 'documents.upload' | translate }}</button>
+  </app-page-header>
+}
+
+<form class="row g-2 align-items-end mb-3" role="search" (submit)="search($event, q.value)">
+  <div class="col-12 col-md-3">
+    <label for="doc-q" class="form-label">{{ 'documents.search' | translate }}</label>
+    <input #q id="doc-q" type="search" class="form-control" [value]="params().q ?? ''" />
+  </div>
+  @if (!embedded() && clients().length) {
+    <div class="col-6 col-md-3">
+      <label for="doc-client" class="form-label">{{ 'documents.client' | translate }}</label>
+      <select id="doc-client" class="form-select" (change)="patch({ clientId: $any($event.target).value })">
+        <option value="">{{ 'clients.all' | translate }}</option>
+        @for (c of clients(); track c.id) {
+          <option [value]="c.id">{{ c.name }}</option>
+        }
+      </select>
+    </div>
+  }
+  <div class="col-6 col-md-2">
+    <label for="doc-category" class="form-label">{{ 'documents.fields.category' | translate }}</label>
+    <select id="doc-category" class="form-select" (change)="patch({ category: $any($event.target).value })">
+      <option value="">{{ 'clients.all' | translate }}</option>
+      @for (c of categories; track c) {
+        <option [value]="c">{{ 'documents.category.' + c | translate }}</option>
+      }
+    </select>
+  </div>
+  <div class="col-6 col-md-1">
+    <label for="doc-year" class="form-label">{{ 'documents.fields.year' | translate }}</label>
+    <input id="doc-year" type="number" class="form-control" min="2000" max="2100" (change)="setYear($any($event.target).value)" />
+  </div>
+  <div class="col-6 col-md-2">
+    <label for="doc-review" class="form-label">{{ 'documents.fields.reviewStatus' | translate }}</label>
+    <select id="doc-review" class="form-select" (change)="patch({ reviewStatus: $any($event.target).value })">
+      <option value="">{{ 'clients.all' | translate }}</option>
+      @for (s of reviewStatuses; track s) {
+        <option [value]="s">{{ 'documents.review.' + s | translate }}</option>
+      }
+    </select>
+  </div>
+  <div class="col-12 col-md-auto d-flex align-items-center gap-3">
+    <button type="submit" class="btn btn-secondary">{{ 'clients.searchButton' | translate }}</button>
+    <div class="form-check mb-0">
+      <input id="doc-expiring" type="checkbox" class="form-check-input" (change)="patch({ expiring: $any($event.target).checked || undefined })" />
+      <label for="doc-expiring" class="form-check-label">{{ 'documents.expiringOnly' | translate }}</label>
+    </div>
+  </div>
+</form>
+
+@if (actionError(); as message) {
+  <div class="alert alert-danger" role="alert">{{ message }}</div>
+}
+
+<div [attr.aria-busy]="loading()">
+  @if (failed()) {
+    <div class="alert alert-danger d-flex align-items-center justify-content-between" role="alert">
+      <span>{{ 'clients.loadFailed' | translate }}</span>
+      <button type="button" class="btn btn-outline-danger btn-sm" (click)="reload()">{{ 'common.retry' | translate }}</button>
+    </div>
+  } @else if (loading() && !result()) {
+    <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+  } @else if (result(); as page) {
+    @if (page.data.length === 0) {
+      <div class="alert alert-secondary" role="status">{{ 'documents.empty' | translate }}</div>
+    } @else {
+      <app-data-table
+        [columns]="columns()"
+        [rows]="page.data"
+        [caption]="'documents.title' | translate"
+        [sort]="params().sort ?? ''"
+        [dir]="params().dir ?? 'asc'"
+        [page]="page.meta.page"
+        [pageSize]="page.meta.pageSize"
+        [total]="page.meta.total"
+        (sortChange)="onSort($event)"
+        (pageChange)="patch({ page: $event }, false)"
+      >
+        <ng-template let-row>
+          <td>
+            {{ row.name }}
+            @if (row.tags.length) {
+              <span class="text-body-secondary small d-block">{{ row.tags.join(', ') }}</span>
+            }
+          </td>
+          @if (!embedded()) {
+            <td>{{ row.clientName }}</td>
+          }
+          <td>{{ 'documents.category.' + row.category | translate }}</td>
+          <td>{{ row.year }}</td>
+          <td>{{ row.currentVersion }}</td>
+          <td><app-status-badge [label]="'documents.review.' + row.reviewStatus | translate" [tone]="reviewTone[row.reviewStatus]" /></td>
+          <td>
+            @if (row.expiryDate) {
+              {{ format.date(row.expiryDate) }}
+              @if (row.expiryState === 'expiring_soon' || row.expiryState === 'expired') {
+                <span class="badge d-block mt-1" [class]="'text-bg-' + expiryTone[row.expiryState]"><span aria-hidden="true">⚠ </span>{{ 'documents.expiry.' + row.expiryState | translate }}</span>
+              }
+            } @else {
+              —
+            }
+          </td>
+          <td>
+            <span class="d-inline-flex flex-wrap gap-1">
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="download(row)">{{ 'documents.download' | translate }}<span class="visually-hidden"> {{ row.name }}</span></button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="dialog.set({ kind: 'detail', doc: row })">{{ 'documents.details' | translate }}<span class="visually-hidden"> {{ row.name }}</span></button>
+              <button *appHasPermission="'documents.upload'" type="button" class="btn btn-outline-secondary btn-sm" (click)="dialog.set({ kind: 'version', doc: row })">{{ 'documents.newVersion' | translate }}<span class="visually-hidden"> {{ row.name }}</span></button>
+              @if (row.reviewStatus === 'pending') {
+                <ng-container *appHasPermission="'documents.review'">
+                  <button type="button" class="btn btn-outline-success btn-sm" (click)="dialog.set({ kind: 'approve', doc: row })">{{ 'documents.approve' | translate }}<span class="visually-hidden"> {{ row.name }}</span></button>
+                  <button type="button" class="btn btn-outline-danger btn-sm" (click)="dialog.set({ kind: 'reject', doc: row })">{{ 'documents.reject' | translate }}<span class="visually-hidden"> {{ row.name }}</span></button>
+                </ng-container>
+              }
+            </span>
+          </td>
+        </ng-template>
+      </app-data-table>
+    }
+  }
+</div>
+
+@if (dialog(); as d) {
+  @switch (d.kind) {
+    @case ('upload') {
+      <app-upload-dialog [clientId]="clientId()" [clients]="clients()" [requests]="requests()" [presetRequestId]="d.requestId" (uploaded)="uploaded()" (cancelled)="dialog.set(null)" />
+    }
+    @case ('version') {
+      <app-upload-dialog [documentId]="d.doc.id" (uploaded)="uploaded()" (cancelled)="dialog.set(null)" />
+    }
+    @case ('detail') {
+      <app-document-detail [doc]="d.doc" (download)="download(d.doc, $event)" (closed)="dialog.set(null)" />
+    }
+    @case ('approve') {
+      <app-comment-dialog
+        [title]="'documents.approveTitle' | translate"
+        [message]="d.doc.name"
+        [label]="'documents.commentOptional' | translate"
+        [confirmLabel]="'documents.approve' | translate"
+        (confirmed)="decide('approved', $event)"
+        (cancelled)="dialog.set(null)"
+      />
+    }
+    @case ('reject') {
+      <app-comment-dialog
+        [title]="'documents.rejectTitle' | translate"
+        [message]="d.doc.name"
+        [label]="'documents.rejectComment' | translate"
+        [confirmLabel]="'documents.reject' | translate"
+        [required]="true"
+        [danger]="true"
+        (confirmed)="decide('rejected', $event)"
+        (cancelled)="dialog.set(null)"
+      />
+    }
+  }
+}

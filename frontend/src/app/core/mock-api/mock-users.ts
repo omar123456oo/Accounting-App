@@ -6,7 +6,10 @@ import { AuthUser } from '../auth/auth.models';
  *
  *   owner@demo.test       / Owner-Demo-123!        staff, all permissions
  *   accountant@demo.test  / Accountant-Demo-123!   staff, journals.view + reports.view + clients.view/update,
+ *                                                 documents.view/upload, tasks.view/manage;
  *                                                 sees only the clients assigned to them
+ *   chief@demo.test       / Chief-Demo-123!        staff, office-wide, holds the approve permissions
+ *                                                 (clients.approve_onboarding, documents.review, workflows.approve)
  *   client@demo.test      / Client-Demo-123!       client portal user
  *   mfa@demo.test         / Mfa-Demo-12345!        staff with MFA enabled; one-time code is DEMO_OTP
  */
@@ -21,7 +24,20 @@ export interface DemoUser {
 
 export const DEMO_OTP = '123456';
 
-const ALL_PERMISSIONS = ['journals.view', 'journals.post', 'reports.view', 'settings.manage', 'clients.view', 'clients.create', 'clients.update', 'clients.archive'];
+const ALL_PERMISSIONS = [
+  'journals.view', 'journals.post', 'reports.view', 'settings.manage',
+  'clients.view',
+  'clients.create',
+  'clients.update',
+  'clients.archive',
+  'clients.approve_onboarding',
+  'documents.view',
+  'documents.upload',
+  'documents.review',
+  'tasks.view',
+  'tasks.manage',
+  'workflows.approve',
+];
 
 export const DEMO_USERS: DemoUser[] = [
   {
@@ -35,7 +51,19 @@ export const DEMO_USERS: DemoUser[] = [
     email: 'accountant@demo.test',
     password: 'Accountant-Demo-123!',
     mfaEnabled: false,
-    profile: { id: 'u-accountant', name: 'Demo Accountant', type: 'staff', permissions: ['journals.view', 'reports.view', 'clients.view', 'clients.update'] },
+    profile: { id: 'u-accountant', name: 'Demo Accountant', type: 'staff', permissions: ['journals.view', 'reports.view', 'clients.view', 'clients.update', 'documents.view', 'documents.upload', 'tasks.view', 'tasks.manage'] },
+  },
+  {
+    email: 'chief@demo.test',
+    password: 'Chief-Demo-123!',
+    mfaEnabled: false,
+    officeWide: true,
+    profile: {
+      id: 'u-chief',
+      name: 'Demo Chief Accountant',
+      type: 'staff',
+      permissions: ['journals.view', 'reports.view', 'clients.view', 'clients.update', 'clients.approve_onboarding', 'documents.view', 'documents.upload', 'documents.review', 'tasks.view', 'tasks.manage', 'workflows.approve'],
+    },
   },
   {
     email: 'client@demo.test',

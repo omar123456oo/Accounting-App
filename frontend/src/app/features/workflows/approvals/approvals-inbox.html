@@ -1,0 +1,85 @@
+<app-page-header [title]="'approvals.title' | translate" />
+
+<div class="mb-3 col-12 col-md-3 px-0">
+  <label for="appr-status" class="form-label">{{ 'approvals.show' | translate }}</label>
+  <select id="appr-status" class="form-select" (change)="setStatus($any($event.target).value)">
+    <option value="pending" selected>{{ 'approvals.status.pending' | translate }}</option>
+    <option value="approved">{{ 'approvals.status.approved' | translate }}</option>
+    <option value="rejected">{{ 'approvals.status.rejected' | translate }}</option>
+    <option value="">{{ 'clients.all' | translate }}</option>
+  </select>
+</div>
+
+@if (error(); as message) {
+  <div class="alert alert-danger" role="alert">{{ message }}</div>
+}
+
+@if (failed()) {
+  <div class="alert alert-danger" role="alert">{{ 'clients.loadFailed' | translate }}</div>
+} @else if (items(); as rows) {
+  @if (rows.length === 0) {
+    <div class="alert alert-secondary" role="status">{{ 'approvals.empty' | translate }}</div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <caption class="visually-hidden">{{ 'approvals.title' | translate }}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ 'approvals.kind' | translate }}</th>
+            <th scope="col">{{ 'documents.client' | translate }}</th>
+            <th scope="col">{{ 'approvals.requestedBy' | translate }}</th>
+            <th scope="col">{{ 'approvals.requestedAt' | translate }}</th>
+            <th scope="col">{{ 'clients.fields.status' | translate }}</th>
+            <th scope="col"><span class="visually-hidden">{{ 'common.actions' | translate }}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of rows; track item.id) {
+            <tr>
+              <td>{{ 'approvals.kinds.' + item.kind | translate }}</td>
+              <td><a [routerLink]="['/app/clients', item.clientId]" [queryParams]="{ tab: 'onboarding' }">{{ item.clientName }}</a></td>
+              <td>{{ item.requestedBy }}</td>
+              <td>{{ format.dateTime(item.requestedAt) }}</td>
+              <td>
+                <app-status-badge [label]="'approvals.status.' + item.status | translate" [tone]="tone[item.status]" />
+                @if (item.decidedBy) {
+                  <span class="d-block small text-body-secondary">{{ item.decidedBy }}</span>
+                }
+              </td>
+              <td class="text-end">
+                @if (item.status === 'pending') {
+                  <span class="d-inline-flex flex-wrap gap-1">
+                    <button type="button" class="btn btn-success btn-sm" [disabled]="isOwn(item)" (click)="dialog.set({ item, action: 'approve' })">
+                      {{ 'approvals.approve' | translate }}<span class="visually-hidden"> {{ item.clientName }}</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm" (click)="dialog.set({ item, action: 'reject' })">
+                      {{ 'approvals.reject' | translate }}<span class="visually-hidden"> {{ item.clientName }}</span>
+                    </button>
+                  </span>
+                  @if (isOwn(item)) {
+                    <span class="d-block small text-body-secondary">{{ 'onboarding.fourEyesNote' | translate }}</span>
+                  }
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+} @else {
+  <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+}
+
+@if (dialog(); as d) {
+  <app-comment-dialog
+    [title]="(d.action === 'approve' ? 'approvals.approveTitle' : 'approvals.rejectTitle') | translate"
+    [message]="d.item.clientName"
+    [label]="(d.action === 'approve' ? 'onboarding.commentOptional' : 'onboarding.comment') | translate"
+    [confirmLabel]="(d.action === 'approve' ? 'approvals.approve' : 'approvals.reject') | translate"
+    [required]="d.action === 'reject'"
+    [danger]="d.action === 'reject'"
+    (confirmed)="decide($event)"
+    (cancelled)="dialog.set(null)"
+  />
+}
