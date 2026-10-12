@@ -1,0 +1,116 @@
+<app-page-header [title]="(editing ? 'clients.edit' : 'clients.new') | translate" />
+
+@if (notFound()) {
+  <div class="alert alert-danger" role="alert">{{ 'clients.notFound' | translate }}</div>
+} @else if (loading()) {
+  <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-label]="(editing ? 'clients.edit' : 'clients.new') | translate" [attr.aria-busy]="submitting()">
+    <fieldset class="mb-4">
+      <legend class="h6">{{ 'clients.sections.identity' | translate }}</legend>
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label for="legalName" class="form-label">{{ 'clients.fields.legalName' | translate }} *</label>
+          <input id="legalName" class="form-control" formControlName="legalName" required [class.is-invalid]="isInvalid(form.controls.legalName)" [attr.aria-invalid]="isInvalid(form.controls.legalName)" aria-describedby="legalName-error" />
+          <app-field-error [control]="form.controls.legalName" id="legalName-error" />
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="tradeName" class="form-label">{{ 'clients.fields.tradeName' | translate }}</label>
+          <input id="tradeName" class="form-control" formControlName="tradeName" />
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="legalForm" class="form-label">{{ 'clients.fields.legalForm' | translate }} *</label>
+          <select id="legalForm" class="form-select" formControlName="legalForm" required [attr.aria-invalid]="isInvalid(form.controls.legalForm)" aria-describedby="legalForm-error">
+            @for (f of legalForms; track f) {
+              <option [value]="f">{{ 'clients.legalForm.' + f | translate }}</option>
+            }
+          </select>
+          <app-field-error [control]="form.controls.legalForm" id="legalForm-error" />
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="industry" class="form-label">{{ 'clients.fields.industry' | translate }}</label>
+          <input id="industry" class="form-control" formControlName="industry" />
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="mb-4">
+      <legend class="h6">{{ 'clients.sections.registration' | translate }}</legend>
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label for="commercialRegistrationNo" class="form-label">{{ 'clients.fields.commercialRegistrationNo' | translate }}</label>
+          <input id="commercialRegistrationNo" class="form-control" inputmode="numeric" formControlName="commercialRegistrationNo" [class.is-invalid]="isInvalid(form.controls.commercialRegistrationNo)" [attr.aria-invalid]="isInvalid(form.controls.commercialRegistrationNo)" aria-describedby="commercialRegistrationNo-error" />
+          <app-field-error [control]="form.controls.commercialRegistrationNo" id="commercialRegistrationNo-error" />
+        </div>
+        <div class="col-12 col-md-6">
+          <label for="taxRegistrationNo" class="form-label">{{ 'clients.fields.taxRegistrationNo' | translate }}</label>
+          <input id="taxRegistrationNo" class="form-control" inputmode="numeric" formControlName="taxRegistrationNo" [class.is-invalid]="isInvalid(form.controls.taxRegistrationNo)" [attr.aria-invalid]="isInvalid(form.controls.taxRegistrationNo)" aria-describedby="taxRegistrationNo-error" />
+          <app-field-error [control]="form.controls.taxRegistrationNo" id="taxRegistrationNo-error" />
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="mb-4">
+      <legend class="h6">{{ 'clients.sections.business' | translate }}</legend>
+      <div class="row g-3">
+        <div class="col-12 col-md-8">
+          <label for="address" class="form-label">{{ 'clients.fields.address' | translate }} *</label>
+          <input id="address" class="form-control" formControlName="address" required [class.is-invalid]="isInvalid(form.controls.address)" [attr.aria-invalid]="isInvalid(form.controls.address)" aria-describedby="address-error" />
+          <app-field-error [control]="form.controls.address" id="address-error" />
+        </div>
+        <div class="col-12 col-md-4">
+          <label for="fiscalYearStartMonth" class="form-label">{{ 'clients.fields.fiscalYearStartMonth' | translate }} *</label>
+          <select id="fiscalYearStartMonth" class="form-select" formControlName="fiscalYearStartMonth" required aria-describedby="fiscalYearStartMonth-error">
+            @for (m of months; track m) {
+              <option [ngValue]="m">{{ format.monthName(m) }}</option>
+            }
+          </select>
+          <app-field-error [control]="form.controls.fiscalYearStartMonth" id="fiscalYearStartMonth-error" />
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="mb-4">
+      <legend class="h6">{{ 'clients.sections.tax' | translate }}</legend>
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-md-4">
+          <div class="form-check">
+            <input id="vatRegistered" type="checkbox" class="form-check-input" formControlName="vatRegistered" />
+            <label for="vatRegistered" class="form-check-label">{{ 'clients.fields.vatRegistered' | translate }}</label>
+          </div>
+        </div>
+        <div class="col-12 col-md-8">
+          <label for="taxType" class="form-label">{{ 'clients.fields.taxType' | translate }}</label>
+          <input id="taxType" class="form-control" formControlName="taxType" aria-describedby="taxType-hint" />
+          <div id="taxType-hint" class="form-text">{{ 'clients.taxTypeHint' | translate }}</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="mb-4">
+      <legend class="h6">{{ 'clients.sections.assignment' | translate }}</legend>
+      @for (user of assignable(); track user.id) {
+        <div class="form-check">
+          <input [id]="'assignee-' + user.id" type="checkbox" class="form-check-input" [checked]="form.controls.assignedAccountantIds.value.includes(user.id)" (change)="toggleAssignee(user.id, $any($event.target).checked)" />
+          <label [for]="'assignee-' + user.id" class="form-check-label">{{ user.name }}</label>
+        </div>
+      }
+    </fieldset>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary" [disabled]="submitting()">{{ 'common.save' | translate }}</button>
+      <a class="btn btn-outline-secondary" [routerLink]="id ? ['/app/clients', id] : ['/app/clients']">{{ 'common.cancel' | translate }}</a>
+    </div>
+  </form>
+}
+
+@if (leaving()) {
+  <app-confirm-dialog
+    [title]="'clients.unsaved.title' | translate"
+    [message]="'clients.unsaved.message' | translate"
+    [confirmLabel]="'clients.unsaved.leave' | translate"
+    [danger]="true"
+    (confirmed)="answerLeave(true)"
+    (cancelled)="answerLeave(false)"
+  />
+}

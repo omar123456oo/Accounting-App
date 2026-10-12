@@ -1,0 +1,106 @@
+@if (notFound()) {
+  <div class="alert alert-danger" role="alert">{{ 'clients.notFound' | translate }}</div>
+  <a routerLink="/app/clients">{{ 'clients.backToList' | translate }}</a>
+} @else if (client(); as c) {
+  <app-page-header [title]="c.legalName">
+    <a *appHasPermission="'clients.update'" class="btn btn-outline-secondary" [routerLink]="['/app/clients', c.id, 'edit']">{{ 'common.edit' | translate }}</a>
+    <button *appHasPermission="'clients.archive'" type="button" class="btn btn-outline-secondary" (click)="confirmingArchive.set(true)">
+      {{ (c.archived ? 'clients.unarchive' : 'clients.archive') | translate }}
+    </button>
+  </app-page-header>
+
+  <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <span>{{ 'clients.fields.status' | translate }}:</span>
+    <app-status-badge [label]="'clients.status.' + c.status | translate" [tone]="tone[c.status]" />
+    @if (c.archived) {
+      <span class="badge text-bg-dark">{{ 'clients.archived' | translate }}</span>
+    }
+    <span *appHasPermission="'clients.update'" class="d-inline-flex flex-wrap gap-2 ms-3">
+      @for (s of nextStatuses(); track s) {
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="pendingStatus.set(s)">{{ 'clients.moveTo' | translate: { status: ('clients.status.' + s | translate) } }}</button>
+      }
+    </span>
+  </div>
+
+  @if (actionError()) {
+    <div class="alert alert-danger" role="alert">{{ 'errors.generic' | translate }}</div>
+  }
+
+  <div role="tablist" class="nav nav-tabs mb-3" [attr.aria-label]="'clients.tabs.label' | translate" (keydown)="onTabKey($event)">
+    @for (t of tabs; track t) {
+      <button
+        type="button"
+        role="tab"
+        class="nav-link"
+        [class.active]="tab() === t"
+        [id]="'tab-' + t"
+        [attr.aria-selected]="tab() === t"
+        [attr.aria-controls]="'panel-' + t"
+        [attr.tabindex]="tab() === t ? 0 : -1"
+        (click)="tab.set(t)"
+      >
+        {{ 'clients.tabs.' + t | translate }}
+      </button>
+    }
+  </div>
+
+  <div role="tabpanel" [id]="'panel-' + tab()" [attr.aria-labelledby]="'tab-' + tab()" tabindex="0">
+    @switch (tab()) {
+      @case ('overview') {
+        <h2 class="h5 mb-3">{{ 'clients.tabs.overview' | translate }}</h2>
+        <dl class="row">
+          <dt class="col-sm-4">{{ 'clients.fields.legalName' | translate }}</dt>
+          <dd class="col-sm-8">{{ c.legalName }}</dd>
+          <dt class="col-sm-4">{{ 'clients.fields.tradeName' | translate }}</dt>
+          <dd class="col-sm-8">{{ c.tradeName ?? '—' }}</dd>
+          <dt class="col-sm-4">{{ 'clients.fields.legalForm' | translate }}</dt>
+          <dd class="col-sm-8">{{ 'clients.legalForm.' + c.legalForm | translate }}</dd>
+          <dt class="col-sm-4">{{ 'clients.fields.commercialRegistrationNo' | translate }}</dt>
+          <dd class="col-sm-8">{{ c.commercialRegistrationNo ?? '—' }}</dd>
+          <dt class="col-sm-4">{{ 'clients.fields.taxRegistrationNo' | translate }}</dt>
+          <dd class="col-sm-8">{{ c.taxRegistrationNo ?? '—' }}</dd>
+          <dt class="col-sm-4">{{ 'clients.fields.address' | translate }}</dt>
+          <dd class="col-sm-8">{{ c.address }}</dd>
+          <dt class="col-sm-4">{{ 'clients.fields.industry' | translate }}</dt>
+          <dd class="col-sm-8">{{ c.industry ?? '—' }}</dd>
+          <dt class="col-sm-4">{{ 'clients.fields.fiscalYearStartMonth' | translate }}</dt>
+          <dd class="col-sm-8">{{ format.monthName(c.fiscalYearStartMonth) }}</dd>
+          <dt class="col-sm-4">{{ 'clients.fields.vatRegistered' | translate }}</dt>
+          <dd class="col-sm-8">{{ (c.taxProfile?.vatRegistered ? 'common.yes' : 'common.no') | translate }}@if (c.taxProfile?.taxType) { ({{ c.taxProfile?.taxType }}) }</dd>
+          <dt class="col-sm-4">{{ 'clients.fields.updatedAt' | translate }}</dt>
+          <dd class="col-sm-8">{{ format.dateTime(c.updatedAt) }}</dd>
+        </dl>
+      }
+      @case ('history') {
+        <app-client-history [clientId]="c.id" [version]="c.updatedAt" />
+      }
+      @default {
+        @if (configs[tab()]; as cfg) {
+          <app-resource-tab [clientId]="c.id" [config]="cfg" />
+        }
+      }
+    }
+  </div>
+
+  @if (pendingStatus(); as next) {
+    <app-confirm-dialog
+      [title]="'clients.statusConfirm.title' | translate"
+      [message]="'clients.statusConfirm.message' | translate: { from: ('clients.status.' + c.status | translate), to: ('clients.status.' + next | translate) }"
+      [confirmLabel]="'common.confirm' | translate"
+      [danger]="next === 'closed'"
+      (confirmed)="applyStatus()"
+      (cancelled)="pendingStatus.set(null)"
+    />
+  }
+  @if (confirmingArchive()) {
+    <app-confirm-dialog
+      [title]="(c.archived ? 'clients.unarchive' : 'clients.archive') | translate"
+      [message]="(c.archived ? 'clients.unarchiveMessage' : 'clients.archiveMessage') | translate: { name: c.legalName }"
+      [confirmLabel]="'common.confirm' | translate"
+      (confirmed)="applyArchive()"
+      (cancelled)="confirmingArchive.set(false)"
+    />
+  }
+} @else {
+  <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+}

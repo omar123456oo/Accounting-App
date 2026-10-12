@@ -11,7 +11,8 @@
     "language": "العربية",
     "main": "Main navigation",
     "userMenu": "User menu",
-    "signedInAs": "Signed in as"
+    "signedInAs": "Signed in as",
+    "clients": "Clients"
   },
   "login": {
     "title": "Sign in",
@@ -30,11 +31,23 @@
   "validation": {
     "required": "This field is required.",
     "email": "Enter a valid email address.",
-    "minlength": "Must be at least {{min}} characters."
+    "minlength": "Must be at least {{min}} characters.",
+    "digits": "Enter digits only.",
+    "pattern": "Enter a valid value."
   },
   "common": {
     "close": "Close",
-    "comingSoon": "This section arrives in a later phase."
+    "comingSoon": "This section arrives in a later phase.",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "yes": "Yes",
+    "no": "No",
+    "actions": "Actions"
   },
   "mock": {
     "banner": "DEMO MODE: mock data"
@@ -55,5 +68,163 @@
     "confirm": "Confirm",
     "done": "Two-step verification is now enabled.",
     "continue": "Continue"
+  },
+  "table": {
+    "pagination": "Pagination",
+    "pageOf": "Page {{page}} of {{pages}} ({{total}} total)",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "clients": {
+    "title": "Clients",
+    "new": "New client",
+    "edit": "Edit client",
+    "exportCsv": "Export page as CSV",
+    "search": "Search by name or registration number",
+    "searchButton": "Search",
+    "all": "All",
+    "showArchived": "Show archived",
+    "archived": "Archived",
+    "archive": "Archive client",
+    "unarchive": "Restore client",
+    "archiveMessage": "Archive \"{{name}}\"? It will be hidden from the default list but not deleted.",
+    "unarchiveMessage": "Restore \"{{name}}\" to the active list?",
+    "loadFailed": "Could not load the data. Please try again.",
+    "empty": "No clients match your filters.",
+    "notFound": "This client was not found or you do not have access to it.",
+    "backToList": "Back to clients",
+    "moveTo": "Move to {{status}}",
+    "taxTypeHint": "A free label only. The legal tax classification needs confirmation by a tax specialist.",
+    "deleteMessage": "Delete \"{{name}}\"? This cannot be undone.",
+    "status": {
+      "lead": "Lead",
+      "onboarding": "Onboarding",
+      "active": "Active",
+      "suspended": "Suspended",
+      "closed": "Closed"
+    },
+    "legalForm": {
+      "individual": "Individual",
+      "company": "Company",
+      "sole_proprietor": "Sole proprietor",
+      "partnership": "Partnership",
+      "other": "Other"
+    },
+    "agreementStatus": {
+      "draft": "Draft",
+      "active": "Active",
+      "expired": "Expired",
+      "terminated": "Terminated"
+    },
+    "noteType": {
+      "call": "Call",
+      "meeting": "Meeting",
+      "email": "Email",
+      "note": "Note"
+    },
+    "fields": {
+      "id": "ID",
+      "legalName": "Legal name",
+      "tradeName": "Trade name",
+      "legalForm": "Legal form",
+      "status": "Status",
+      "createdAt": "Created",
+      "updatedAt": "Last updated",
+      "commercialRegistrationNo": "Commercial registration no.",
+      "taxRegistrationNo": "Tax registration no.",
+      "address": "Address",
+      "industry": "Industry",
+      "fiscalYearStartMonth": "Fiscal year starts in",
+      "vatRegistered": "VAT registered",
+      "taxType": "Tax type",
+      "assignedAccountantIds": "Assigned accountants",
+      "name": "Name",
+      "role": "Role",
+      "email": "Email",
+      "phone": "Phone",
+      "isAuthorizedRepresentative": "Authorized representative",
+      "bankName": "Bank",
+      "accountNo": "Account number",
+      "iban": "IBAN",
+      "currency": "Currency",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "renewalDate": "Renewal date",
+      "monthlyFee": "Monthly fee",
+      "type": "Type",
+      "body": "Note",
+      "followUpDate": "Follow-up date",
+      "createdBy": "Created by"
+    },
+    "sections": {
+      "identity": "Identity",
+      "registration": "Registration",
+      "business": "Business details",
+      "tax": "Tax profile",
+      "assignment": "Assigned accountants"
+    },
+    "tabs": {
+      "label": "Client sections",
+      "overview": "Overview",
+      "contacts": "Contacts",
+      "branches": "Branches",
+      "bankAccounts": "Bank accounts",
+      "agreements": "Agreements",
+      "notes": "Communication",
+      "history": "History"
+    },
+    "contacts": {
+      "title": "Contacts",
+      "add": "Add contact",
+      "edit": "Edit contact",
+      "empty": "No contacts yet.",
+      "deleteTitle": "Delete contact"
+    },
+    "branches": {
+      "title": "Branches",
+      "add": "Add branch",
+      "edit": "Edit branch",
+      "empty": "No branches yet.",
+      "deleteTitle": "Delete branch"
+    },
+    "bankAccounts": {
+      "title": "Bank accounts",
+      "add": "Add bank account",
+      "edit": "Edit bank account",
+      "empty": "No bank accounts yet.",
+      "deleteTitle": "Delete bank account"
+    },
+    "agreements": {
+      "title": "Service agreements",
+      "add": "Add agreement",
+      "edit": "Edit agreement",
+      "empty": "No agreements yet.",
+      "deleteTitle": "Delete agreement"
+    },
+    "notes": {
+      "title": "Communication notes",
+      "add": "Add note",
+      "edit": "Edit note",
+      "empty": "No notes yet.",
+      "deleteTitle": "Delete note"
+    },
+    "history": {
+      "title": "Change history",
+      "empty": "No changes recorded yet.",
+      "field": "Field",
+      "oldValue": "Old value",
+      "newValue": "New value",
+      "changedBy": "Changed by",
+      "changedAt": "Changed at"
+    },
+    "statusConfirm": {
+      "title": "Change client status",
+      "message": "Change the status from {{from}} to {{to}}? This is recorded in the change history."
+    },
+    "unsaved": {
+      "title": "Unsaved changes",
+      "message": "You have unsaved changes. Leave without saving?",
+      "leave": "Leave"
+    }
   }
 }

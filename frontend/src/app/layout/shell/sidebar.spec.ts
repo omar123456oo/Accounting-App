@@ -19,6 +19,10 @@ describe('Sidebar', () => {
     expect(render(['journals.view', 'reports.view'])).toEqual(['/app', '/app/journals', '/app/reports']);
   });
 
+  it('shows the clients entry only with clients.view', () => {
+    expect(render(['clients.view'])).toEqual(['/app', '/app/clients']);
+  });
+
   it('always shows the dashboard', () => {
     expect(render([])).toEqual(['/app']);
   });

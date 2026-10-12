@@ -1,0 +1,98 @@
+@let cfg = config();
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h2 class="h5 mb-0">{{ cfg.prefix + '.title' | translate }}</h2>
+  <button *appHasPermission="'clients.update'" type="button" class="btn btn-primary btn-sm" (click)="open('new')">{{ cfg.prefix + '.add' | translate }}</button>
+</div>
+
+@if (editing(); as target) {
+  <form class="card card-body mb-3" [formGroup]="form" (ngSubmit)="save()" novalidate [attr.aria-label]="cfg.prefix + (target === 'new' ? '.add' : '.edit') | translate">
+    <div class="row g-3">
+      @for (field of cfg.fields; track field.key) {
+        <div class="col-12 col-md-6">
+          @if (field.type === 'checkbox') {
+            <div class="form-check">
+              <input [id]="'f-' + field.key" type="checkbox" class="form-check-input" [formControlName]="field.key" />
+              <label [for]="'f-' + field.key" class="form-check-label">{{ field.labelKey | translate }}</label>
+            </div>
+          } @else {
+            <label [for]="'f-' + field.key" class="form-label">{{ field.labelKey | translate }}@if (field.required) { * }</label>
+            @if (field.type === 'select') {
+              <select [id]="'f-' + field.key" class="form-select" [formControlName]="field.key" [attr.aria-describedby]="'f-' + field.key + '-error'">
+                @for (o of field.options; track o) {
+                  <option [value]="o">{{ field.optionPrefix + '.' + o | translate }}</option>
+                }
+              </select>
+            } @else if (field.type === 'textarea') {
+              <textarea [id]="'f-' + field.key" class="form-control" rows="3" [formControlName]="field.key" [class.is-invalid]="isInvalid(field.key)" [attr.aria-invalid]="isInvalid(field.key)" [attr.aria-describedby]="'f-' + field.key + '-error'"></textarea>
+            } @else {
+              <input
+                [id]="'f-' + field.key"
+                class="form-control"
+                [type]="field.type === 'date' ? 'date' : field.type === 'email' ? 'email' : 'text'"
+                [attr.inputmode]="field.inputMode ?? null"
+                [formControlName]="field.key"
+                [class.is-invalid]="isInvalid(field.key)"
+                [attr.aria-invalid]="isInvalid(field.key)"
+                [attr.aria-describedby]="'f-' + field.key + '-error'"
+              />
+            }
+            <app-field-error [control]="form.controls[field.key]" [id]="'f-' + field.key + '-error'" />
+          }
+        </div>
+      }
+    </div>
+    <div class="d-flex gap-2 mt-3">
+      <button type="submit" class="btn btn-primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+    </div>
+  </form>
+}
+
+@if (failed()) {
+  <div class="alert alert-danger" role="alert">{{ 'clients.loadFailed' | translate }}</div>
+} @else if (loading()) {
+  <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+} @else if (rows().length === 0) {
+  <div class="alert alert-secondary" role="status">{{ cfg.prefix + '.empty' | translate }}</div>
+} @else {
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <caption class="visually-hidden">{{ cfg.prefix + '.title' | translate }}</caption>
+      <thead>
+        <tr>
+          @for (col of cfg.columns; track col.labelKey) {
+            <th scope="col">{{ col.labelKey | translate }}</th>
+          }
+          <th scope="col"><span class="visually-hidden">{{ 'common.actions' | translate }}</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.id) {
+          <tr>
+            @for (col of cfg.columns; track col.labelKey) {
+              @let cell = col.cell(row, format);
+              <td>{{ cell.translate ? (cell.text | translate) : cell.text }}</td>
+            }
+            <td class="text-end">
+              <span *appHasPermission="'clients.update'" class="d-inline-flex gap-1">
+                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="open(row)">{{ 'common.edit' | translate }}</button>
+                <button type="button" class="btn btn-outline-danger btn-sm" (click)="deleting.set(row)">{{ 'common.delete' | translate }}</button>
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+@if (deleting(); as row) {
+  <app-confirm-dialog
+    [title]="cfg.prefix + '.deleteTitle' | translate"
+    [message]="'clients.deleteMessage' | translate: { name: cfg.label(row) }"
+    [confirmLabel]="'common.delete' | translate"
+    [danger]="true"
+    (confirmed)="confirmDelete()"
+    (cancelled)="deleting.set(null)"
+  />
+}

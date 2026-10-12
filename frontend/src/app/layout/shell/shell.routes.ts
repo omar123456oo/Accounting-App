@@ -10,6 +10,7 @@ export const SHELL_ROUTES: Routes = [
     component: Shell,
     children: [
       { path: '', pathMatch: 'full', loadComponent: () => import('../../features/dashboard/dashboard').then((m) => m.Dashboard) },
+      { path: 'clients', loadChildren: () => import('../../features/clients/clients.routes').then((m) => m.CLIENT_ROUTES), canActivate: [permissionGuard], data: { permission: 'clients.view' } },
       { path: 'journals', canActivate: [permissionGuard], data: { permission: 'journals.view' }, loadComponent: comingSoon },
       { path: 'reports', canActivate: [permissionGuard], data: { permission: 'reports.view' }, loadComponent: comingSoon },
       { path: 'settings', canActivate: [permissionGuard], data: { permission: 'settings.manage' }, loadComponent: comingSoon },

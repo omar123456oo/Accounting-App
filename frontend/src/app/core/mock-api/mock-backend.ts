@@ -2,9 +2,12 @@ import { HttpErrorResponse, HttpEvent, HttpRequest, HttpResponse } from '@angula
 import { Observable, of, throwError } from 'rxjs';
 import { AuthUser } from '../auth/auth.models';
 import { DEMO_OTP, DEMO_USERS, DemoUser } from './mock-users';
+import { MockClients, MockResult } from './mock-clients';
 import { MockMessageKey, mockMessage } from './mock-messages';
 
 const API = '/api/v1/auth';
+const STAFF_API = '/api/v1/staff/';
+const CLIENT_PATH = /^\/api\/v1\/staff\/(clients|assignable-users)(\/|$)/;
 const MAX_FAILURES = 5;
 const LOCK_MS = 15 * 60 * 1000;
 const COOKIE = 'XSRF-TOKEN';
@@ -24,6 +27,7 @@ export class MockBackend {
   private readonly mfaEnabled = new Set(DEMO_USERS.filter((u) => u.mfaEnabled).map((u) => u.profile.id));
   private mfaPending = false;
   private lang: string | null = null;
+  private readonly clients = new MockClients();
 
   /** Returns null when the URL is not served by the mock so the request can go on to the network. */
   handle(req: HttpRequest<unknown>): Observable<HttpEvent<unknown>> | null {
@@ -42,6 +46,9 @@ export class MockBackend {
     }
     if (req.method !== 'GET' && !this.csrfValid(req)) {
       return this.fail(419, 'csrf');
+    }
+    if (CLIENT_PATH.test(path)) {
+      return this.withUser((u) => this.respond(this.clients.handle({ method: req.method, path: path.slice(STAFF_API.length), query: new URL(req.urlWithParams, 'http://mock.local').searchParams, body: (req.body ?? {}) as Record<string, unknown> }, u)));
     }
     const body = (req.body ?? {}) as Body;
     switch (`${req.method} ${path}`) {
@@ -130,6 +137,12 @@ export class MockBackend {
       .find((c) => c.startsWith(`${COOKIE}=`))
       ?.slice(COOKIE.length + 1);
     return !!cookie && req.headers.get(HEADER) === cookie;
+  }
+
+  private respond(r: MockResult): Observable<HttpEvent<unknown>> {
+    if (r.errors) return this.invalid(r.errors);
+    if (r.error) return this.fail(r.status, r.error);
+    return this.ok(r.body ?? null, r.status);
   }
 
   private ok(body: unknown, status = 200): Observable<HttpEvent<unknown>> {

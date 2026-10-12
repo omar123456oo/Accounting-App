@@ -48,6 +48,8 @@ export class FieldError {
     }
     if (errors['required']) return { key: 'validation.required' };
     if (errors['email']) return { key: 'validation.email' };
+    if (errors['pattern']) return { key: 'validation.pattern' };
+    if (errors['digits']) return { key: 'validation.digits' };
     if (errors['minlength']) return { key: 'validation.minlength', params: { min: errors['minlength'].requiredLength } };
     return null;
   }
