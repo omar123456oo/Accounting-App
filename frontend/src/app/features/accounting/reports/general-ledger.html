@@ -1,0 +1,77 @@
+<app-page-header [title]="'accounting.reports.generalLedger' | translate">
+  <button type="button" class="btn btn-outline-secondary no-print" [disabled]="!report()" (click)="exportCsv()">{{ 'accounting.reports.exportCsv' | translate }}</button>
+  <button type="button" class="btn btn-outline-secondary no-print" [disabled]="!report()" (click)="print()">{{ 'accounting.reports.print' | translate }}</button>
+</app-page-header>
+
+@if (accounts(); as list) {
+  <app-report-filters [accounts]="list" [periods]="periods()" [initial]="initial" (runReport)="run($event)" />
+}
+
+<p class="print-only">{{ format.ledgerLabel(ctx.active()) }}</p>
+
+<div [attr.aria-busy]="loading()">
+  @if (failed()) {
+    <div class="alert alert-danger" role="alert">{{ 'clients.loadFailed' | translate }}</div>
+  } @else if (report(); as r) {
+    <app-report-banner [includesUnposted]="r.includesUnposted" />
+    <h2 class="h5">{{ r.account.code }} - {{ format.name(r.account) }}</h2>
+    <div class="table-responsive">
+      <table class="table table-sm align-middle report-table">
+        <caption class="visually-hidden">{{ 'accounting.reports.generalLedger' | translate }}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ 'accounting.reports.col.date' | translate }}</th>
+            <th scope="col">{{ 'accounting.reports.col.reference' | translate }}</th>
+            <th scope="col">{{ 'accounting.reports.col.description' | translate }}</th>
+            <th scope="col">{{ 'accounting.reports.col.status' | translate }}</th>
+            <th scope="col">{{ 'accounting.reports.col.debit' | translate }}</th>
+            <th scope="col">{{ 'accounting.reports.col.credit' | translate }}</th>
+            <th scope="col">{{ 'accounting.reports.col.balance' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="fw-semibold">
+            <td colspan="6">{{ 'accounting.reports.opening' | translate }}</td>
+            <td dir="ltr" class="text-end">
+              {{ format.amount(side(r.openingBalance).amount) }}
+              @if (side(r.openingBalance).side; as s) {
+                <span class="small">{{ 'accounting.reports.' + s + 'Short' | translate }}</span>
+              }
+            </td>
+          </tr>
+          @for (row of r.rows; track $index) {
+            <tr>
+              <td>{{ format.date(row.date) }}</td>
+              <td dir="ltr" class="text-start"><a [routerLink]="['/app/accounting/journals', row.journalId]">{{ row.reference }}</a></td>
+              <td>{{ row.description }}</td>
+              <td>{{ 'accounting.status.' + row.status | translate }}</td>
+              <td dir="ltr" class="text-end">{{ format.amount(row.debit) }}</td>
+              <td dir="ltr" class="text-end">{{ format.amount(row.credit) }}</td>
+              <td dir="ltr" class="text-end">
+                {{ format.amount(side(row.balance).amount) }}
+                @if (side(row.balance).side; as s) {
+                  <span class="small">{{ 'accounting.reports.' + s + 'Short' | translate }}</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr class="fw-bold">
+            <th scope="row" colspan="4">{{ 'accounting.reports.closing' | translate }}</th>
+            <td dir="ltr" class="text-end" id="gl-total-debit">{{ format.amount(r.totalDebit) }}</td>
+            <td dir="ltr" class="text-end" id="gl-total-credit">{{ format.amount(r.totalCredit) }}</td>
+            <td dir="ltr" class="text-end" id="gl-closing">
+              {{ format.amount(side(r.closingBalance).amount) }}
+              @if (side(r.closingBalance).side; as s) {
+                <span class="small">{{ 'accounting.reports.' + s + 'Short' | translate }}</span>
+              }
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  } @else if (loading()) {
+    <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+  }
+</div>

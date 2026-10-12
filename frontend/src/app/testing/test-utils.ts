@@ -53,3 +53,11 @@ export async function failure(request: Promise<unknown>): Promise<HttpErrorRespo
   }
   throw new Error('expected the request to fail');
 }
+
+/** Makes `ledgerId` the active ledger of the accounting pages (the mock answers synchronously). */
+export async function activateLedger(ledgerId: string): Promise<void> {
+  const { LedgerContext } = await import('../features/accounting/ledger-context');
+  const context = TestBed.inject(LedgerContext);
+  context.load(ledgerId);
+  if (context.activeId() !== ledgerId) throw new Error(`ledger ${ledgerId} is not available to this user`);
+}

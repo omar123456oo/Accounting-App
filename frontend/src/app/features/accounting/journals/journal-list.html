@@ -1,0 +1,80 @@
+<app-page-header [title]="'accounting.journals.title' | translate">
+  <a *appHasPermission="'journals.create'" class="btn btn-primary" routerLink="/app/accounting/journals/new">{{ 'accounting.journals.new' | translate }}</a>
+</app-page-header>
+
+<form class="row g-2 align-items-end mb-3" role="search" (submit)="search($event, q.value)">
+  <div class="col-12 col-md-3">
+    <label for="je-q" class="form-label">{{ 'accounting.journals.search' | translate }}</label>
+    <input #q id="je-q" type="search" class="form-control" [value]="params().q ?? ''" />
+  </div>
+  <div class="col-6 col-md-2">
+    <label for="je-status" class="form-label">{{ 'accounting.journals.fields.status' | translate }}</label>
+    <select id="je-status" class="form-select" (change)="patch({ status: $any($event.target).value })">
+      <option value="" [selected]="!params().status">{{ 'clients.all' | translate }}</option>
+      @for (s of statuses; track s) {
+        <option [value]="s" [selected]="params().status === s">{{ 'accounting.status.' + s | translate }}</option>
+      }
+    </select>
+  </div>
+  <div class="col-6 col-md-2">
+    <label for="je-from" class="form-label">{{ 'accounting.journals.from' | translate }}</label>
+    <input id="je-from" type="date" class="form-control" (change)="patch({ from: $any($event.target).value })" />
+  </div>
+  <div class="col-6 col-md-2">
+    <label for="je-to" class="form-label">{{ 'accounting.journals.to' | translate }}</label>
+    <input id="je-to" type="date" class="form-control" (change)="patch({ to: $any($event.target).value })" />
+  </div>
+  @if (accounts().length > 0) {
+    <div class="col-6 col-md-3">
+      <label for="je-account" class="form-label">{{ 'accounting.journals.account' | translate }}</label>
+      <select id="je-account" class="form-select" (change)="patch({ accountId: $any($event.target).value })">
+        <option value="">{{ 'clients.all' | translate }}</option>
+        @for (a of accounts(); track a.id) {
+          @if (a.isPostable) {
+            <option [value]="a.id">{{ a.code }} - {{ format.name(a) }}</option>
+          }
+        }
+      </select>
+    </div>
+  }
+  <div class="col-12">
+    <button type="submit" class="btn btn-secondary">{{ 'clients.searchButton' | translate }}</button>
+  </div>
+</form>
+
+<div [attr.aria-busy]="loading()">
+  @if (failed()) {
+    <div class="alert alert-danger d-flex align-items-center justify-content-between" role="alert">
+      <span>{{ 'clients.loadFailed' | translate }}</span>
+      <button type="button" class="btn btn-outline-danger btn-sm" (click)="reload()">{{ 'common.retry' | translate }}</button>
+    </div>
+  } @else if (loading() && !result()) {
+    <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+  } @else if (result(); as page) {
+    @if (page.data.length === 0) {
+      <div class="alert alert-secondary" role="status">{{ 'accounting.journals.empty' | translate }}</div>
+    } @else {
+      <app-data-table
+        [columns]="columns"
+        [rows]="page.data"
+        [caption]="'accounting.journals.title' | translate"
+        [page]="page.meta.page"
+        [pageSize]="page.meta.pageSize"
+        [total]="page.meta.total"
+        (pageChange)="patch({ page: $event }, false)"
+      >
+        <ng-template let-row>
+          <td dir="ltr" class="text-start"><a [routerLink]="['/app/accounting/journals', row.id]">{{ row.reference }}</a></td>
+          <td>{{ format.date(row.postingDate) }}</td>
+          <td>{{ row.description }}</td>
+          <td>{{ 'accounting.journals.types.' + row.entryType | translate }}</td>
+          <td dir="ltr" class="text-end">{{ format.amount(row.totalDebit) }}</td>
+          <td>{{ row.createdByName }}</td>
+          <td><app-status-badge [label]="'accounting.status.' + row.status | translate" [tone]="tone[row.status]" /></td>
+        </ng-template>
+      </app-data-table>
+    }
+  }
+</div>
+
+<app-recurring-templates [ledgerId]="ledgerId" />

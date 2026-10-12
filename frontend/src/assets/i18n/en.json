@@ -15,7 +15,10 @@
     "clients": "Clients",
     "documents": "Documents",
     "tasks": "Tasks",
-    "approvals": "Approvals"
+    "approvals": "Approvals",
+    "accounting": "Accounting",
+    "accounts": "Chart of accounts",
+    "periods": "Fiscal periods"
   },
   "login": {
     "title": "Sign in",
@@ -473,5 +476,251 @@
     "reject": "Reject",
     "approveTitle": "Approve",
     "rejectTitle": "Reject"
+  },
+  "accounting": {
+    "sections": "Accounting sections",
+    "tabs": {
+      "accounts": "Chart of accounts",
+      "periods": "Fiscal periods",
+      "journals": "Journal entries",
+      "reports": "Reports"
+    },
+    "ledger": {
+      "label": "Active ledger",
+      "firm": "Firm books",
+      "client": "Books of {{name}}",
+      "none": "No ledgers are available to you.",
+      "loadFailed": "The ledgers could not be loaded."
+    },
+    "category": {
+      "asset": "Asset",
+      "liability": "Liability",
+      "equity": "Equity",
+      "revenue": "Revenue",
+      "expense": "Expense"
+    },
+    "normal": {
+      "debit": "Debit",
+      "credit": "Credit"
+    },
+    "status": {
+      "draft": "Draft",
+      "pending_approval": "Pending approval",
+      "approved": "Approved",
+      "posted": "Posted",
+      "reversed": "Reversed"
+    },
+    "events": {
+      "created": "Created",
+      "updated": "Edited",
+      "submitted": "Submitted for approval",
+      "approved": "Approved",
+      "rejected": "Returned to draft",
+      "posted": "Posted",
+      "reversed": "Reversed",
+      "reversal_created": "Created as a reversal",
+      "created_from_template": "Created from a recurring template"
+    },
+    "accounts": {
+      "title": "Chart of accounts",
+      "new": "New account",
+      "edit": "Edit account",
+      "view": "View",
+      "viewTree": "Tree",
+      "viewList": "List",
+      "showInactive": "Show inactive accounts",
+      "search": "Search by code or name",
+      "empty": "No accounts yet. Import the starter chart or add an account.",
+      "importTemplate": "Import starter chart",
+      "importTitle": "Import the starter chart of accounts",
+      "importNote": "This is an editable starting point in the usual Egyptian layout. It is NOT a legal or professional certification and must be reviewed by a qualified accountant before real use. Codes that already exist are left unchanged.",
+      "importConfirm": "Import",
+      "imported": "{{count}} accounts were added.",
+      "importedNone": "Nothing to import: every starter account already exists.",
+      "saved": "The account was saved.",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "deactivateConfirm": "Deactivate account {{code}}? It will no longer accept new entries.",
+      "hasPostings": "Has posted entries",
+      "hasPostingsHint": "The category cannot change because posted entries use this account.",
+      "postable": "Postable",
+      "group": "Group",
+      "postableHint": "A group account only organises the tree; entries post to postable accounts.",
+      "noParent": "No parent (top level)",
+      "active": "Active",
+      "inactive": "Inactive",
+      "fields": {
+        "code": "Code",
+        "name": "Name",
+        "nameAr": "Name (Arabic)",
+        "nameEn": "Name (English)",
+        "category": "Category",
+        "parent": "Parent account",
+        "postable": "Accepts postings",
+        "normalBalance": "Normal balance",
+        "active": "Active",
+        "status": "Status",
+        "type": "Type"
+      }
+    },
+    "periods": {
+      "title": "Fiscal years and periods",
+      "newYear": "New fiscal year",
+      "empty": "No fiscal years yet.",
+      "year": "Fiscal year",
+      "startHint": "The year starts on the first day of any month and has twelve monthly periods.",
+      "reason": "Reason",
+      "reopenWarning": "Reopening lets entries be posted into this period again. The reason is recorded in the audit trail.",
+      "close": "Close",
+      "lock": "Lock",
+      "reopen": "Reopen",
+      "status": {
+        "open": "Open",
+        "closed": "Closed",
+        "locked": "Locked"
+      },
+      "yearStatus": {
+        "open": "open",
+        "closed": "closed"
+      },
+      "events": {
+        "created": "Created",
+        "closed": "Closed",
+        "locked": "Locked",
+        "reopened": "Reopened"
+      },
+      "fields": {
+        "name": "Name",
+        "startDate": "Start date",
+        "number": "No.",
+        "range": "Dates",
+        "status": "Status",
+        "lastChange": "Last change"
+      }
+    },
+    "journals": {
+      "title": "Journal entries",
+      "new": "New entry",
+      "edit": "Edit entry",
+      "empty": "No journal entries match.",
+      "back": "Back to journal entries",
+      "notFound": "This entry was not found in the active ledger.",
+      "notEditable": "Only draft entries can be edited. Posted entries are changed by reversal.",
+      "search": "Search reference or description",
+      "from": "From",
+      "to": "To",
+      "account": "Account",
+      "lines": "Lines",
+      "totals": "Totals",
+      "balanced": "Balanced: debits equal credits.",
+      "outOfBalance": "Out of balance by {{amount}}",
+      "incompleteLines": "Complete or remove line(s): {{lines}}. Each line needs an account and exactly one of debit or credit.",
+      "accountsFailed": "The accounts could not be loaded.",
+      "openingHint": "An opening balance entry records the balances carried into this ledger. It follows the same approval and posting rules.",
+      "saveDraft": "Save draft",
+      "submitForApproval": "Submit for approval",
+      "approve": "Approve",
+      "reject": "Return to draft",
+      "rejectReason": "Reason for returning",
+      "comment": "Comment (optional)",
+      "post": "Post",
+      "fourEyesNote": "You created this entry, so another person must approve it.",
+      "deleteConfirm": "Delete this draft entry?",
+      "timeline": "Workflow timeline",
+      "outcome": "Outcome",
+      "reversedDone": "Entry reversed by {{reference}}.",
+      "viewReversal": "View the reversing entry",
+      "viewOriginal": "View the original entry",
+      "editReplacement": "Edit the replacement draft",
+      "types": {
+        "standard": "Standard",
+        "opening": "Opening balance"
+      },
+      "fields": {
+        "reference": "Reference",
+        "postingDate": "Posting date",
+        "description": "Description",
+        "type": "Type",
+        "total": "Total",
+        "createdBy": "Created by",
+        "status": "Status"
+      },
+      "line": {
+        "account": "Account",
+        "debit": "Debit",
+        "credit": "Credit",
+        "description": "Line description",
+        "add": "Add line",
+        "remove": "Remove",
+        "chooseAccount": "Choose an account"
+      },
+      "reverse": {
+        "title": "Reverse entry",
+        "message": "Reversing {{reference}} posts a new entry with debits and credits swapped and links both entries. The original stays in the books.",
+        "reason": "Reason for reversal",
+        "date": "Reversal date (optional)",
+        "dateHint": "Leave empty to use today's date. It must fall in an open period.",
+        "replacement": "Also create a replacement draft",
+        "confirm": "Reverse"
+      }
+    },
+    "recurring": {
+      "title": "Recurring entry templates",
+      "hint": "Choose a posting date to create a draft from a template. Nothing runs automatically.",
+      "name": "Template",
+      "createDraft": "Create draft"
+    },
+    "reports": {
+      "menu": "Reports",
+      "trialBalance": "Trial balance",
+      "generalLedger": "General ledger",
+      "journalRegister": "Journal register",
+      "postedOnly": "Posted only",
+      "postedOnlyNote": "Draft, pending and approved entries are excluded.",
+      "draftIncluded": "DRAFT-INCLUDED",
+      "draftIncludedNote": "This is a preview that includes unposted entries. It is not the books.",
+      "basisPosted": "Basis: posted only",
+      "basisDraftIncluded": "Basis: DRAFT-INCLUDED (preview with unposted entries)",
+      "includeUnposted": "Include unposted entries (preview)",
+      "run": "Run report",
+      "exportCsv": "Export CSV",
+      "print": "Print",
+      "period": "Period",
+      "customRange": "Custom range",
+      "account": "Account",
+      "empty": "No lines in this range.",
+      "totals": "Totals",
+      "opening": "Opening balance",
+      "closing": "Closing",
+      "debitShort": "Dr",
+      "creditShort": "Cr",
+      "reconciled": "Reconciled: total debits equal total credits.",
+      "notReconciled": "NOT reconciled: out of balance by {{amount}}",
+      "col": {
+        "code": "Code",
+        "account": "Account",
+        "opening": "Opening balance",
+        "openingSide": "Opening side",
+        "debit": "Debit",
+        "credit": "Credit",
+        "closingDebit": "Closing debit",
+        "closingCredit": "Closing credit",
+        "date": "Date",
+        "reference": "Reference",
+        "description": "Description",
+        "status": "Status",
+        "balance": "Balance",
+        "balanceSide": "Balance side",
+        "type": "Type",
+        "total": "Total",
+        "createdBy": "Created by"
+      }
+    },
+    "summary": {
+      "title": "Accounting",
+      "awaiting": "Journals awaiting approval",
+      "openPeriods": "Open periods",
+      "perLedger": "{{awaiting}} awaiting approval, {{open}} open periods"
+    }
   }
 }

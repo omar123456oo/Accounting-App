@@ -1,6 +1,7 @@
 import { MockApprovals } from './mock-approvals';
 import { MockClients } from './mock-clients';
 import { MockDocuments } from './mock-documents';
+import { MockLedger } from './mock-ledger';
 import { MockOnboarding } from './mock-onboarding';
 import { MockModule, MockRequest, MockResult, fail } from './mock-types';
 import { MockTasks } from './mock-tasks';
@@ -18,6 +19,7 @@ export class MockStaff {
     [/^(clients\/[^/]+\/(documents|document-requests)|documents|document-requests)(\/|$)/, this.documents],
     [/^tasks(\/|$)/, new MockTasks(this.clients)],
     [/^approvals(\/|$)/, new MockApprovals(this.onboarding)],
+    [/^ledger(\/|$)/, new MockLedger(this.clients)],
     [/^(clients|assignable-users)(\/|$)/, this.clients],
   ];
 

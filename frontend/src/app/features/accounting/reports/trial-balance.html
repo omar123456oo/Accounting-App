@@ -1,0 +1,74 @@
+<app-page-header [title]="'accounting.reports.trialBalance' | translate">
+  <button type="button" class="btn btn-outline-secondary no-print" [disabled]="!report()" (click)="exportCsv()">{{ 'accounting.reports.exportCsv' | translate }}</button>
+  <button type="button" class="btn btn-outline-secondary no-print" [disabled]="!report()" (click)="print()">{{ 'accounting.reports.print' | translate }}</button>
+</app-page-header>
+
+<app-report-filters [periods]="periods()" [initial]="initial" (runReport)="run($event)" />
+
+<p class="print-only">{{ format.ledgerLabel(ctx.active()) }}@if (params().from || params().to) { - {{ params().from }} / {{ params().to }} }</p>
+
+<div [attr.aria-busy]="loading()">
+  @if (failed()) {
+    <div class="alert alert-danger" role="alert">{{ 'clients.loadFailed' | translate }}</div>
+  } @else if (report(); as r) {
+    <app-report-banner [includesUnposted]="r.includesUnposted" />
+    @if (r.rows.length === 0) {
+      <div class="alert alert-secondary" role="status">{{ 'accounting.reports.empty' | translate }}</div>
+    } @else {
+      <div id="tb-reconciliation" role="status" class="mb-3 fw-semibold" [class]="reconciled() ? 'text-success' : 'text-danger'">
+        @if (reconciled()) {
+          <span aria-hidden="true">&#10003; </span>{{ 'accounting.reports.reconciled' | translate }}
+        } @else {
+          <span aria-hidden="true">&#9888; </span>{{ 'accounting.reports.notReconciled' | translate: { amount: format.exact(difference()) } }}
+        }
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle report-table">
+          <caption class="visually-hidden">{{ 'accounting.reports.trialBalance' | translate }}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{{ 'accounting.reports.col.code' | translate }}</th>
+              <th scope="col">{{ 'accounting.reports.col.account' | translate }}</th>
+              <th scope="col">{{ 'accounting.reports.col.opening' | translate }}</th>
+              <th scope="col">{{ 'accounting.reports.col.debit' | translate }}</th>
+              <th scope="col">{{ 'accounting.reports.col.credit' | translate }}</th>
+              <th scope="col">{{ 'accounting.reports.col.closingDebit' | translate }}</th>
+              <th scope="col">{{ 'accounting.reports.col.closingCredit' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of r.rows; track row.accountId) {
+              <tr>
+                <td dir="ltr" class="text-start">
+                  <a [routerLink]="['/app/accounting/reports/general-ledger']" [queryParams]="{ accountId: row.accountId, from: params().from || null, to: params().to || null }">{{ row.code }}</a>
+                </td>
+                <td>{{ format.name(row) }}</td>
+                <td dir="ltr" class="text-end">
+                  {{ format.amount(side(row.opening).amount) }}
+                  @if (side(row.opening).side; as s) {
+                    <span class="small">{{ 'accounting.reports.' + s + 'Short' | translate }}</span>
+                  }
+                </td>
+                <td dir="ltr" class="text-end">{{ format.amount(row.debit) }}</td>
+                <td dir="ltr" class="text-end">{{ format.amount(row.credit) }}</td>
+                <td dir="ltr" class="text-end">{{ format.amount(row.closingDebit) }}</td>
+                <td dir="ltr" class="text-end">{{ format.amount(row.closingCredit) }}</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr class="fw-bold">
+              <th scope="row" colspan="3">{{ 'accounting.reports.totals' | translate }}</th>
+              <td dir="ltr" class="text-end" id="tb-total-debit">{{ format.amount(r.totals.debit) }}</td>
+              <td dir="ltr" class="text-end" id="tb-total-credit">{{ format.amount(r.totals.credit) }}</td>
+              <td dir="ltr" class="text-end" id="tb-total-closing-debit">{{ format.amount(r.totals.closingDebit) }}</td>
+              <td dir="ltr" class="text-end" id="tb-total-closing-credit">{{ format.amount(r.totals.closingCredit) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    }
+  } @else if (loading()) {
+    <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+  }
+</div>

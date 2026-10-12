@@ -1,0 +1,121 @@
+<app-page-header [title]="'accounting.accounts.title' | translate">
+  <ng-container *appHasPermission="'ledger.manage_accounts'">
+    <button type="button" class="btn btn-outline-secondary" [disabled]="busy()" (click)="confirmImport.set(true)">{{ 'accounting.accounts.importTemplate' | translate }}</button>
+    <button type="button" class="btn btn-primary" (click)="editing.set('new')">{{ 'accounting.accounts.new' | translate }}</button>
+  </ng-container>
+</app-page-header>
+
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+  <div class="btn-group" role="group" [attr.aria-label]="'accounting.accounts.view' | translate">
+    <input id="acc-view-tree" type="radio" class="btn-check" name="acc-view" [checked]="view() === 'tree'" (change)="view.set('tree')" />
+    <label for="acc-view-tree" class="btn btn-outline-secondary">{{ 'accounting.accounts.viewTree' | translate }}</label>
+    <input id="acc-view-list" type="radio" class="btn-check" name="acc-view" [checked]="view() === 'list'" (change)="view.set('list')" />
+    <label for="acc-view-list" class="btn btn-outline-secondary">{{ 'accounting.accounts.viewList' | translate }}</label>
+  </div>
+  @if (view() === 'list') {
+    <div>
+      <label for="acc-search" class="visually-hidden">{{ 'accounting.accounts.search' | translate }}</label>
+      <input id="acc-search" type="search" class="form-control" [placeholder]="'accounting.accounts.search' | translate" [value]="search()" (input)="search.set($any($event.target).value)" />
+    </div>
+  }
+  <div class="form-check mb-0">
+    <input id="acc-inactive" type="checkbox" class="form-check-input" [checked]="showInactive()" (change)="showInactive.set($any($event.target).checked)" />
+    <label for="acc-inactive" class="form-check-label">{{ 'accounting.accounts.showInactive' | translate }}</label>
+  </div>
+</div>
+
+@if (message(); as m) {
+  <div class="alert" [class]="m.kind === 'success' ? 'alert-success' : 'alert-danger'" [attr.role]="m.kind === 'success' ? 'status' : 'alert'">
+    @if (m.key) {
+      {{ m.key | translate: { count: m.count } }}
+    } @else {
+      {{ m.text }}
+    }
+  </div>
+}
+
+@if (failed()) {
+  <div class="alert alert-danger d-flex align-items-center justify-content-between" role="alert">
+    <span>{{ 'clients.loadFailed' | translate }}</span>
+    <button type="button" class="btn btn-outline-danger btn-sm" (click)="load()">{{ 'common.retry' | translate }}</button>
+  </div>
+} @else if (accounts() === null) {
+  <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+} @else if (rows().length === 0) {
+  <div class="alert alert-secondary" role="status">{{ 'accounting.accounts.empty' | translate }}</div>
+} @else {
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <caption class="visually-hidden">{{ 'accounting.accounts.title' | translate }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ 'accounting.accounts.fields.code' | translate }}</th>
+          <th scope="col">{{ 'accounting.accounts.fields.name' | translate }}</th>
+          <th scope="col">{{ 'accounting.accounts.fields.category' | translate }}</th>
+          <th scope="col">{{ 'accounting.accounts.fields.type' | translate }}</th>
+          <th scope="col">{{ 'accounting.accounts.fields.normalBalance' | translate }}</th>
+          <th scope="col">{{ 'accounting.accounts.fields.status' | translate }}</th>
+          <th scope="col"><span class="visually-hidden">{{ 'common.actions' | translate }}</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.account.id) {
+          <tr>
+            <td dir="ltr" class="text-start"><span class="indent d-inline-block" [style.--depth]="row.depth">{{ row.account.code }}</span></td>
+            <td [class.fw-semibold]="!row.account.isPostable">
+              <span class="indent d-inline-block" [style.--depth]="row.depth">{{ format.name(row.account) }}</span>
+              @if (row.account.hasPostings) {
+                <span class="d-block small text-body-secondary">{{ 'accounting.accounts.hasPostings' | translate }}</span>
+              }
+            </td>
+            <td>{{ 'accounting.category.' + row.account.category | translate }}</td>
+            <td>{{ (row.account.isPostable ? 'accounting.accounts.postable' : 'accounting.accounts.group') | translate }}</td>
+            <td>{{ 'accounting.normal.' + row.account.normalBalance | translate }}</td>
+            <td><app-status-badge [label]="(row.account.isActive ? 'accounting.accounts.active' : 'accounting.accounts.inactive') | translate" [tone]="row.account.isActive ? 'success' : 'secondary'" /></td>
+            <td class="text-end">
+              <span *appHasPermission="'ledger.manage_accounts'" class="d-inline-flex flex-wrap gap-1">
+                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="editing.set(row.account)">
+                  {{ 'common.edit' | translate }}<span class="visually-hidden"> {{ row.account.code }}</span>
+                </button>
+                @if (row.account.isActive) {
+                  <button type="button" class="btn btn-outline-danger btn-sm" [disabled]="busy()" (click)="toDeactivate.set(row.account)">
+                    {{ 'accounting.accounts.deactivate' | translate }}<span class="visually-hidden"> {{ row.account.code }}</span>
+                  </button>
+                } @else {
+                  <button type="button" class="btn btn-outline-success btn-sm" [disabled]="busy()" (click)="setActive(row.account, true)">
+                    {{ 'accounting.accounts.activate' | translate }}<span class="visually-hidden"> {{ row.account.code }}</span>
+                  </button>
+                }
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+@if (editing(); as target) {
+  <app-account-form [ledgerId]="ledgerId" [accounts]="accounts() ?? []" [account]="target === 'new' ? null : target" (saved)="saved()" (cancelled)="editing.set(null)" />
+}
+
+@if (confirmImport()) {
+  <app-confirm-dialog
+    [title]="'accounting.accounts.importTitle' | translate"
+    [message]="'accounting.accounts.importNote' | translate"
+    [confirmLabel]="'accounting.accounts.importConfirm' | translate"
+    (confirmed)="importTemplate()"
+    (cancelled)="confirmImport.set(false)"
+  />
+}
+
+@if (toDeactivate(); as target) {
+  <app-confirm-dialog
+    [title]="'accounting.accounts.deactivate' | translate"
+    [message]="'accounting.accounts.deactivateConfirm' | translate: { code: target.code }"
+    [confirmLabel]="'accounting.accounts.deactivate' | translate"
+    [danger]="true"
+    (confirmed)="setActive(target, false)"
+    (cancelled)="toDeactivate.set(null)"
+  />
+}

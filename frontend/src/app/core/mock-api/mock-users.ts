@@ -5,11 +5,12 @@ import { AuthUser } from '../auth/auth.models';
  * compiled out of production builds by the file replacement. They are not real accounts.
  *
  *   owner@demo.test       / Owner-Demo-123!        staff, all permissions
- *   accountant@demo.test  / Accountant-Demo-123!   staff, journals.view + reports.view + clients.view/update,
- *                                                 documents.view/upload, tasks.view/manage;
- *                                                 sees only the clients assigned to them
+ *   accountant@demo.test  / Accountant-Demo-123!   staff, journals.view/create + ledger.view + reports.view + clients.view/update,
+ *                                                 documents.view/upload, tasks.view/manage; cannot approve or post;
+ *                                                 sees only the clients (and client ledgers) assigned to them
  *   chief@demo.test       / Chief-Demo-123!        staff, office-wide, holds the approve permissions
- *                                                 (clients.approve_onboarding, documents.review, workflows.approve)
+ *                                                 (clients.approve_onboarding, documents.review, workflows.approve,
+ *                                                 journals.approve/approve_high/post, ledger.manage_accounts, periods.manage/reopen)
  *   client@demo.test      / Client-Demo-123!       client portal user
  *   mfa@demo.test         / Mfa-Demo-12345!        staff with MFA enabled; one-time code is DEMO_OTP
  */
@@ -25,7 +26,17 @@ export interface DemoUser {
 export const DEMO_OTP = '123456';
 
 const ALL_PERMISSIONS = [
-  'journals.view', 'journals.post', 'reports.view', 'settings.manage',
+  'journals.view',
+  'journals.create',
+  'journals.approve',
+  'journals.approve_high',
+  'journals.post',
+  'ledger.view',
+  'ledger.manage_accounts',
+  'periods.manage',
+  'periods.reopen',
+  'reports.view',
+  'settings.manage',
   'clients.view',
   'clients.create',
   'clients.update',
@@ -51,7 +62,7 @@ export const DEMO_USERS: DemoUser[] = [
     email: 'accountant@demo.test',
     password: 'Accountant-Demo-123!',
     mfaEnabled: false,
-    profile: { id: 'u-accountant', name: 'Demo Accountant', type: 'staff', permissions: ['journals.view', 'reports.view', 'clients.view', 'clients.update', 'documents.view', 'documents.upload', 'tasks.view', 'tasks.manage'] },
+    profile: { id: 'u-accountant', name: 'Demo Accountant', type: 'staff', permissions: ['journals.view', 'journals.create', 'ledger.view', 'reports.view', 'clients.view', 'clients.update', 'documents.view', 'documents.upload', 'tasks.view', 'tasks.manage'] },
   },
   {
     email: 'chief@demo.test',
@@ -62,7 +73,7 @@ export const DEMO_USERS: DemoUser[] = [
       id: 'u-chief',
       name: 'Demo Chief Accountant',
       type: 'staff',
-      permissions: ['journals.view', 'reports.view', 'clients.view', 'clients.update', 'clients.approve_onboarding', 'documents.view', 'documents.upload', 'documents.review', 'tasks.view', 'tasks.manage', 'workflows.approve'],
+      permissions: ['journals.view', 'journals.create', 'journals.approve', 'journals.approve_high', 'journals.post', 'ledger.view', 'ledger.manage_accounts', 'periods.manage', 'periods.reopen', 'reports.view', 'clients.view', 'clients.update', 'clients.approve_onboarding', 'documents.view', 'documents.upload', 'documents.review', 'tasks.view', 'tasks.manage', 'workflows.approve'],
     },
   },
   {

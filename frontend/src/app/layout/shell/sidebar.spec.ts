@@ -16,7 +16,7 @@ function render(permissions: string[]) {
 
 describe('Sidebar', () => {
   it('lists only the entries the user may see', () => {
-    expect(render(['journals.view', 'reports.view'])).toEqual(['/app', '/app/journals', '/app/reports']);
+    expect(render(['journals.view', 'reports.view'])).toEqual(['/app', '/app/accounting/journals', '/app/accounting/reports']);
   });
 
   it('shows the clients entry only with clients.view', () => {
@@ -29,6 +29,14 @@ describe('Sidebar', () => {
     [['workflows.approve'], ['/app', '/app/approvals']],
     [['tasks.manage', 'documents.upload'], ['/app']],
   ])('shows documents, tasks and approvals only with their own permissions: %j', (permissions, expected) => {
+    expect(render(permissions)).toEqual(expected);
+  });
+
+  it.each([
+    [['ledger.view', 'journals.view', 'reports.view'], ['/app', '/app/accounting/accounts', '/app/accounting/periods', '/app/accounting/journals', '/app/accounting/reports']],
+    [['ledger.view'], ['/app', '/app/accounting/accounts', '/app/accounting/periods']],
+    [['ledger.manage_accounts', 'journals.create'], ['/app']],
+  ])('lists the accounting group in order, filtered by permission: %j', (permissions, expected) => {
     expect(render(permissions)).toEqual(expected);
   });
 

@@ -13,7 +13,23 @@ export type MockMessageKey = 'invalidCredentials' | 'otpRequired' | 'otpInvalid'
   | 'fileType'
   | 'fileMime'
   | 'fileSignature'
-  | 'fileEmpty';
+  | 'fileEmpty'
+  | 'unbalanced'
+  | 'lineInvalid'
+  | 'tooFewLines'
+  | 'accountNotPostable'
+  | 'periodNotOpen'
+  | 'postedImmutable'
+  | 'fourEyesJournal'
+  | 'highValueApproval'
+  | 'duplicateCode'
+  | 'accountHasPostings'
+  | 'accountHasChildren'
+  | 'invalidParent'
+  | 'periodOverlap'
+  | 'idempotencyConflict'
+  | 'alreadyReversed'
+  | 'startDayInvalid';
 
 const MESSAGES: Record<'ar' | 'en', Record<MockMessageKey, string>> = {
   en: {
@@ -48,6 +64,22 @@ const MESSAGES: Record<'ar' | 'en', Record<MockMessageKey, string>> = {
     fileMime: 'The file type declared by the browser does not match its extension.',
     fileSignature: 'The file content does not match its extension.',
     fileEmpty: 'The file is empty.',
+    unbalanced: 'The entry is out of balance: total debits must equal total credits.',
+    lineInvalid: 'Each line needs an existing account and exactly one of debit or credit greater than zero.',
+    tooFewLines: 'An entry needs at least two lines.',
+    accountNotPostable: 'Every line must use an active account that accepts postings.',
+    periodNotOpen: 'The posting date is not in an open accounting period.',
+    postedImmutable: 'Posted entries cannot be changed. Reverse the entry instead.',
+    fourEyesJournal: 'You cannot approve an entry you created.',
+    highValueApproval: 'Entries of 50,000 EGP or more need approval by a chief accountant.',
+    duplicateCode: 'This account code is already used in this ledger.',
+    accountHasPostings: 'This account has posted lines, so this change is not allowed.',
+    accountHasChildren: 'Deactivate or move the active child accounts first.',
+    invalidParent: 'The parent must be a group account of the same category in this ledger.',
+    periodOverlap: 'The fiscal year overlaps an existing fiscal year.',
+    idempotencyConflict: 'This Idempotency-Key was already used with different data.',
+    alreadyReversed: 'This entry has already been reversed.',
+    startDayInvalid: 'A fiscal year must start on the first day of a month.',
   },
   ar: {
     invalidCredentials: 'بيانات الدخول غير صحيحة.',
@@ -81,6 +113,22 @@ const MESSAGES: Record<'ar' | 'en', Record<MockMessageKey, string>> = {
     fileMime: 'نوع الملف المعلن لا يطابق امتداده.',
     fileSignature: 'محتوى الملف لا يطابق امتداده.',
     fileEmpty: 'الملف فارغ.',
+    unbalanced: 'القيد غير متوازن: يجب أن يتساوى إجمالي المدين مع إجمالي الدائن.',
+    lineInvalid: 'يحتاج كل سطر إلى حساب موجود ومبلغ واحد فقط أكبر من صفر، مدين أو دائن.',
+    tooFewLines: 'يحتاج القيد إلى سطرين على الأقل.',
+    accountNotPostable: 'يجب أن يستخدم كل سطر حسابًا نشطًا يقبل الترحيل.',
+    periodNotOpen: 'تاريخ الترحيل ليس ضمن فترة محاسبية مفتوحة.',
+    postedImmutable: 'لا يمكن تعديل القيود المرحّلة. اعكس القيد بدلًا من ذلك.',
+    fourEyesJournal: 'لا يجوز لك اعتماد قيد أنشأته بنفسك.',
+    highValueApproval: 'القيود التي تبلغ 50,000 جنيه أو أكثر تحتاج إلى اعتماد رئيس الحسابات.',
+    duplicateCode: 'رمز الحساب مستخدم بالفعل في هذا الدفتر.',
+    accountHasPostings: 'لهذا الحساب أسطر مرحّلة، لذلك لا يُسمح بهذا التغيير.',
+    accountHasChildren: 'عطّل الحسابات الفرعية النشطة أو انقلها أولًا.',
+    invalidParent: 'يجب أن يكون الحساب الأب حساب تجميع من الفئة نفسها في هذا الدفتر.',
+    periodOverlap: 'السنة المالية تتداخل مع سنة مالية قائمة.',
+    idempotencyConflict: 'سبق استخدام مفتاح عدم التكرار هذا مع بيانات مختلفة.',
+    alreadyReversed: 'تم عكس هذا القيد مسبقًا.',
+    startDayInvalid: 'يجب أن تبدأ السنة المالية في أول يوم من الشهر.',
   },
 };
 

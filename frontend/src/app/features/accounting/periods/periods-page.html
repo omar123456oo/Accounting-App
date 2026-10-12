@@ -1,0 +1,94 @@
+<app-page-header [title]="'accounting.periods.title' | translate">
+  <button *appHasPermission="'periods.manage'" type="button" class="btn btn-primary" (click)="creating.set(true)">{{ 'accounting.periods.newYear' | translate }}</button>
+</app-page-header>
+
+@if (error(); as message) {
+  <div class="alert alert-danger" role="alert">{{ message }}</div>
+}
+
+@if (failed()) {
+  <div class="alert alert-danger d-flex align-items-center justify-content-between" role="alert">
+    <span>{{ 'clients.loadFailed' | translate }}</span>
+    <button type="button" class="btn btn-outline-danger btn-sm" (click)="load()">{{ 'common.retry' | translate }}</button>
+  </div>
+} @else if (years() === null) {
+  <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+} @else if (years()!.length === 0) {
+  <div class="alert alert-secondary" role="status">{{ 'accounting.periods.empty' | translate }}</div>
+} @else {
+  <div class="col-12 col-md-4 px-0 mb-3">
+    <label for="fy-select" class="form-label">{{ 'accounting.periods.year' | translate }}</label>
+    <select id="fy-select" class="form-select" (change)="selectedYear.set($any($event.target).value)">
+      @for (y of years(); track y.id) {
+        <option [value]="y.id" [selected]="y.id === selectedYear()">{{ y.name }} ({{ format.date(y.startDate) }} - {{ format.date(y.endDate) }}) - {{ 'accounting.periods.yearStatus.' + y.status | translate }}</option>
+      }
+    </select>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <caption class="visually-hidden">{{ 'accounting.periods.title' | translate }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ 'accounting.periods.fields.number' | translate }}</th>
+          <th scope="col">{{ 'accounting.periods.fields.range' | translate }}</th>
+          <th scope="col">{{ 'accounting.periods.fields.status' | translate }}</th>
+          <th scope="col">{{ 'accounting.periods.fields.lastChange' | translate }}</th>
+          <th scope="col"><span class="visually-hidden">{{ 'common.actions' | translate }}</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of shown(); track p.id) {
+          <tr>
+            <td>{{ p.number }}</td>
+            <td>{{ format.date(p.startDate) }} - {{ format.date(p.endDate) }}</td>
+            <td><app-status-badge [label]="'accounting.periods.status.' + p.status | translate" [tone]="tone[p.status]" /></td>
+            <td>
+              @if (last(p); as event) {
+                {{ 'accounting.periods.events.' + event.action | translate }} - {{ event.actor }}, {{ format.dateTime(event.at) }}
+                @if (event.reason) {
+                  <span class="d-block small text-body-secondary">{{ 'accounting.periods.reason' | translate }}: {{ event.reason }}</span>
+                }
+              }
+            </td>
+            <td class="text-end">
+              <span class="d-inline-flex flex-wrap gap-1">
+                @if (p.status === 'open') {
+                  <button *appHasPermission="'periods.manage'" type="button" class="btn btn-outline-secondary btn-sm" [disabled]="busy()" (click)="change(p, 'close')">
+                    {{ 'accounting.periods.close' | translate }}<span class="visually-hidden"> {{ p.number }}</span>
+                  </button>
+                }
+                @if (p.status !== 'locked') {
+                  <button *appHasPermission="'periods.manage'" type="button" class="btn btn-outline-secondary btn-sm" [disabled]="busy()" (click)="change(p, 'lock')">
+                    {{ 'accounting.periods.lock' | translate }}<span class="visually-hidden"> {{ p.number }}</span>
+                  </button>
+                }
+                @if (p.status !== 'open') {
+                  <button *appHasPermission="'periods.reopen'" type="button" class="btn btn-outline-danger btn-sm" [disabled]="busy()" (click)="reopening.set(p)">
+                    {{ 'accounting.periods.reopen' | translate }}<span class="visually-hidden"> {{ p.number }}</span>
+                  </button>
+                }
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+@if (creating()) {
+  <app-fiscal-year-form [ledgerId]="ledgerId" (saved)="created()" (cancelled)="creating.set(false)" />
+}
+
+@if (reopening(); as period) {
+  <app-comment-dialog
+    [title]="'accounting.periods.reopen' | translate"
+    [message]="'accounting.periods.reopenWarning' | translate"
+    [label]="'accounting.periods.reason' | translate"
+    [confirmLabel]="'accounting.periods.reopen' | translate"
+    [required]="true"
+    [danger]="true"
+    (confirmed)="change(period, 'reopen', $event)"
+    (cancelled)="reopening.set(null)"
+  />
+}

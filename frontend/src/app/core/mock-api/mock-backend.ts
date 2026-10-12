@@ -48,7 +48,7 @@ export class MockBackend {
       return this.fail(419, 'csrf');
     }
     if (path.startsWith(STAFF_API) && this.staff.serves(path.slice(STAFF_API.length))) {
-      const request = { method: req.method, path: path.slice(STAFF_API.length), query: new URL(req.urlWithParams, 'http://mock.local').searchParams, body: this.bodyOf(req.body) };
+      const request = { method: req.method, path: path.slice(STAFF_API.length), query: new URL(req.urlWithParams, 'http://mock.local').searchParams, body: this.bodyOf(req.body), idempotencyKey: req.headers.get('Idempotency-Key') ?? undefined };
       return this.withUser((u) => {
         const result = this.staff.handle(request, u);
         return result instanceof Promise ? from(result).pipe(switchMap((r) => this.respond(r))) : this.respond(result);

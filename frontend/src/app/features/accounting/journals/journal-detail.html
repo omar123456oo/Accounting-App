@@ -1,0 +1,139 @@
+@if (notFound()) {
+  <div class="alert alert-danger" role="alert">{{ 'accounting.journals.notFound' | translate }}</div>
+  <a routerLink="/app/accounting/journals">{{ 'accounting.journals.back' | translate }}</a>
+} @else if (entry(); as e) {
+  <app-page-header [title]="e.reference">
+    <app-status-badge [label]="'accounting.status.' + e.status | translate" [tone]="tone[e.status]" />
+  </app-page-header>
+  <p class="text-body-secondary">
+    {{ e.description }} - {{ 'accounting.journals.types.' + e.entryType | translate }} - {{ format.date(e.postingDate) }}
+  </p>
+
+  @if (error(); as message) {
+    <div class="alert alert-danger" role="alert">{{ message }}</div>
+  }
+  @if (reversed(); as r) {
+    <div class="alert alert-success" role="status">
+      {{ 'accounting.journals.reversedDone' | translate: { reference: r.reversal.reference } }}
+      <a [routerLink]="['/app/accounting/journals', r.reversal.id]">{{ 'accounting.journals.viewReversal' | translate }}</a>
+      @if (r.replacement; as rep) {
+        - <a [routerLink]="['/app/accounting/journals', rep.id, 'edit']">{{ 'accounting.journals.editReplacement' | translate }}</a>
+      }
+    </div>
+  }
+
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    @if (can().edit) {
+      <a class="btn btn-outline-secondary" [routerLink]="['/app/accounting/journals', e.id, 'edit']">{{ 'common.edit' | translate }}</a>
+    }
+    @if (can().submit) {
+      <button type="button" class="btn btn-primary" [disabled]="busy()" (click)="submit()">{{ 'accounting.journals.submitForApproval' | translate }}</button>
+    }
+    @if (can().decide) {
+      <button type="button" class="btn btn-success" [disabled]="busy() || isOwn()" (click)="dialog.set('approve')">{{ 'accounting.journals.approve' | translate }}</button>
+      <button type="button" class="btn btn-outline-danger" [disabled]="busy()" (click)="dialog.set('reject')">{{ 'accounting.journals.reject' | translate }}</button>
+    }
+    @if (can().post) {
+      <button type="button" class="btn btn-primary" [disabled]="busy()" (click)="post()">{{ 'accounting.journals.post' | translate }}</button>
+    }
+    @if (can().reverse && !e.reversedById) {
+      <button type="button" class="btn btn-outline-danger" [disabled]="busy()" (click)="dialog.set('reverse')">{{ 'accounting.journals.reverse.title' | translate }}</button>
+    }
+    @if (can().edit) {
+      <button type="button" class="btn btn-outline-danger" [disabled]="busy()" (click)="dialog.set('delete')">{{ 'common.delete' | translate }}</button>
+    }
+  </div>
+  @if (can().decide && isOwn()) {
+    <p class="small text-body-secondary">{{ 'accounting.journals.fourEyesNote' | translate }}</p>
+  }
+  @if (e.reversalOfId) {
+    <p><a [routerLink]="['/app/accounting/journals', e.reversalOfId]">{{ 'accounting.journals.viewOriginal' | translate }}</a></p>
+  }
+  @if (e.reversedById) {
+    <p><a [routerLink]="['/app/accounting/journals', e.reversedById]">{{ 'accounting.journals.viewReversal' | translate }}</a></p>
+  }
+
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <caption class="caption-top">{{ 'accounting.journals.lines' | translate }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ 'accounting.journals.line.account' | translate }}</th>
+          <th scope="col">{{ 'accounting.journals.line.description' | translate }}</th>
+          <th scope="col">{{ 'accounting.journals.line.debit' | translate }}</th>
+          <th scope="col">{{ 'accounting.journals.line.credit' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (l of e.lines; track $index) {
+          <tr>
+            <td>{{ l.accountCode }} - {{ format.name({ nameAr: l.accountNameAr ?? '', nameEn: l.accountNameEn ?? '' }) }}</td>
+            <td>{{ l.description }}</td>
+            <td dir="ltr" class="text-end">{{ format.amount(l.debit) }}</td>
+            <td dir="ltr" class="text-end">{{ format.amount(l.credit) }}</td>
+          </tr>
+        }
+      </tbody>
+      <tfoot>
+        <tr>
+          <th scope="row" colspan="2">{{ 'accounting.journals.totals' | translate }}</th>
+          <td dir="ltr" class="text-end fw-bold">{{ format.amount(e.totalDebit) }}</td>
+          <td dir="ltr" class="text-end fw-bold">{{ format.amount(totalCredit()) }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <section aria-labelledby="timeline-title" class="mt-4">
+    <h2 id="timeline-title" class="h5">{{ 'accounting.journals.timeline' | translate }}</h2>
+    <ol class="list-group list-group-numbered">
+      @for (h of e.history; track $index) {
+        <li class="list-group-item">
+          <span class="fw-semibold">{{ 'accounting.events.' + h.action | translate }}</span>
+          - {{ h.actor }}, {{ format.dateTime(h.at) }}
+          @if (h.outcome) {
+            <span class="d-block small text-body-secondary">{{ 'accounting.journals.outcome' | translate }}: {{ h.outcome }}</span>
+          }
+        </li>
+      }
+    </ol>
+  </section>
+
+  @switch (dialog()) {
+    @case ('approve') {
+      <app-comment-dialog
+        [title]="'accounting.journals.approve' | translate"
+        [label]="'accounting.journals.comment' | translate"
+        [confirmLabel]="'accounting.journals.approve' | translate"
+        (confirmed)="approve($event)"
+        (cancelled)="dialog.set(null)"
+      />
+    }
+    @case ('reject') {
+      <app-comment-dialog
+        [title]="'accounting.journals.reject' | translate"
+        [label]="'accounting.journals.rejectReason' | translate"
+        [confirmLabel]="'accounting.journals.reject' | translate"
+        [required]="true"
+        [danger]="true"
+        (confirmed)="reject($event)"
+        (cancelled)="dialog.set(null)"
+      />
+    }
+    @case ('reverse') {
+      <app-reverse-dialog [reference]="e.reference" (confirmed)="reverse($event)" (cancelled)="dialog.set(null)" />
+    }
+    @case ('delete') {
+      <app-confirm-dialog
+        [title]="'common.delete' | translate"
+        [message]="'accounting.journals.deleteConfirm' | translate"
+        [confirmLabel]="'common.delete' | translate"
+        [danger]="true"
+        (confirmed)="remove()"
+        (cancelled)="dialog.set(null)"
+      />
+    }
+  }
+} @else {
+  <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+}

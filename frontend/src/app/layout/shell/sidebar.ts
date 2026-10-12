@@ -12,6 +12,9 @@ import { NAV_ITEMS } from './nav.config';
       <div class="h5 mb-4">{{ 'app.name' | translate }}</div>
       <ul class="nav nav-pills flex-column gap-1">
         @for (item of items(); track item.route) {
+          @if (item.heading) {
+            <li class="nav-item mt-3 px-3 small fw-semibold text-body-secondary" role="presentation">{{ item.heading | translate }}</li>
+          }
           <li class="nav-item">
             <a class="nav-link" [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: item.route === '/app' }">
               {{ item.labelKey | translate }}
@@ -32,5 +35,9 @@ import { NAV_ITEMS } from './nav.config';
 })
 export class Sidebar {
   private readonly auth = inject(AuthService);
-  protected readonly items = computed(() => NAV_ITEMS.filter((i) => !i.permission || this.auth.can(i.permission)));
+  /** Permission-filtered entries; the first visible entry of a group carries the group heading. */
+  protected readonly items = computed(() => {
+    const visible = NAV_ITEMS.filter((i) => !i.permission || this.auth.can(i.permission));
+    return visible.map((item, index) => ({ ...item, heading: item.groupKey && visible[index - 1]?.groupKey !== item.groupKey ? item.groupKey : null }));
+  });
 }

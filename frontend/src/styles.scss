@@ -7,3 +7,35 @@
 body {
   font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
 }
+
+// Reports print cleanly: only the report remains, without navigation or the demo banner.
+.print-only {
+  display: none;
+}
+
+@media print {
+  app-sidebar,
+  app-header,
+  app-mock-banner,
+  app-toast-container,
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block;
+  }
+
+  #main-content {
+    padding: 0 !important;
+  }
+
+  .report-table {
+    font-size: 0.8rem;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}

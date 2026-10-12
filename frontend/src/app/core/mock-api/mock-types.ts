@@ -9,6 +9,8 @@ export interface MockRequest {
   query: URLSearchParams;
   /** JSON body, or the fields of a multipart form (a file arrives as a Blob under its field name). */
   body: Record<string, unknown>;
+  /** The Idempotency-Key request header, when the client sent one. */
+  idempotencyKey?: string;
 }
 
 export interface MockResult {

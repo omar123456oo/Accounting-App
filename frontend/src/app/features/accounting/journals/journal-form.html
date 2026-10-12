@@ -1,0 +1,125 @@
+@if (notFound()) {
+  <div class="alert alert-danger" role="alert">{{ 'accounting.journals.notFound' | translate }}</div>
+  <a routerLink="/app/accounting/journals">{{ 'accounting.journals.back' | translate }}</a>
+} @else if (loading()) {
+  <div class="text-body-secondary" role="status">{{ 'common.loading' | translate }}</div>
+} @else if (notEditable()) {
+  <div class="alert alert-warning" role="alert">{{ 'accounting.journals.notEditable' | translate }}</div>
+  <a [routerLink]="['/app/accounting/journals', id]">{{ 'accounting.journals.back' | translate }}</a>
+} @else {
+  <app-page-header [title]="(editing ? 'accounting.journals.edit' : 'accounting.journals.new') | translate" />
+  <form [formGroup]="form" (ngSubmit)="save(false)" novalidate [attr.aria-label]="(editing ? 'accounting.journals.edit' : 'accounting.journals.new') | translate">
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-md-3">
+        <label for="je-type" class="form-label">{{ 'accounting.journals.fields.type' | translate }}</label>
+        <select id="je-type" class="form-select" formControlName="entryType">
+          <option value="standard">{{ 'accounting.journals.types.standard' | translate }}</option>
+          <option value="opening">{{ 'accounting.journals.types.opening' | translate }}</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-3">
+        <label for="je-date" class="form-label">{{ 'accounting.journals.fields.postingDate' | translate }} *</label>
+        <input id="je-date" type="date" class="form-control" formControlName="postingDate" [class.is-invalid]="form.controls.postingDate.invalid && form.controls.postingDate.touched" />
+        <app-field-error [control]="form.controls.postingDate" />
+      </div>
+      <div class="col-12 col-md-6">
+        <label for="je-description" class="form-label">{{ 'accounting.journals.fields.description' | translate }} *</label>
+        <input id="je-description" class="form-control" formControlName="description" [class.is-invalid]="form.controls.description.invalid && form.controls.description.touched" />
+        <app-field-error [control]="form.controls.description" />
+      </div>
+      @if (form.controls.entryType.value === 'opening') {
+        <div class="col-12"><div class="form-text">{{ 'accounting.journals.openingHint' | translate }}</div></div>
+      }
+    </div>
+
+    <div class="table-responsive">
+      <table class="table align-middle" formArrayName="lines">
+        <caption class="caption-top">{{ 'accounting.journals.lines' | translate }}</caption>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">{{ 'accounting.journals.line.account' | translate }}</th>
+            <th scope="col">{{ 'accounting.journals.line.debit' | translate }}</th>
+            <th scope="col">{{ 'accounting.journals.line.credit' | translate }}</th>
+            <th scope="col">{{ 'accounting.journals.line.description' | translate }}</th>
+            <th scope="col"><span class="visually-hidden">{{ 'common.actions' | translate }}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (line of lines.controls; track line; let i = $index) {
+            <tr [formGroupName]="i">
+              <th scope="row">{{ i + 1 }}</th>
+              <td>
+                <label [for]="'line-account-' + i" class="visually-hidden">{{ 'accounting.journals.line.account' | translate }} {{ i + 1 }}</label>
+                <select [id]="'line-account-' + i" class="form-select" formControlName="accountId">
+                  <option value="">{{ 'accounting.journals.line.chooseAccount' | translate }}</option>
+                  @for (a of postable(); track a.id) {
+                    <option [value]="a.id">{{ a.code }} - {{ format.name(a) }}</option>
+                  }
+                </select>
+              </td>
+              <td>
+                <label [for]="'line-debit-' + i" class="visually-hidden">{{ 'accounting.journals.line.debit' | translate }} {{ i + 1 }}</label>
+                <input [id]="'line-debit-' + i" class="form-control text-end" dir="ltr" inputmode="decimal" autocomplete="off" formControlName="debit" (input)="amountEntered(i, 'debit')" (keydown.enter)="enterPressed($event, i)" />
+              </td>
+              <td>
+                <label [for]="'line-credit-' + i" class="visually-hidden">{{ 'accounting.journals.line.credit' | translate }} {{ i + 1 }}</label>
+                <input [id]="'line-credit-' + i" class="form-control text-end" dir="ltr" inputmode="decimal" autocomplete="off" formControlName="credit" (input)="amountEntered(i, 'credit')" (keydown.enter)="enterPressed($event, i)" />
+              </td>
+              <td>
+                <label [for]="'line-desc-' + i" class="visually-hidden">{{ 'accounting.journals.line.description' | translate }} {{ i + 1 }}</label>
+                <input [id]="'line-desc-' + i" class="form-control" formControlName="description" (keydown.enter)="enterPressed($event, i)" />
+              </td>
+              <td>
+                <button type="button" class="btn btn-outline-danger btn-sm" [disabled]="lines.length <= 2" (click)="removeLine(i)">
+                  {{ 'accounting.journals.line.remove' | translate }}<span class="visually-hidden"> {{ i + 1 }}</span>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row" colspan="2">{{ 'accounting.journals.totals' | translate }}</th>
+            <td dir="ltr" class="text-end fw-bold" id="total-debit">{{ format.exact(analysis().totalDebit) }}</td>
+            <td dir="ltr" class="text-end fw-bold" id="total-credit">{{ format.exact(analysis().totalCredit) }}</td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+      <button type="button" class="btn btn-outline-secondary" (click)="addLine()">{{ 'accounting.journals.line.add' | translate }}</button>
+      <div id="balance-status" role="status" aria-live="polite" [class]="analysis().balanced ? 'text-success fw-semibold' : 'text-danger fw-semibold'">
+        @if (analysis().balanced) {
+          <span aria-hidden="true">&#10003; </span>{{ 'accounting.journals.balanced' | translate }}
+        } @else {
+          <span aria-hidden="true">&#9888; </span>{{ 'accounting.journals.outOfBalance' | translate: { amount: format.exact(analysis().difference) } }}
+        }
+      </div>
+    </div>
+    @if (analysis().incomplete.length > 0) {
+      <div class="alert alert-warning" role="status">{{ 'accounting.journals.incompleteLines' | translate: { lines: analysis().incomplete.join(', ') } }}</div>
+    }
+    @if (serverError(); as message) {
+      <div class="alert alert-danger" role="alert">{{ message.startsWith('accounting.') ? (message | translate) : message }}</div>
+    }
+    <div class="d-flex flex-wrap gap-2">
+      <button type="submit" class="btn btn-outline-primary" [disabled]="!canSave()">{{ 'accounting.journals.saveDraft' | translate }}</button>
+      <button type="button" class="btn btn-primary" [disabled]="!canSubmit()" (click)="save(true)">{{ 'accounting.journals.submitForApproval' | translate }}</button>
+      <a class="btn btn-outline-secondary" [routerLink]="id ? ['/app/accounting/journals', id] : ['/app/accounting/journals']">{{ 'common.cancel' | translate }}</a>
+    </div>
+  </form>
+}
+
+@if (leaving()) {
+  <app-confirm-dialog
+    [title]="'clients.unsaved.title' | translate"
+    [message]="'clients.unsaved.message' | translate"
+    [confirmLabel]="'clients.unsaved.leave' | translate"
+    [danger]="true"
+    (confirmed)="answerLeave(true)"
+    (cancelled)="answerLeave(false)"
+  />
+}
