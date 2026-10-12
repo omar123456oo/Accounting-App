@@ -24,7 +24,7 @@ describe('Trial balance page', () => {
     expect(el.querySelector('#tb-reconciliation')!.textContent).toContain('accounting.reports.reconciled');
     expect(el.querySelector('#tb-reconciliation')!.textContent).not.toContain('notReconciled');
     expect(el.querySelector('#tb-total-debit')!.textContent).toBe(el.querySelector('#tb-total-credit')!.textContent);
-    expect(el.querySelector('#tb-total-debit')!.textContent).toBe('950,034.08');
+    expect(el.querySelector('#tb-total-debit')!.textContent).toBe('1,072,354.47');
     expect(el.querySelectorAll('tbody tr').length).toBeGreaterThan(5);
   });
 
@@ -61,7 +61,7 @@ describe('General ledger and register pages', () => {
 
   it('lists the posted entries of the register with a total', async () => {
     const { el } = await render(JournalRegisterPage, 'le-c-009');
-    expect(el.querySelectorAll('tbody tr')).toHaveLength(3);
+    expect(el.querySelectorAll('tbody tr')).toHaveLength(4);
     expect(el.textContent).toContain('accounting.reports.postedOnly');
     expect(el.querySelector('tfoot')!.textContent).toContain('accounting.reports.totals');
   });

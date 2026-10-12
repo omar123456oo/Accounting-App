@@ -10,6 +10,9 @@ const RULES: Rules = {
   postingDate: { kind: 'date', required: true },
   description: { kind: 'text', required: true },
 };
+/** Journals created by the commercial module are corrected from their document, never by hand. */
+export const isCommercialSource = (t: string | undefined): boolean => !!t && COMMERCIAL_SOURCES.includes(t);
+const COMMERCIAL_SOURCES = ['invoice', 'invoice_recognition', 'credit_note', 'customer_payment', 'customer_credit_allocation', 'customer_refund', 'supplier_bill', 'supplier_credit', 'supplier_payment', 'supplier_credit_allocation', 'supplier_refund', 'expense_claim', 'expense_claim_payment'];
 const text = (v: unknown): string => (typeof v === 'string' ? v.trim() : '');
 
 /** Journal entries and the draft -> pending_approval -> approved -> posted workflow. Every rule is enforced here. */
@@ -33,7 +36,7 @@ export function handleJournals(ctx: LedgerCtx, rest: string[]): MockResult {
 
 const immutableKey = (j: StoredJournal) => (isPosted(j) ? ('postedImmutable' as const) : ('conflict' as const));
 
-function event(ctx: LedgerCtx, action: JournalEvent['action'], outcome?: string): JournalEvent {
+export function event(ctx: LedgerCtx, action: JournalEvent['action'], outcome?: string): JournalEvent {
   return { actor: ctx.user.profile.name, actorId: ctx.user.profile.id, action, at: new Date().toISOString(), ...(outcome ? { outcome } : {}) };
 }
 
@@ -145,7 +148,7 @@ function reject(ctx: LedgerCtx, j: StoredJournal): MockResult {
 }
 
 /** Locks nothing but mirrors the DB transaction: period open, balanced, accounts usable, then the gapless number. */
-function postNow(ctx: LedgerCtx, j: StoredJournal): MockResult | null {
+export function postNow(ctx: LedgerCtx, j: StoredJournal): MockResult | null {
   const period = ctx.store.periodAt(ctx.entity.id, j.postingDate);
   if (!period || period.status !== 'open') return invalid({ postingDate: ['periodNotOpen'] });
   const problem = readiness(ctx.store, j);
@@ -163,6 +166,7 @@ function post(ctx: LedgerCtx, j: StoredJournal): MockResult {
 }
 
 function reverse(ctx: LedgerCtx, j: StoredJournal): MockResult {
+  if (isCommercialSource(j.sourceType)) return fail(409, 'sourceManaged');
   if (j.reversedById) return fail(409, 'alreadyReversed');
   if (j.status !== 'posted' || j.reversalOfId) return fail(409, 'conflict');
   const body = ctx.req.body;

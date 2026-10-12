@@ -8,6 +8,12 @@
   <p class="text-body-secondary">
     {{ e.description }} - {{ 'accounting.journals.types.' + e.entryType | translate }} - {{ format.date(e.postingDate) }}
   </p>
+  @if (source(); as src) {
+    <p id="journal-source">
+      {{ 'commercial.journals.viewSource' | translate }}:
+      <a [routerLink]="src">{{ 'commercial.journals.sources.' + e.sourceType | translate }}</a>
+    </p>
+  }
 
   @if (error(); as message) {
     <div class="alert alert-danger" role="alert">{{ message }}</div>

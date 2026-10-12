@@ -1,5 +1,8 @@
 import { LedgerEntity, LedgerSummary } from '../../features/accounting/accounting.models';
 import { MockClients } from './mock-clients';
+import { handleCommercial } from './mock-commercial';
+import { commercialSummary } from './mock-commercial-reports';
+import { handleTaxRates } from './mock-commercial-settings';
 import { handleAccounts } from './mock-ledger-accounts';
 import { seedLedgerStore } from './mock-ledger-data';
 import { handleJournals, handleTemplates } from './mock-ledger-journals';
@@ -25,9 +28,11 @@ export class MockLedger implements MockModule {
     const [, first, section, ...rest] = req.path.split('/');
     if (first === 'entities' && req.method === 'GET') return need(user, 'ledger.view') ?? ok({ data: this.visible(user).map((e) => this.entityDto(e)) });
     if (first === 'summary' && req.method === 'GET') return need(user, 'ledger.view') ?? ok({ data: this.summary(user) });
+    if (first === 'tax-rates') return handleTaxRates(this.store.commercial, req, user, section);
+    if (first === 'commercial-summary' && req.method === 'GET') return this.commercialSummary(req, user);
     const entity = this.visible(user).find((e) => e.id === first);
     if (!entity) return need(user, 'ledger.view') ?? fail(404, 'notFound');
-    const ctx: LedgerCtx = { store: this.store, entity, user, req };
+    const ctx: LedgerCtx = { store: this.store, entity, user, req, clients: this.clients };
     return this.idempotent(ctx, section, () => this.route(ctx, section, rest));
   }
 
@@ -45,6 +50,8 @@ export class MockLedger implements MockModule {
         return handleTemplates(ctx, rest);
       case 'reports':
         return handleReports(ctx, rest);
+      case 'commercial':
+        return handleCommercial(ctx, rest);
       default:
         return fail(404, 'notFound');
     }
@@ -56,7 +63,7 @@ export class MockLedger implements MockModule {
    */
   private idempotent(ctx: LedgerCtx, section: string | undefined, run: () => MockResult): MockResult {
     const key = ctx.req.idempotencyKey;
-    if (!key || ctx.req.method !== 'POST' || (section !== 'journals' && section !== 'recurring-templates')) return run();
+    if (!key || ctx.req.method !== 'POST' || (section !== 'journals' && section !== 'recurring-templates' && section !== 'commercial')) return run();
     const slot = `${ctx.user.profile.id}|${ctx.req.path}|${key}`;
     const hash = stable(ctx.req.body);
     const seen = this.store.idempotency.get(slot);
@@ -72,6 +79,13 @@ export class MockLedger implements MockModule {
 
   private entityDto(e: StoredEntity): LedgerEntity {
     return { id: e.id, type: e.type, ...(e.clientId ? { clientId: e.clientId } : {}), name: e.clientId ? this.clients.clientName(e.clientId) : 'DEMO Accounting Office', functionalCurrency: e.functionalCurrency };
+  }
+
+  private commercialSummary(req: MockRequest, user: DemoUser): MockResult {
+    const denied = need(user, 'ledger.view');
+    if (denied) return denied;
+    const ledgers = this.visible(user).map((e) => ({ ctx: { store: this.store, entity: e, user, req, clients: this.clients } as LedgerCtx, type: e.type, name: this.entityDto(e).name }));
+    return ok({ data: commercialSummary(ledgers, user) });
   }
 
   private summary(user: DemoUser): LedgerSummary {

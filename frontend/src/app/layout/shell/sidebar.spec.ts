@@ -40,6 +40,15 @@ describe('Sidebar', () => {
     expect(render(permissions)).toEqual(expected);
   });
 
+  it.each([
+    [['invoices.view'], ['/app', '/app/invoicing/invoices', '/app/invoicing/payments']],
+    [['mappings.manage'], ['/app', '/app/accounting/settings/mappings']],
+    [['tax.rates.manage'], ['/app', '/app/accounting/settings/tax-rates']],
+    [['payments.record', 'invoices.create', 'bills.create'], ['/app']],
+  ])('lists the receivables, payables and settings entries only with their permissions: %j', (permissions, expected) => {
+    expect(render(permissions)).toEqual(expected);
+  });
+
   it('always shows the dashboard', () => {
     expect(render([])).toEqual(['/app']);
   });

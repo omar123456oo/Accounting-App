@@ -1,5 +1,6 @@
 import { JournalEvent, JournalStatus, JournalType } from '../../features/accounting/accounting.models';
 import { normalize } from '../money/money';
+import { seedCommercial } from './mock-commercial-data';
 import { LedgerStore, StoredJournal } from './mock-ledger-store';
 
 /**
@@ -26,17 +27,13 @@ interface Open {
 const POSTED: Record<string, Posted[]> = {
   [FIRM_LEDGER]: [
     ['2026-01-02', 'DEMO Opening balances', 'opening', [['1110', '150000', '0'], ['1120', '450000.50', '0'], ['1510', '120000', '0'], ['3100', '0', '720000.50']]],
-    ['2026-02-10', 'DEMO Service fees invoiced, February', 'standard', [['1210', '57000', '0'], ['4100', '0', '50000'], ['2310', '0', '7000']]],
-    ['2026-03-05', 'DEMO Collection from clients', 'standard', [['1120', '57000', '0'], ['1210', '0', '57000']]],
     ['2026-04-01', 'DEMO Salaries, March', 'standard', [['5100', '80000.25', '0'], ['1120', '0', '80000.25']]],
     ['2026-05-15', 'DEMO Office rent, Q2', 'standard', [['5200', '36000', '0'], ['1120', '0', '36000']]],
     ['2026-09-30', 'DEMO Bank charges, September', 'standard', [['5310', '33.3333', '0'], ['1110', '0', '33.3333']]],
   ],
   'le-c-001': [
     ['2026-01-02', 'DEMO Opening balances', 'opening', [['1110', '25000.10', '0'], ['1120', '310000.20', '0'], ['1300', '90000', '0'], ['3100', '0', '425000.30']]],
-    ['2026-03-12', 'DEMO Sales on credit', 'standard', [['1210', '114000', '0'], ['4200', '0', '100000'], ['2310', '0', '14000']]],
     ['2026-04-20', 'DEMO Supplier payment', 'standard', [['5400', '15000', '0'], ['1120', '0', '15000']]],
-    ['2026-06-02', 'DEMO Customer receipt', 'standard', [['1120', '60000', '0'], ['1210', '0', '60000']]],
     ['2026-08-31', 'DEMO Salaries, August', 'standard', [['5100', '48000.75', '0'], ['1120', '0', '48000.75']]],
   ],
   'le-c-009': [
@@ -78,12 +75,6 @@ export function seedLedgerStore(): LedgerStore {
     store.importStarterChart(e.id);
     const year = store.createYear(e.id, 'FY 2026', '2026-01-01', 'Demo Owner', '2026-01-01T08:00:00.000Z');
     const periods = store.periods.filter((p) => p.fiscalYearId === year.id);
-    periods[0].status = 'locked';
-    periods[0].history.push({ actor: 'Demo Chief Accountant', action: 'locked', at: '2026-02-20T08:00:00.000Z' });
-    if (e.id === FIRM_LEDGER) {
-      periods[1].status = 'closed';
-      periods[1].history.push({ actor: 'Demo Chief Accountant', action: 'closed', at: '2026-03-15T08:00:00.000Z' });
-    }
     for (const [date, description, entryType, lines] of POSTED[e.id]) {
       const at = `${date}T09:00:00.000Z`;
       const fy = store.yearOf(store.periodAt(e.id, date)!);
@@ -132,6 +123,14 @@ export function seedLedgerStore(): LedgerStore {
     }
     for (const [name, description, lines] of TEMPLATES) {
       store.templates.push({ id: store.nextId('rt'), ledgerEntityId: e.id, name, description, lines: lines.map((l) => lineOf(store, e.id, l)) });
+    }
+    // Commercial documents post through the live rules, so they are seeded while the early periods are still open.
+    seedCommercial(store, e.id);
+    periods[0].status = 'locked';
+    periods[0].history.push({ actor: 'Demo Chief Accountant', action: 'locked', at: '2026-02-20T08:00:00.000Z' });
+    if (e.id === FIRM_LEDGER) {
+      periods[1].status = 'closed';
+      periods[1].history.push({ actor: 'Demo Chief Accountant', action: 'closed', at: '2026-03-15T08:00:00.000Z' });
     }
   }
   return store;

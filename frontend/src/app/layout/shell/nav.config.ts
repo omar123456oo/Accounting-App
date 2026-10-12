@@ -18,5 +18,9 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { labelKey: 'nav.periods', route: '/app/accounting/periods', permission: 'ledger.view', groupKey: 'nav.accounting' },
   { labelKey: 'nav.journals', route: '/app/accounting/journals', permission: 'journals.view', groupKey: 'nav.accounting' },
   { labelKey: 'nav.reports', route: '/app/accounting/reports', permission: 'reports.view', groupKey: 'nav.accounting' },
+  { labelKey: 'nav.mappings', route: '/app/accounting/settings/mappings', permission: 'mappings.manage', groupKey: 'nav.accounting' },
+  { labelKey: 'nav.taxRates', route: '/app/accounting/settings/tax-rates', permission: 'tax.rates.manage', groupKey: 'nav.accounting' },
+  { labelKey: 'nav.invoices', route: '/app/invoicing/invoices', permission: 'invoices.view', groupKey: 'nav.invoicing' },
+  { labelKey: 'nav.receipts', route: '/app/invoicing/payments', permission: 'invoices.view', groupKey: 'nav.invoicing' },
   { labelKey: 'nav.settings', route: '/app/settings', permission: 'settings.manage' },
 ];

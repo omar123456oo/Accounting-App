@@ -70,3 +70,42 @@ export function format(a: string, locale: string): string {
 export function formatExact(a: string, locale: string): string {
   return new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 4 }).format(new D(a).toFixed(4) as unknown as number);
 }
+
+/** Product of two decimal strings, exact (no rounding). */
+export function mul(a: string, b: string): string {
+  return new D(a).times(b).toFixed();
+}
+
+/** Rounds half up to `places` decimal places; returns a plain decimal string without trailing zeros stripped (fixed places). */
+export function roundTo(a: string, places: number): string {
+  return new D(a).toDecimalPlaces(places, Decimal.ROUND_HALF_UP).toFixed(places);
+}
+
+/** `a * b / c`, computed exactly and rounded half up once, at the end. Throws on a zero divisor. */
+export function mulDiv(a: string, b: string, c: string, places: number): string {
+  if (new D(c).isZero()) throw new RangeError('division by zero');
+  return new D(a).times(b).dividedBy(c).toDecimalPlaces(places, Decimal.ROUND_HALF_UP).toFixed(places);
+}
+
+/** `percent` percent of `amount`, rounded half up to `places` (percent is "14" for 14 percent). */
+export function percentOf(amount: string, percent: string, places = 2): string {
+  return mulDiv(amount, percent, '100', places);
+}
+
+export function min(a: string, b: string): string {
+  return cmp(a, b) <= 0 ? a : b;
+}
+
+export function max(a: string, b: string): string {
+  return cmp(a, b) >= 0 ? a : b;
+}
+
+/** A non-negative percentage from 0 to 100 with at most four decimal places. */
+export function isValidPercent(value: string): boolean {
+  return /^\d{1,3}(\.\d{1,4})?$/.test(value) && cmp(value, '100') <= 0;
+}
+
+/** A positive quantity with at most four decimal places, up to 11 integer digits. */
+export function isValidQuantity(value: string): boolean {
+  return /^\d{1,11}(\.\d{1,4})?$/.test(value) && isPositive(value);
+}

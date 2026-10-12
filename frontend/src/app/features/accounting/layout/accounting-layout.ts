@@ -3,13 +3,7 @@ import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } fr
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../../core/auth/auth.service';
 import { LedgerContext } from '../ledger-context';
-
-const TABS = [
-  { key: 'accounts', permission: 'ledger.view' },
-  { key: 'periods', permission: 'ledger.view' },
-  { key: 'journals', permission: 'journals.view' },
-  { key: 'reports', permission: 'reports.view' },
-] as const;
+import { ACCOUNTING_FRAME, FrameConfig } from './frame';
 
 /** Frame of every accounting page: which ledger the user is in, the section tabs, and the routed page. */
 @Component({
@@ -31,11 +25,11 @@ const TABS = [
           }
         </select>
       </div>
-      <nav [attr.aria-label]="'accounting.sections' | translate">
+      <nav [attr.aria-label]="frame.sectionsKey | translate">
         <ul class="nav nav-tabs">
           @for (tab of tabs(); track tab.key) {
             <li class="nav-item">
-              <a class="nav-link" [routerLink]="['/app/accounting', tab.key]" routerLinkActive="active" ariaCurrentWhenActive="page">{{ 'accounting.tabs.' + tab.key | translate }}</a>
+              <a class="nav-link" [routerLink]="[frame.base, tab.key]" routerLinkActive="active" ariaCurrentWhenActive="page">{{ frame.tabPrefix + tab.key | translate }}</a>
             </li>
           }
         </ul>
@@ -62,15 +56,19 @@ export class AccountingLayout {
   protected readonly ctx = inject(LedgerContext);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-  protected readonly tabs = computed(() => TABS.filter((t) => this.auth.can(t.permission)));
+  private readonly route = inject(ActivatedRoute);
+  /** The section frame comes from the route data; accounting is the default. */
+  protected readonly frame: FrameConfig = (this.route.snapshot.data['frame'] as FrameConfig | undefined) ?? ACCOUNTING_FRAME;
+  protected readonly tabs = computed(() => this.frame.tabs.filter((t) => (typeof t.permission === 'string' ? this.auth.can(t.permission) : t.permission.some((p) => this.auth.can(p)))));
 
   constructor() {
-    this.ctx.load(inject(ActivatedRoute).snapshot.queryParamMap.get('ledger'));
+    this.ctx.load(this.route.snapshot.queryParamMap.get('ledger'));
   }
 
   protected choose(id: string): void {
     this.ctx.select(id);
-    // An entry belongs to one ledger, so leave an entry's page for the list when the books change.
-    if (/\/journals\/[^/?]+/.test(this.router.url)) void this.router.navigate(['/app/accounting/journals']);
+    // A record belongs to one ledger, so leave its page for the section's list when the books change.
+    const record = new RegExp(this.frame.recordPattern).exec(this.router.url);
+    if (record) void this.router.navigate([this.frame.base, record[1]]);
   }
 }

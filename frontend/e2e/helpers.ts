@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 
 // DEMO credentials of the in-app mock API (see src/app/core/mock-api/mock-users.ts).
 export const OWNER = { email: 'owner@demo.test', password: 'Owner-Demo-123!' };
@@ -25,4 +25,19 @@ export async function logout(page: Page) {
 export async function openNav(page: Page, name: string, url: RegExp) {
   await page.getByRole('navigation', { name: 'التنقل الرئيسي' }).getByRole('link', { name }).click();
   await expect(page).toHaveURL(url);
+}
+
+/** The text of an element with Arabic-Indic digits and separators turned into Western ones, so amounts read the same in both languages. */
+export async function western(locator: Locator): Promise<string> {
+  const text = (await locator.textContent()) ?? '';
+  return text
+    .replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+    .replace(/٬/g, ',')
+    .replace(/٫/g, '.')
+    .trim();
+}
+
+/** Waits until the element's amount text (normalised to Western digits) equals `expected`. */
+export async function expectAmount(locator: Locator, expected: string): Promise<void> {
+  await expect.poll(() => western(locator)).toBe(expected);
 }

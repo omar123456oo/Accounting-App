@@ -74,8 +74,11 @@ describe('DocumentList', () => {
     await settle(fixture);
     const input = el.querySelector<HTMLInputElement>('#up-file')!;
     await pick(input, new File([new Uint8Array(EXE)], 'invoice.pdf', { type: 'application/pdf' }));
-    await settle(fixture);
-    expect(el.querySelector('#up-file-error')!.textContent).toContain('documents.fileError.signature');
+    // The signature check reads the file asynchronously; wait for it instead of guessing a delay (slow under load).
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(el.querySelector('#up-file-error')!.textContent).toContain('documents.fileError.signature');
+    });
     el.querySelector<HTMLFormElement>('app-upload-dialog form')!.dispatchEvent(new Event('submit'));
     await settle(fixture);
     expect(el.querySelector('app-upload-dialog')).toBeTruthy();
@@ -87,8 +90,10 @@ describe('DocumentList', () => {
     button('documents.upload')!.click();
     await settle(fixture);
     await pick(el.querySelector<HTMLInputElement>('#up-file')!, new File([new Uint8Array(PDF)], 'march-statement.pdf', { type: 'application/pdf' }));
-    await settle(fixture);
-    expect(el.querySelector<HTMLInputElement>('#up-name')!.value).toBe('march-statement');
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(el.querySelector<HTMLInputElement>('#up-name')!.value).toBe('march-statement');
+    });
     el.querySelector<HTMLFormElement>('app-upload-dialog form')!.dispatchEvent(new Event('submit'));
     await settle(fixture);
     expect(el.querySelector('app-upload-dialog')).toBeNull();

@@ -29,7 +29,7 @@ const buttons = (el: HTMLElement) => Array.from(el.querySelectorAll<HTMLButtonEl
 
 describe('JournalDetail', () => {
   it('shows the timeline with actor, action and outcome for a posted entry, and offers reversal to a poster', async () => {
-    const { el } = await render('chief@demo.test', 'Chief-Demo-123!', (l) => l.find((e) => e.status === 'posted')!);
+    const { el } = await render('chief@demo.test', 'Chief-Demo-123!', (l) => l.find((e) => e.status === 'posted' && !e.sourceType)!);
     expect(el.querySelectorAll('ol li')).toHaveLength(4);
     expect(el.querySelector('ol')!.textContent).toContain('accounting.events.posted');
     expect(el.querySelector('ol')!.textContent).toContain('Demo Chief Accountant');

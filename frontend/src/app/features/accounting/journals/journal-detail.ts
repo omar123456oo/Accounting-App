@@ -39,6 +39,36 @@ export class JournalDetail {
   protected readonly error = signal<string | null>(null);
   protected readonly reversed = signal<ReverseResult | null>(null);
 
+  /** Where the document behind a system-generated entry lives, so the ledger can be traced to its source. */
+  protected readonly source = computed<string[] | null>(() => {
+    const e = this.entry();
+    if (!e?.sourceType || !e.sourceId) return null;
+    const id = e.sourceId;
+    switch (e.sourceType) {
+      case 'invoice':
+      case 'invoice_recognition':
+        return ['/app/invoicing/invoices', id];
+      case 'credit_note':
+        return ['/app/invoicing/credit-notes'];
+      case 'customer_payment':
+      case 'customer_credit_allocation':
+      case 'customer_refund':
+        return ['/app/invoicing/payments', id];
+      case 'supplier_bill':
+        return ['/app/payables/bills', id];
+      case 'supplier_credit':
+        return ['/app/payables/credits'];
+      case 'supplier_payment':
+      case 'supplier_credit_allocation':
+      case 'supplier_refund':
+        return ['/app/payables/payments', id];
+      case 'expense_claim':
+      case 'expense_claim_payment':
+        return ['/app/payables/expenses'];
+      default:
+        return null;
+    }
+  });
   protected readonly totalCredit = computed(() => sum((this.entry()?.lines ?? []).map((l) => l.credit)));
   protected readonly isOwn = computed(() => this.entry()?.createdBy === this.auth.user()?.id);
   protected readonly can = computed(() => {

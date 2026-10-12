@@ -18,7 +18,16 @@
     "approvals": "Approvals",
     "accounting": "Accounting",
     "accounts": "Chart of accounts",
-    "periods": "Fiscal periods"
+    "periods": "Fiscal periods",
+    "invoicing": "Receivables",
+    "payables": "Payables",
+    "invoices": "Invoices",
+    "receipts": "Receipts",
+    "bills": "Supplier bills",
+    "suppliers": "Suppliers",
+    "expenses": "Expenses",
+    "mappings": "Account mappings",
+    "taxRates": "Tax rates"
   },
   "login": {
     "title": "Sign in",
@@ -26,7 +35,16 @@
     "password": "Password",
     "otp": "Verification code",
     "submit": "Sign in",
-    "otpHint": "Enter the 6-digit code from your authenticator app."
+    "otpHint": "Enter the 6-digit code from your authenticator app.",
+    "art": {
+      "debit": "Debit",
+      "credit": "Credit",
+      "headline": "Every debit meets its credit.",
+      "sub": "Clients, books and deadlines for your accounting office, in one place."
+    },
+    "welcome": "Sign in to continue to your office.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -68,6 +86,13 @@
       "overdueTasks": "My overdue tasks",
       "pendingApprovals": "Pending approvals",
       "documentsToReview": "Documents awaiting review"
+    },
+    "commercial": {
+      "title": "Receivables and payables",
+      "overdueInvoices": "Overdue invoices",
+      "billsDue": "Bills due in 7 days",
+      "receivables": "Outstanding receivables",
+      "billsDueAmount": "Amount due in 7 days"
     }
   },
   "portal": {
@@ -483,7 +508,8 @@
       "accounts": "Chart of accounts",
       "periods": "Fiscal periods",
       "journals": "Journal entries",
-      "reports": "Reports"
+      "reports": "Reports",
+      "settings": "Commercial settings"
     },
     "ledger": {
       "label": "Active ledger",
@@ -714,13 +740,582 @@
         "type": "Type",
         "total": "Total",
         "createdBy": "Created by"
-      }
+      },
+      "arAging": "Receivables aging",
+      "apAging": "Payables aging",
+      "revenue": "Revenue",
+      "reconciliation": "Reconciliation"
     },
     "summary": {
       "title": "Accounting",
       "awaiting": "Journals awaiting approval",
       "openPeriods": "Open periods",
       "perLedger": "{{awaiting}} awaiting approval, {{open}} open periods"
+    }
+  },
+  "commercial": {
+    "settings": {
+      "menu": "Commercial settings",
+      "mappings": "Account mappings",
+      "service-types": "Service types",
+      "expense-categories": "Expense categories",
+      "tax-rates": "Tax rates"
+    },
+    "mappings": {
+      "intro": "Choose which ledger accounts invoices, bills and payments post to. A document cannot be issued or approved while a mapping it needs is missing.",
+      "control": "Control and tax accounts",
+      "revenue": "Revenue account by service type",
+      "expense": "Expense account by category",
+      "bank": "Bank and cash accounts for payments",
+      "bankHint": "Receipts and payments can only use the accounts ticked here.",
+      "policy": "Policy",
+      "allowDraftRates": "Allow documents to use tax rates that are not professionally verified",
+      "allowDraftRatesHint": "When off, a document using a draft tax rate is refused. A warning is shown on every document that uses one.",
+      "notSet": "Not set",
+      "readOnly": "You can view the mappings but not change them.",
+      "saved": "Mappings saved.",
+      "keys": {
+        "arControl": "Receivables control account",
+        "apControl": "Payables control account",
+        "vatOutput": "VAT output (sales tax payable)",
+        "vatInput": "VAT input (recoverable)",
+        "deferredRevenue": "Deferred revenue",
+        "customerCredit": "Customer credit balances (unapplied receipts)",
+        "supplierPrepayment": "Supplier prepayments (unapplied payments)",
+        "receivableFromClient": "Receivable from clients (reimbursable expenses)",
+        "employeePayable": "Employee reimbursements payable"
+      },
+      "hints": {
+        "arControl": "Debited when an invoice is issued, credited by receipts and credit notes.",
+        "apControl": "Credited when a bill is approved, debited by payments and supplier credits.",
+        "vatOutput": "Credited with the tax on issued invoices.",
+        "vatInput": "Debited with the tax on approved bills.",
+        "deferredRevenue": "Holds revenue billed in advance until it is recognized.",
+        "customerCredit": "Holds receipts that are not yet allocated to an invoice.",
+        "supplierPrepayment": "Holds payments that are not yet allocated to a bill.",
+        "receivableFromClient": "Debited when the firm pays an expense on behalf of a client.",
+        "employeePayable": "Credited when an expense claim is approved."
+      }
+    },
+    "recognition": {
+      "on_issue": "Recognize on issue",
+      "deferred_over_period": "Deferred over a period",
+      "action": "Recognize revenue",
+      "run": "Recognize",
+      "upTo": "Recognize installments due up to",
+      "intro": "Posts one journal per monthly installment that falls due on or before this date: deferred revenue is debited and revenue credited. If any installment cannot be posted (for example the period is closed), nothing is posted.",
+      "done": "Revenue recognized.",
+      "nothing": "No installment was due up to that date.",
+      "schedule": "Revenue recognition schedule",
+      "scheduleNote": "Monthly from {{start}} over {{months}} months, recognized at the end of each month.",
+      "rowStatus": {
+        "recognized": "Recognized",
+        "pending": "Pending"
+      }
+    },
+    "catalogue": {
+      "new": "Add",
+      "code": "Code",
+      "name": "Name",
+      "nameAr": "Name (Arabic)",
+      "nameEn": "Name (English)",
+      "recognition": "Revenue recognition",
+      "kind": "Kind",
+      "kinds": {
+        "standard": "Standard",
+        "reimbursement": "Reimbursed expenses"
+      },
+      "monthlyBudget": "Monthly budget",
+      "noBudget": "No budget",
+      "service-typesIntro": "Each service type has a recognition policy and a revenue account in the mappings. The reimbursed-expenses type is what client expenses are re-billed under.",
+      "expense-categoriesIntro": "Each category has an expense account in the mappings and an optional monthly budget."
+    },
+    "tax": {
+      "new": "New tax rate",
+      "edit": "Edit tax rate",
+      "empty": "No tax rates yet. A tax specialist enters and verifies them here.",
+      "unverifiedBanner": "Rates are unverified demo values — Egyptian tax specialist must verify before use",
+      "unverifiedWarning": "This document uses a tax rate that is not professionally verified. The amounts are not final until a tax specialist verifies the rate.",
+      "unverifiedShort": "unverified",
+      "notEffective": "not in effect on this date",
+      "demo": "DEMO",
+      "verifiedAt": "Verified on {{date}}",
+      "versionNote": "Changing the rate, its dates or its status creates a new version. Documents already issued keep the version they used.",
+      "version": "version {{version}}",
+      "fields": {
+        "code": "Code",
+        "name": "Name",
+        "rate": "Rate",
+        "effective": "In effect",
+        "effectiveFrom": "Effective from",
+        "effectiveTo": "Effective to",
+        "status": "Status",
+        "version": "Version",
+        "legalSource": "Legal source",
+        "lastVerifiedAt": "Last verified on"
+      },
+      "approval": {
+        "draft": "Draft (unverified)",
+        "professionally_verified": "Professionally verified",
+        "retired": "Retired"
+      }
+    },
+    "parties": {
+      "ar": {
+        "title": "Customers",
+        "new": "New customer",
+        "one": "Customer"
+      },
+      "ap": {
+        "title": "Suppliers",
+        "new": "New supplier",
+        "one": "Supplier"
+      },
+      "search": "Search by name",
+      "showArchived": "Show archived",
+      "empty": "Nothing to show.",
+      "name": "Name",
+      "terms": "Payment terms",
+      "termsDays": "{{days}} days",
+      "termsHint": "Days until an invoice or bill falls due. The document form suggests it.",
+      "open": {
+        "ar": "Outstanding",
+        "ap": "We owe"
+      },
+      "credit": {
+        "ar": "Credit balance",
+        "ap": "Prepaid"
+      },
+      "status": "Status",
+      "archived": "Archived",
+      "active": "Active",
+      "linkedClient": "Client: {{name}}",
+      "email": "Email",
+      "phone": "Phone",
+      "taxNo": "Tax registration number",
+      "client": "Linked client",
+      "noClient": "Not a client of the firm",
+      "archive": "Archive (only possible with no open balance)"
+    },
+    "status": {
+      "draft": "Draft",
+      "pending_approval": "Pending approval",
+      "issued": "Issued",
+      "approved": "Approved and posted",
+      "partially_paid": "Partially paid",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "cancelled": "Cancelled",
+      "credited": "Credited"
+    },
+    "docs": {
+      "ar": {
+        "title": "Invoices",
+        "new": "New invoice",
+        "edit": "Edit invoice"
+      },
+      "ap": {
+        "title": "Supplier bills",
+        "new": "New bill",
+        "edit": "Edit bill"
+      },
+      "search": "Search",
+      "status": "Status",
+      "empty": "No documents match.",
+      "col": {
+        "reference": "Reference",
+        "arParty": "Customer",
+        "apParty": "Supplier",
+        "date": "Date",
+        "dueDate": "Due date",
+        "total": "Total",
+        "balance": "Open balance",
+        "status": "Status"
+      },
+      "terms": "Payment terms",
+      "termsKinds": {
+        "net15": "Net 15 days",
+        "net30": "Net 30 days",
+        "net60": "Net 60 days",
+        "custom": "Custom"
+      },
+      "termsDays": "Days",
+      "notes": "Notes",
+      "saveDraft": "Save draft",
+      "notFound": "This document does not exist or you cannot see it.",
+      "back": "Back to the list",
+      "notEditable": "Only drafts can be edited. Correct an issued document with a credit note.",
+      "dueOn": "due {{date}}",
+      "approvalNote": "This amount reaches the approval threshold: a different user with approval rights must approve it, and approving issues the invoice.",
+      "submit": "Submit for approval",
+      "issue": "Issue",
+      "approveIssue": "Approve and issue",
+      "approvePost": "Approve and post",
+      "approve": "Approve",
+      "reject": "Return to draft",
+      "cancel": "Cancel document",
+      "cancelConfirm": "Cancel this document? It has no number and no journal.",
+      "deleteConfirm": "Delete this draft?",
+      "submitted": "Submitted for approval.",
+      "issuedDone": "Issued and posted to the ledger.",
+      "approvedDone": "Approved and posted to the ledger.",
+      "rejectedDone": "Returned to draft.",
+      "cancelledDone": "Cancelled.",
+      "fourEyesNote": "You created this item, so a different user must approve it.",
+      "limitNote": "Approval is limited by role: amounts above your limit need a more senior approver.",
+      "paid": "Paid",
+      "credited": "Credited",
+      "deferredNote": "A service billed in advance is held as deferred revenue and recognized monthly over the service period.",
+      "servicePeriodStart": "Service period starts",
+      "servicePeriodMonths": "Number of months",
+      "supplierInvoiceNo": "Supplier invoice number",
+      "bearer": "Who bears the expense",
+      "bearerHint": "Client-reimbursable expenses are held as a receivable from the client until they are re-billed.",
+      "bearers": {
+        "firm": "Firm (this ledger)",
+        "client_reimbursable": "Client, reimbursable"
+      },
+      "client": "Client",
+      "forClient": "For client: {{name}}",
+      "rebilledTo": "Re-billed on an invoice",
+      "rebill": "Add to client invoice"
+    },
+    "lines": {
+      "caption": "Lines",
+      "description": "Description",
+      "service": "Service",
+      "category": "Category",
+      "qty": "Quantity",
+      "unitPrice": "Unit price",
+      "discount": "Discount %",
+      "tax": "Tax",
+      "total": "Line total",
+      "net": "Net",
+      "remove": "Remove",
+      "add": "Add line",
+      "choose": "Choose...",
+      "exempt": "Tax exempt"
+    },
+    "totals": {
+      "net": "Total before tax",
+      "tax": "Tax",
+      "total": "Total"
+    },
+    "journals": {
+      "title": "Linked journal entries",
+      "viewSource": "Source document",
+      "kinds": {
+        "issue": "Issue",
+        "recognition": "Revenue recognition",
+        "credit_note": "Credit note",
+        "payment": "Payment",
+        "bill": "Bill",
+        "claim": "Expense claim",
+        "claim_payment": "Claim payment"
+      },
+      "sources": {
+        "invoice": "Invoice",
+        "invoice_recognition": "Invoice (revenue recognition)",
+        "credit_note": "Credit notes",
+        "customer_payment": "Receipt",
+        "customer_credit_allocation": "Receipt (allocation)",
+        "customer_refund": "Receipt (refund)",
+        "supplier_bill": "Supplier bill",
+        "supplier_credit": "Supplier credits",
+        "supplier_payment": "Supplier payment",
+        "supplier_credit_allocation": "Supplier payment (allocation)",
+        "supplier_refund": "Supplier payment (refund)",
+        "expense_claim": "Expense claims",
+        "expense_claim_payment": "Expense claims"
+      }
+    },
+    "history": {
+      "title": "History",
+      "actions": {
+        "created": "Created",
+        "updated": "Edited",
+        "submitted": "Submitted for approval",
+        "approved": "Approved",
+        "rejected": "Returned to draft",
+        "issued": "Issued",
+        "cancelled": "Cancelled",
+        "reminder_logged": "Reminder logged",
+        "revenue_recognized": "Revenue recognized",
+        "credit_note": "Credit note issued",
+        "payment_received": "Payment received",
+        "payment_made": "Payment made",
+        "rebilled": "Re-billed",
+        "created_from_template": "Created from a recurring template",
+        "paid": "Paid"
+      }
+    },
+    "reminders": {
+      "send": "Send reminder",
+      "loggedOnly": "Mock mode: the reminder is only recorded in the history. No email is sent.",
+      "note": "Note (optional)",
+      "log": "Record reminder",
+      "done": "Reminder recorded in the history (not sent).",
+      "title": "Reminders",
+      "delivery": "recorded only, not sent"
+    },
+    "credit": {
+      "ar": {
+        "title": "Credit note",
+        "list": "Credit notes"
+      },
+      "ap": {
+        "title": "Supplier credit",
+        "list": "Supplier credits"
+      },
+      "intro": "Against {{reference}} (open balance {{balance}}). The credit reduces the open balance and posts a reversing journal in proportion to the document's lines.",
+      "amount": "Credit amount",
+      "date": "Credit date",
+      "reason": "Reason",
+      "create": "Create",
+      "exceeds": "The credit is larger than the open balance ({{balance}}).",
+      "done": "Credit created.",
+      "empty": "No credit notes yet.",
+      "col": {
+        "number": "Number",
+        "document": "Document"
+      }
+    },
+    "payments": {
+      "ar": {
+        "title": "Customer receipts",
+        "new": "Record receipt",
+        "refund": "Refund credit"
+      },
+      "ap": {
+        "title": "Supplier payments",
+        "new": "Record payment",
+        "refund": "Take back prepayment"
+      },
+      "record": "Record payment",
+      "date": "Payment date",
+      "account": "Bank or cash account",
+      "amount": "Amount",
+      "reference": "Reference",
+      "noAccounts": "No bank or cash accounts are set in the account mappings yet, so payments cannot be recorded.",
+      "unapplied": "Not allocated",
+      "receipt": "Receipt {{number}}",
+      "voucher": "Payment voucher {{number}}",
+      "empty": "No payments yet.",
+      "col": {
+        "arNumber": "Receipt",
+        "apNumber": "Voucher"
+      },
+      "noAllocations": "Nothing allocated.",
+      "refunds": "Refunds",
+      "allocateLater": "Allocate the rest",
+      "allocate": "Allocate",
+      "allocateIntro": "Allocate part of the unallocated {{amount}} to open documents.",
+      "refundNow": "Refund",
+      "refundExceeds": "The refund is larger than the unallocated amount ({{amount}}).",
+      "allocated": "Allocation recorded.",
+      "refunded": "Refund recorded."
+    },
+    "allocation": {
+      "title": "Allocation",
+      "none": "No open documents for this party. The whole amount will be kept as a credit.",
+      "auto": "Allocate oldest first",
+      "clear": "Clear",
+      "caption": "Allocation of the payment across open documents",
+      "amount": "Allocate",
+      "remaining": "Open after",
+      "allocated": "Allocated",
+      "unallocated": "Not allocated",
+      "overCapacity": "The allocations are {{amount}} more than the payment amount.",
+      "problem": {
+        "invalid": "Enter an amount greater than zero.",
+        "overDocument": "More than the open balance of this document."
+      },
+      "becomes": {
+        "ar": "{{amount}} is not allocated and will be kept as a customer credit.",
+        "ap": "{{amount}} is not allocated and will be kept as a supplier prepayment."
+      }
+    },
+    "quotations": {
+      "title": "Quotations",
+      "new": "New quotation",
+      "empty": "No quotations yet.",
+      "validUntil": "Valid until",
+      "send": "Mark as sent",
+      "accept": "Accepted",
+      "reject": "Rejected",
+      "convert": "Convert to invoice",
+      "viewInvoice": "View invoice",
+      "status": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "converted": "Converted"
+      }
+    },
+    "recurring": {
+      "ar": {
+        "title": "Recurring invoices"
+      },
+      "ap": {
+        "title": "Recurring expenses"
+      },
+      "intro": "A template makes a normal draft on demand. Nothing is created automatically.",
+      "empty": "No templates yet.",
+      "date": "Date of the new draft",
+      "name": "Template",
+      "lines": "Lines",
+      "createDraft": "Create draft"
+    },
+    "statement": {
+      "title": "Statement",
+      "back": "Back to the list",
+      "period": "From {{from}} to {{to}}",
+      "type": "Type",
+      "kinds": {
+        "invoice": "Invoice",
+        "bill": "Bill",
+        "payment": "Payment",
+        "credit_note": "Credit note",
+        "refund": "Refund"
+      },
+      "cols": {
+        "arDebit": "Charges",
+        "arCredit": "Payments and credits",
+        "apDebit": "Payments and credits",
+        "apCredit": "Bills"
+      },
+      "ar": {
+        "title": "Customer statement",
+        "unapplied": "Part of the closing balance is an unapplied customer credit of {{amount}}."
+      },
+      "ap": {
+        "title": "Supplier statement",
+        "unapplied": "The supplier holds an unapplied prepayment of {{amount}}."
+      }
+    },
+    "aging": {
+      "ar": {
+        "title": "Receivables aging"
+      },
+      "ap": {
+        "title": "Payables aging"
+      },
+      "asOf": "Age as of (blank: today)",
+      "basis": "Open balances aged by due date as of {{date}}.",
+      "empty": "Nothing is open.",
+      "buckets": {
+        "current": "Current",
+        "d1_30": "1-30 days",
+        "d31_60": "31-60 days",
+        "d61_90": "61-90 days",
+        "d90_plus": "Over 90 days"
+      },
+      "showDocuments": "show documents",
+      "daysPast": "{{days}} days past due"
+    },
+    "revenue": {
+      "title": "Revenue",
+      "groupBy": "Group by",
+      "by": {
+        "client": "Client",
+        "service": "Service",
+        "month": "Month"
+      },
+      "amount": "Revenue",
+      "basis": "Revenue from issued invoices: on-issue revenue at issue, deferred revenue as it is recognized, less credit notes. Tax is excluded."
+    },
+    "reconciliation": {
+      "title": "Subledger reconciliation",
+      "intro": "Each subledger is compared with its control account in the general ledger. They must agree.",
+      "allOk": "Reconciled: every subledger equals its control account.",
+      "notOk": "NOT reconciled: at least one subledger differs from its control account.",
+      "rowOk": "{{name}} {{sub}} = control account {{control}}: reconciled",
+      "rowDiff": "{{name}} {{sub}} differs from control account {{control}} by {{diff}}: NOT reconciled",
+      "unmapped": "{{name}}: no control account is mapped ({{mapping}}).",
+      "rows": {
+        "ar": "Receivables subledger",
+        "ap": "Payables subledger",
+        "customerCredit": "Customer credit balances",
+        "supplierPrepayment": "Supplier prepayments",
+        "deferredRevenue": "Deferred revenue schedule"
+      },
+      "col": {
+        "subledger": "Subledger",
+        "account": "Control account",
+        "subledgerAmount": "Subledger amount",
+        "control": "Control balance",
+        "difference": "Difference"
+      },
+      "status": {
+        "ok": "Reconciled",
+        "diff": "Not reconciled",
+        "unmapped": "No control account"
+      }
+    },
+    "schedule": {
+      "title": "Payment schedule",
+      "horizon": "Show bills due within",
+      "days": "{{days}} days",
+      "empty": "No open bills are due in this period.",
+      "urgency": "Urgency",
+      "buckets": {
+        "overdue": "Overdue",
+        "this_week": "Due within 7 days",
+        "later": "Later"
+      }
+    },
+    "claims": {
+      "title": "Expenses",
+      "new": "New expense claim",
+      "list": "Expense claims",
+      "empty": "No expense claims.",
+      "claimant": "Claimant",
+      "date": "Date",
+      "amount": "Amount",
+      "description": "Description",
+      "receipt": "Receipt",
+      "submit": "Submit claim",
+      "pay": "Pay claim",
+      "status": {
+        "submitted": "Submitted",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "paid": "Paid"
+      }
+    },
+    "budget": {
+      "title": "Budget against actual",
+      "note": "Read only: actual is the posted spending on each category's mapped expense account in the month.",
+      "budget": "Monthly budget",
+      "actual": "Actual",
+      "remaining": "Remaining",
+      "over": "Over budget",
+      "within": "Within budget",
+      "none": "No budget"
+    },
+    "invoicing": {
+      "sections": "Receivables sections",
+      "tabs": {
+        "invoices": "Invoices",
+        "quotations": "Quotations",
+        "customers": "Customers",
+        "payments": "Receipts",
+        "credit-notes": "Credit notes",
+        "recurring": "Recurring"
+      }
+    },
+    "payables": {
+      "sections": "Payables sections",
+      "tabs": {
+        "bills": "Bills",
+        "payments": "Payments",
+        "schedule": "Schedule",
+        "suppliers": "Suppliers",
+        "expenses": "Expenses",
+        "credits": "Supplier credits",
+        "recurring": "Recurring"
+      }
     }
   }
 }
