@@ -42,6 +42,7 @@ describe('Sidebar', () => {
 
   it.each([
     [['invoices.view'], ['/app', '/app/invoicing/invoices', '/app/invoicing/payments']],
+    [['bills.view', 'suppliers.manage', 'expenses.claim'], ['/app', '/app/payables/bills', '/app/payables/suppliers', '/app/payables/expenses']],
     [['mappings.manage'], ['/app', '/app/accounting/settings/mappings']],
     [['tax.rates.manage'], ['/app', '/app/accounting/settings/tax-rates']],
     [['payments.record', 'invoices.create', 'bills.create'], ['/app']],

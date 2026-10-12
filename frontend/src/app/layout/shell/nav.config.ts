@@ -22,5 +22,8 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { labelKey: 'nav.taxRates', route: '/app/accounting/settings/tax-rates', permission: 'tax.rates.manage', groupKey: 'nav.accounting' },
   { labelKey: 'nav.invoices', route: '/app/invoicing/invoices', permission: 'invoices.view', groupKey: 'nav.invoicing' },
   { labelKey: 'nav.receipts', route: '/app/invoicing/payments', permission: 'invoices.view', groupKey: 'nav.invoicing' },
+  { labelKey: 'nav.bills', route: '/app/payables/bills', permission: 'bills.view', groupKey: 'nav.payables' },
+  { labelKey: 'nav.suppliers', route: '/app/payables/suppliers', permission: 'suppliers.manage', groupKey: 'nav.payables' },
+  { labelKey: 'nav.expenses', route: '/app/payables/expenses', permission: 'expenses.claim', groupKey: 'nav.payables' },
   { labelKey: 'nav.settings', route: '/app/settings', permission: 'settings.manage' },
 ];
