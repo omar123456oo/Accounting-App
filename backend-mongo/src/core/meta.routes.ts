@@ -10,7 +10,11 @@ metaRouter.get('/meta/:doctype', wrap(async (req, res) => {
   const dt = await resolveDocType(orgOf(req), String(req.params.doctype));
   // Unknown and not-permitted look the same: the caller learns nothing about types they may not see.
   if (!dt || !req.auth!.permissions.includes(dt.viewPermission)) throw notFound();
-  res.json({ data: { name: dt.name, label: dt.label, module: dt.module, fields: await mergedFields(orgOf(req), dt) } });
+  res.json({ data: {
+    name: dt.name, label: dt.label, module: dt.module, isCustom: dt.isCustom, titleField: dt.titleField ?? null,
+    canManage: !!dt.managePermission && req.auth!.permissions.includes(dt.managePermission),
+    fields: await mergedFields(orgOf(req), dt),
+  } });
 }));
 
 metaRouter.get('/doctypes', wrap(async (req, res) => {

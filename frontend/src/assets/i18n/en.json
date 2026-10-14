@@ -1495,7 +1495,8 @@
       "accounts": "The chart of accounts.",
       "statementMapping": "Map accounts to financial statement lines.",
       "roles": "Create roles and choose what each can do.",
-      "users": "Assign roles to staff members."
+      "users": "Assign roles to staff members.",
+      "docTypes": "Create document types and add your own fields to existing ones."
     }
   },
   "roles": {
@@ -2205,5 +2206,85 @@
     },
     "recent": "Recent searches",
     "clearRecent": "Clear"
+  },
+  "core": {
+    "docTypes": {
+      "title": "Document types",
+      "back": "Back to document types",
+      "new": "New document type",
+      "empty": "No document types.",
+      "name": "ID",
+      "label": "Name",
+      "module": "Module",
+      "kind": "Kind",
+      "custom": "Custom",
+      "builtin": "Built-in",
+      "customize": "Customize form",
+      "records": "Records",
+      "deleteMessage": "“{{name}}” and all its records will be deleted. This cannot be undone.",
+      "nameHint": "Lowercase English letters, digits and underscores, starting with a letter.",
+      "viewPermission": "Permission to view",
+      "managePermission": "Permission to add, change and delete",
+      "titleField": "Title field",
+      "searchFields": "Search fields",
+      "searchFieldsHint": "Field IDs separated by commas.",
+      "fields": "Fields",
+      "defaultTitle": "Title"
+    },
+    "loadFailed": "Could not load this page. Document types need the live server; the demo data does not include them.",
+    "saveFailed": "Could not save. Please try again.",
+    "fields": {
+      "none": "No fields yet.",
+      "new": "New field",
+      "fieldname": "Field ID",
+      "label": "Label",
+      "type": "Type",
+      "choices": "Choices",
+      "choicesHint": "Separate the choices with commas.",
+      "linkTarget": "Linked document type",
+      "linkTargetHint": "The ID of the document type this field points to.",
+      "insertAfter": "Show after",
+      "atEnd": "At the end",
+      "required": "Required",
+      "hidden": "Hidden",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "remove": "Remove field",
+      "add": "Add field",
+      "types": {
+        "text": "Text",
+        "number": "Number",
+        "date": "Date",
+        "select": "Choice",
+        "link": "Link",
+        "checkbox": "Checkbox",
+        "currency": "Amount"
+      }
+    },
+    "customize": {
+      "title": "Customize {{label}}",
+      "titlePlain": "Customize form",
+      "baseFields": "Built-in fields",
+      "customFields": "Custom fields",
+      "saved": "Saved."
+    },
+    "records": {
+      "title": "Records",
+      "new": "New",
+      "search": "Search records",
+      "name": "Number",
+      "empty": "No records yet.",
+      "notFound": "This was not found, or you do not have access to it.",
+      "count": "{{total}} records",
+      "prev": "Previous",
+      "next": "Next",
+      "paging": "Pages"
+    },
+    "record": {
+      "newTitle": "New {{label}}",
+      "back": "Back to the list",
+      "readOnly": "You can view this record but not change it.",
+      "deleteMessage": "Delete {{name}}? This cannot be undone."
+    }
   }
 }

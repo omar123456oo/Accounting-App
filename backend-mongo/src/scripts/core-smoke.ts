@@ -229,6 +229,13 @@ try {
   assert.equal((await owner.call('GET', `${C}/records/leave_request`)).status, 404, 'built-in types have their own API');
   assert.equal((await owner.call('POST', `${C}/records/leave_request`, { data: {} })).status, 404);
 
+  // metadata tells the screen whether the caller may write (a hint; the server enforces it)
+  const mv = (c: Client) => c.call('GET', `${C}/meta/asset`).then((r) => ({ isCustom: r.json.data.isCustom, canManage: r.json.data.canManage, titleField: r.json.data.titleField }));
+  assert.deepEqual(await mv(owner), { isCustom: true, canManage: true, titleField: 'tag' });
+  assert.deepEqual(await mv(viewer), { isCustom: true, canManage: false, titleField: 'tag' });
+  const lm = await owner.call('GET', `${C}/meta/leave_request`);
+  assert.deepEqual([lm.json.data.isCustom, lm.json.data.canManage], [false, false], 'built-in types have no record store');
+
   // search sees created records
   const found = (await s(owner, 'a-1', '&type=asset')).json.data;
   assert.deepEqual(found.map((h: any) => [h.name, h.title, h.route]), [['ASSET-000001', 'A-1', '/app/records/asset/ASSET-000001']]);

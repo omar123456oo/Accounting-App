@@ -19,6 +19,7 @@ export const SHELL_ROUTES: Routes = [
       { path: 'forecast', canActivate: [permissionGuard], data: { permission: 'forecast.view' }, loadComponent: () => import('../../features/engage/forecast-page').then((m) => m.ForecastPage) },
       { path: 'analytics', canActivate: [permissionGuard], data: { permission: 'reports.view' }, loadComponent: () => import('../../features/analytics/analytics-layout').then((m) => m.AnalyticsLayout) },
       { path: 'hr', loadChildren: () => import('../../features/hr/hr.routes').then((m) => m.HR_ROUTES), canActivate: [permissionGuard], data: { permission: 'leave.apply' } },
+      { path: 'records', loadChildren: () => import('../../features/core/core.routes').then((m) => m.RECORD_ROUTES) },
       { path: 'accounting', loadChildren: () => import('../../features/accounting/accounting.routes').then((m) => m.ACCOUNTING_ROUTES) },
       { path: 'statements', loadChildren: () => import('../../features/reports-fs/fs.routes').then((m) => m.FS_ROUTES), canActivate: [permissionGuard], data: { permission: 'reports.view' } },
       { path: 'invoicing', loadChildren: () => import('../../features/invoicing/invoicing.routes').then((m) => m.INVOICING_ROUTES), canActivate: [permissionGuard], data: { permission: 'invoices.view' } },
@@ -30,6 +31,7 @@ export const SHELL_ROUTES: Routes = [
         children: [
           { path: '', pathMatch: 'full', loadComponent: () => import('../../features/settings/settings-page').then((m) => m.SettingsPage) },
           { path: 'roles', loadComponent: () => import('../../features/settings/roles/roles-page').then((m) => m.RolesPage) },
+          { path: 'doctypes', loadChildren: () => import('../../features/core/core.routes').then((m) => m.DOCTYPE_ROUTES) },
           { path: 'users', loadComponent: () => import('../../features/settings/roles/user-roles-page').then((m) => m.UserRolesPage) },
         ],
       },
