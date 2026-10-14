@@ -21,7 +21,7 @@ const META = (over: Partial<DocTypeMeta> = {}): DocTypeMeta => ({
   ...over,
 });
 
-async function open<T>(url: string, component: new () => T, routes = ['records/:doctype', 'records/:doctype/:name', 'settings/doctypes', 'settings/doctypes/:name/customize']) {
+async function open<T>(url: string, component: new () => T, routes = ['records/:doctype', 'records/:doctype/:name', 'doctypes', 'doctypes/:name/customize']) {
   TestBed.configureTestingModule({
     providers: [provideHttpClient(), provideHttpClientTesting(), provideTranslateService(), provideRouter(routes.map((path) => ({ path, component })))],
   });
@@ -33,7 +33,7 @@ const tick = (ms = 0) => new Promise((r) => setTimeout(r, ms));
 
 describe('Customize form', () => {
   it('shows built-in fields, edits custom ones and saves the whole list with their position', async () => {
-    const { http, el, go, harness } = await open('settings/doctypes/asset/customize', CustomizeForm);
+    const { http, el, go, harness } = await open('doctypes/asset/customize', CustomizeForm);
     const nav = go();
     await tick();
     http.expectOne('/api/v1/staff/core/meta/asset').flush({ data: META() });
@@ -60,7 +60,7 @@ describe('Customize form', () => {
   });
 
   it('shows the server message and keeps the rows when the save is rejected', async () => {
-    const { http, el, go, harness } = await open('settings/doctypes/asset/customize', CustomizeForm);
+    const { http, el, go, harness } = await open('doctypes/asset/customize', CustomizeForm);
     const nav = go();
     await tick();
     http.expectOne('/api/v1/staff/core/meta/asset').flush({ data: META() });
@@ -77,7 +77,7 @@ describe('Customize form', () => {
   });
 
   it('says so when the page cannot load', async () => {
-    const { http, el, go, harness } = await open('settings/doctypes/asset/customize', CustomizeForm);
+    const { http, el, go, harness } = await open('doctypes/asset/customize', CustomizeForm);
     const nav = go();
     await tick();
     http.expectOne('/api/v1/staff/core/meta/asset').flush('no', { status: 404, statusText: 'Not found' });
@@ -90,7 +90,7 @@ describe('Customize form', () => {
 
 describe('Document type list', () => {
   it('lists types, offers records and delete only for custom ones, and deletes after confirmation', async () => {
-    const { http, el, go, harness } = await open('settings/doctypes', DocTypeList);
+    const { http, el, go, harness } = await open('doctypes', DocTypeList);
     const nav = go();
     await tick();
     http.expectOne('/api/v1/staff/core/doctypes').flush({ data: [{ name: 'leave_request', label: 'Leave Request', module: 'hr', isCustom: false }, { name: 'asset', label: 'Asset', module: 'ops', isCustom: true }] });
@@ -112,7 +112,7 @@ describe('Document type list', () => {
   });
 
   it('creates a type from the form with the field rows and refreshes the list', async () => {
-    const { http, el, go, harness } = await open('settings/doctypes', DocTypeList);
+    const { http, el, go, harness } = await open('doctypes', DocTypeList);
     const nav = go();
     await tick();
     http.expectOne('/api/v1/staff/core/doctypes').flush({ data: [] });
@@ -132,7 +132,7 @@ describe('Document type list', () => {
   });
 
   it('does not submit an invalid name', async () => {
-    const { http, el, go, harness } = await open('settings/doctypes', DocTypeList);
+    const { http, el, go, harness } = await open('doctypes', DocTypeList);
     const nav = go();
     await tick();
     http.expectOne('/api/v1/staff/core/doctypes').flush({ data: [] });

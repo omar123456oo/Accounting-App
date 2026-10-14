@@ -38,5 +38,6 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { labelKey: 'nav.cashFlow', route: '/app/statements/cashflow', permission: 'reports.view', groupKey: 'nav.statements', icon: 'money-bill-transfer' },
   { labelKey: 'nav.equityChanges', route: '/app/statements/equity', permission: 'reports.view', groupKey: 'nav.statements', icon: 'landmark' },
   { labelKey: 'nav.statementMapping', route: '/app/statements/mapping', permission: 'mappings.manage', groupKey: 'nav.statements', icon: 'sitemap' },
+  { labelKey: 'nav.docTypes', route: '/app/doctypes', permission: 'admin.settings', icon: 'table-list' },
   { labelKey: 'nav.settings', route: '/app/settings', permission: 'settings.manage', icon: 'gear' },
 ];

@@ -39,7 +39,8 @@
     "tickets": "Client tickets",
     "appointments": "Appointments",
     "timesheets": "Time sheets",
-    "forecast": "Cash forecast"
+    "forecast": "Cash forecast",
+    "docTypes": "Document types"
   },
   "login": {
     "title": "Sign in",

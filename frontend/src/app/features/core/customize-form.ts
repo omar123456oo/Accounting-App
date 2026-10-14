@@ -16,7 +16,7 @@ import { FieldRow, fieldsToRows, rowsToFields } from './field-rows';
   imports: [RouterLink, TranslatePipe, PageHeader, FieldEditor],
   template: `
     <app-page-header [title]="meta() ? ('core.customize.title' | translate: { label: meta()!.label }) : ('core.customize.titlePlain' | translate)">
-      <a class="btn btn-outline-secondary" routerLink="/app/settings/doctypes">{{ 'core.docTypes.back' | translate }}</a>
+      <a class="btn btn-outline-secondary" routerLink="/app/doctypes">{{ 'core.docTypes.back' | translate }}</a>
     </app-page-header>
 
     @if (loadFailed()) {

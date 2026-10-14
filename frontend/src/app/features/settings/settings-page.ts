@@ -14,7 +14,7 @@ interface SettingsLink {
 }
 
 const LINKS: readonly SettingsLink[] = [
-  { labelKey: 'core.docTypes.title', descKey: 'settings.desc.docTypes', route: '/app/settings/doctypes', permission: 'admin.settings', icon: 'table-list' },
+  { labelKey: 'core.docTypes.title', descKey: 'settings.desc.docTypes', route: '/app/doctypes', permission: 'admin.settings', icon: 'table-list' },
   { labelKey: 'roles.title', descKey: 'settings.desc.roles', route: '/app/settings/roles', permission: 'settings.manage', icon: 'user-shield' },
   { labelKey: 'roles.usersTitle', descKey: 'settings.desc.users', route: '/app/settings/users', permission: 'settings.manage', icon: 'users-gear' },
   { labelKey: 'nav.mappings', descKey: 'settings.desc.mappings', route: '/app/accounting/settings/mappings', permission: 'mappings.manage', icon: 'diagram-project' },
