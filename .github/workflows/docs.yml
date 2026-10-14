@@ -1,0 +1,17 @@
+name: docs
+on: [push, pull_request]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      # The scan reads the code with the TypeScript compiler (frontend) and runs tsx (backend).
+      - run: npm ci --prefix frontend
+      - run: npm ci --prefix backend-mongo
+      - name: Generated references match the code
+        run: node scripts/docs/scan.mjs --check
+      - name: Metadata, links, ids, index and coverage
+        run: node scripts/docs/validate.mjs --check
