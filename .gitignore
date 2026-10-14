@@ -5,3 +5,7 @@ vendor/
 /frontend/dist/
 .angular/
 *.log
+/backend/storage/app/spike/
+/backend/.phpunit.result.cache
+/frontend/test-results/
+/backend-mongo/dist/

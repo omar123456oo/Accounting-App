@@ -8,7 +8,7 @@ import { docEvent, inputsOf } from './mock-commercial-invoices';
 import { canPost, linkOf, postSystemJournal, Need, requireMappings } from './mock-commercial-posting';
 import { StoredBill, StoredClaim } from './mock-commercial-store';
 import { LedgerCtx } from './mock-ledger-store';
-import { MockResult, fail, invalid, need, ok, pageQuery, paged } from './mock-types';
+import { MockResult, fail, invalid, need, ok, pageQuery, paged, docPermission } from './mock-types';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v.trim() : '');
 const RULES: Rules = { date: { kind: 'date', required: true }, partyId: { kind: 'text', required: true }, bearer: { kind: ['firm', 'client_reimbursable'] } };
@@ -32,7 +32,7 @@ export function handleBills(ctx: LedgerCtx, rest: string[]): MockResult {
   }
   const bill = store.commercial.bill(entity.id, id);
   if (action && req.method === 'POST') return actionOn(ctx, bill, action);
-  const denied = need(user, req.method === 'GET' ? 'bills.view' : 'bills.create');
+  const denied = need(user, docPermission('bills', req.method));
   if (denied) return denied;
   if (!bill) return fail(404, 'notFound');
   if (!action && req.method === 'GET') return ok({ data: billDto(bill) });
@@ -137,7 +137,7 @@ function update(ctx: LedgerCtx, bill: StoredBill): MockResult {
 }
 
 function actionOn(ctx: LedgerCtx, bill: StoredBill | undefined, action: string): MockResult {
-  const permission = { submit: 'bills.create', cancel: 'bills.create', approve: 'bills.approve', reject: 'bills.approve', rebill: 'invoices.create' }[action];
+  const permission = { submit: 'bills.create', cancel: 'bills.amend', approve: 'bills.approve', reject: 'bills.approve', rebill: 'invoices.create' }[action];
   if (!permission) return fail(404, 'notFound');
   const denied = need(ctx.user, permission);
   if (denied) return denied;

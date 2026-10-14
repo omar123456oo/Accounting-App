@@ -26,7 +26,7 @@ export interface SortChange {
             @for (col of columns(); track col.key) {
               <th scope="col" [attr.aria-sort]="ariaSort(col)">
                 @if (col.sortable) {
-                  <button type="button" class="btn btn-link p-0 text-decoration-none fw-bold" (click)="toggle(col)">
+                  <button type="button" class="btn btn-link p-0 text-decoration-none fw-semibold text-reset text-uppercase small" (click)="toggle(col)">
                     {{ col.labelKey | translate }}
                     <span aria-hidden="true">{{ sort() === col.key ? (dir() === 'asc' ? '▲' : '▼') : '' }}</span>
                   </button>
@@ -44,7 +44,7 @@ export interface SortChange {
         </tbody>
       </table>
     </div>
-    <nav class="d-flex align-items-center justify-content-between" [attr.aria-label]="'table.pagination' | translate">
+    <nav class="d-flex flex-wrap gap-2 align-items-center justify-content-between mt-3" [attr.aria-label]="'table.pagination' | translate">
       <span class="text-body-secondary" aria-live="polite">{{ 'table.pageOf' | translate: { page: page(), pages: pages(), total: total() } }}</span>
       <div class="btn-group">
         <button type="button" class="btn btn-outline-secondary btn-sm" [disabled]="page() <= 1" (click)="pageChange.emit(page() - 1)">{{ 'table.previous' | translate }}</button>

@@ -13,7 +13,7 @@ import { Sidebar } from './sidebar';
       <app-sidebar class="shell-sidebar" />
       <div class="shell-main">
         <app-header />
-        <main class="p-4" id="main-content" tabindex="-1">
+        <main class="p-3 p-lg-4" id="main-content" tabindex="-1">
           <router-outlet />
         </main>
       </div>

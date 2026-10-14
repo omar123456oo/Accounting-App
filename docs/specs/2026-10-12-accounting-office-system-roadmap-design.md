@@ -155,3 +155,18 @@ All twelve are written into sections 3 to 5 and 9a above.
 ### Confidence Assessment
 - Overall: Medium-High for architecture. Low for Egyptian regulatory correctness until specialists sign off, as stated in section 10.
 - Areas of concern: scope is very large, so phase boundaries must be held. Docker is not yet installed on the dev machine.
+
+
+## Build status (2026-10-13)
+
+| Phase | State |
+|---|---|
+| 1 Foundation | Frontend done and tested. Backend written, **never executed** (no Docker on the build machine); run `docs/setup.md` first. |
+| 2 Client ops | Frontend on mock API, done. No Laravel code. |
+| 3 Core accounting | Frontend on mock API, done. No Laravel code, so the database-level gates (unbalanced posting impossible, gapless concurrent posting) are **not yet proven**. |
+| 4 Commercial | Frontend on mock API, done. No Laravel code. |
+| 5 Compliance and reporting | Frontend on mock API, done, with the ETA adapter as a null client. Specialist sign-off and live ETA submission remain open. |
+| 6 Advanced | Frontend on mock API: HR with leave and payroll, budgets (in payables), client portal, tickets and messaging, appointments, notifications, time sheets, cash forecast. Not built: payroll tax and insurance rules (need a specialist), real e-mail/SMS delivery, portal document upload. No Laravel code. |
+| 7 Production readiness | Restore drill and runbook written (unrun). User guides, load tests, security review and the Egypt acceptance tests are **not done**. |
+
+The next real gate is running the Phase 1 backend. Everything after it in the backend is still to be written.

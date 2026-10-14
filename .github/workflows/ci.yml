@@ -1,0 +1,58 @@
+name: ci
+on: [push, pull_request]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: [ "5432:5432" ]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 10
+    env:
+      PGPASSWORD: postgres
+      DB_HOST: 127.0.0.1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '8.3', extensions: 'pdo_pgsql, bcmath, intl, zip, gd, pcntl' }
+      - name: Create database roles and databases
+        run: psql -h 127.0.0.1 -U postgres -f docker/postgres/init/01-roles.sql
+      - name: Create the Laravel skeleton and install packages
+        run: |
+          composer create-project laravel/laravel /tmp/skeleton "^11.0" --no-interaction
+          cp -rn /tmp/skeleton/. backend/
+          rm -f backend/database/migrations/0001_01_01_000000_create_users_table.php
+          cp backend/.env.example backend/.env
+          cd backend
+          composer require laravel/sanctum pragmarx/google2fa-laravel spatie/laravel-permission dedoc/scramble mpdf/mpdf spatie/browsershot --no-interaction
+          composer require pestphp/pest pestphp/pest-plugin-laravel --dev --with-all-dependencies --no-interaction
+          php artisan key:generate
+          php artisan install:api --no-interaction
+          php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider" --no-interaction
+          sed -i "s/'teams' => false/'teams' => true/; s/'team_foreign_key' => 'team_id'/'team_foreign_key' => 'organization_id'/" config/permission.php
+          mv database/migrations/*_create_permission_tables.php database/migrations/2026_10_12_000005_create_permission_tables.php
+      - name: Migrate
+        working-directory: backend
+        run: php artisan migrate --database=owner --force
+        env: { DB_HOST: 127.0.0.1 }
+      - name: Code style
+        working-directory: backend
+        run: ./vendor/bin/pint --test
+      - name: Tests
+        working-directory: backend
+        run: ./vendor/bin/pest
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: frontend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: npm ci
+      - run: npm run lint:css
+      - run: npx ng test --watch=false
+      - run: npx ng build

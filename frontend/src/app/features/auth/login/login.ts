@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ValidationErrorBody } from '../../../core/auth/auth.models';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -17,6 +17,8 @@ export class Login {
   private readonly fb = inject(FormBuilder).nonNullable;
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  /** The e-mail link sends people back here with ?verified=1 once the server has confirmed their address. */
+  protected readonly verified = inject(ActivatedRoute).snapshot.queryParamMap.get('verified') === '1';
 
   protected readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],

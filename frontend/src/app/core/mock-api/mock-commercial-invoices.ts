@@ -6,7 +6,7 @@ import { canPost, linkOf, postSystemJournal, Need, requireMappings } from './moc
 import { StoredInvoice } from './mock-commercial-store';
 import { LedgerCtx } from './mock-ledger-store';
 import { DocEvent } from '../../features/commercial/commercial.models';
-import { MockResult, fail, invalid, need, ok, pageQuery, paged } from './mock-types';
+import { MockResult, fail, invalid, need, ok, pageQuery, paged, docPermission } from './mock-types';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v.trim() : '');
 const RULES: Rules = { date: { kind: 'date', required: true }, partyId: { kind: 'text', required: true } };
@@ -33,7 +33,7 @@ export function handleInvoices(ctx: LedgerCtx, rest: string[]): MockResult {
   }
   const inv = store.commercial.invoice(entity.id, id);
   if (action && req.method === 'POST') return actionOn(ctx, inv, action);
-  const denied = need(user, req.method === 'GET' ? 'invoices.view' : 'invoices.create');
+  const denied = need(user, docPermission('invoices', req.method));
   if (denied) return denied;
   if (!inv) return fail(404, 'notFound');
   if (!action && req.method === 'GET') return ok({ data: invoiceDto(inv) });
@@ -144,7 +144,7 @@ function update(ctx: LedgerCtx, inv: StoredInvoice): MockResult {
 }
 
 function actionOn(ctx: LedgerCtx, inv: StoredInvoice | undefined, action: string): MockResult {
-  const permission = { submit: 'invoices.create', cancel: 'invoices.create', remind: 'invoices.create', issue: 'invoices.issue', recognize: 'invoices.issue', approve: 'invoices.approve', reject: 'invoices.approve' }[action];
+  const permission = { submit: 'invoices.create', cancel: 'invoices.amend', remind: 'invoices.create', issue: 'invoices.issue', recognize: 'invoices.issue', approve: 'invoices.approve', reject: 'invoices.approve' }[action];
   if (!permission) return fail(404, 'notFound');
   const denied = need(ctx.user, permission);
   if (denied) return denied;

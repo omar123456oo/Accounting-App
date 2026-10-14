@@ -1,5 +1,10 @@
 <app-page-header [title]="'approvals.title' | translate" />
 
+<div class="row g-3 mb-3">
+  <div class="col-md-6"><app-chart-card [title]="'approvals.chartStatus' | translate"><app-pie-chart [items]="byStatus()" [label]="'approvals.chartStatus' | translate" [empty]="'approvals.empty' | translate" /></app-chart-card></div>
+  <div class="col-md-6"><app-chart-card [title]="'approvals.chartKind' | translate"><app-pie-chart [items]="byKind()" [label]="'approvals.chartKind' | translate" [empty]="'approvals.empty' | translate" /></app-chart-card></div>
+</div>
+
 <div class="mb-3 col-12 col-md-3 px-0">
   <label for="appr-status" class="form-label">{{ 'approvals.show' | translate }}</label>
   <select id="appr-status" class="form-select" (change)="setStatus($any($event.target).value)">

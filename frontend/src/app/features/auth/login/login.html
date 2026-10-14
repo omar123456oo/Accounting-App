@@ -3,6 +3,12 @@
     <h1 class="auth-title">{{ 'login.title' | translate }}</h1>
     <p class="auth-welcome">{{ 'login.welcome' | translate }}</p>
 
+    @if (verified) {
+      <div class="alert alert-success" role="status" id="verified-message">
+        {{ 'login.verified' | translate }}
+      </div>
+    }
+
     @if (locked()) {
       <div class="alert alert-danger" role="alert" id="lockout-message">
         {{ 'errors.locked' | translate }}

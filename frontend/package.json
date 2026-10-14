@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint:css": "stylelint \"src/**/*.scss\"",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "start:api": "ng serve --configuration api"
   },
   "private": true,
   "packageManager": "npm@12.1.0",

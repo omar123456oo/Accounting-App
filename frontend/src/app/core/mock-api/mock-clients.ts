@@ -60,6 +60,11 @@ export class MockClients implements MockModule {
     return true;
   }
 
+  /** Ids of the accountants assigned to a client (empty when nobody is). */
+  accountantsOf(id: string): string[] {
+    return [...(this.store.clients.find((c) => c.id === id)?.assignedAccountantIds ?? [])];
+  }
+
   /** Legal name for lists that show the client next to a document, task or approval. */
   clientName(id: string): string {
     return this.store.clients.find((c) => c.id === id)?.legalName ?? '';

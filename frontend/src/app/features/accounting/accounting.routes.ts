@@ -25,7 +25,7 @@ export const ACCOUNTING_ROUTES: Routes = [
         path: 'journals/:id/edit',
         canActivate: [permissionGuard],
         canDeactivate: [unsavedChangesGuard],
-        data: { permission: 'journals.create' },
+        data: { permission: 'journals.update' },
         loadComponent: () => import('./journals/journal-form').then((m) => m.JournalForm),
       },
       {

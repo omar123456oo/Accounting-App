@@ -10,6 +10,45 @@
 
 **Spec:** `docs/specs/2026-10-12-accounting-office-system-roadmap-design.md` (including its Stress Test Results).
 
+## Implementation status (2026-10-12)
+
+**Verified (runs and passes here):** Task 9 and Task 10, the Angular scaffold, i18n/RTL, auth, guards, interceptors, shell and Playwright specs (`ng test` 370 passing, `ng build` clean).
+
+**Written but never executed:** everything on the backend (Tasks 1-8 and 11) and the Docker stack. The machine this was built on has no Docker, PHP, Composer or PostgreSQL. All PHP passes a syntax parse, nothing more. Expect some first-run fixes. The first run is the real verification:
+
+```bash
+./scripts/bootstrap-backend.sh && docker compose up -d
+docker compose exec app php artisan migrate --database=owner --force
+docker compose exec app ./vendor/bin/pest
+./scripts/restore-drill.sh
+```
+
+| Task | State |
+|---|---|
+| 0 Repo hygiene | Git and `.gitignore` done. Installing Docker is still a user action. |
+| 1 Docker + Laravel scaffold | Files written (`docker-compose.yml`, `docker/*`, `backend/.env.example`, `scripts/bootstrap-backend.sh`). Not run. |
+| 2 Tenancy + RLS | Migrations, `TenantContext`, middleware, job trait, tests written. Not run. |
+| 3 Auth, lockout, MFA | `LoginService`, controllers, routes, tests written. Not run. **Registration and e-mail verification added** (`RegistrationService`, `EmailVerification`, `RegisterTest`, `VerificationTest`); the plan itself had no register endpoint, the Angular register page needed one. |
+| 4 RBAC | Seeder matrix, `AccessScope`, role-change auditing, access-matrix test written. Not run. |
+| 5 Audit chain | Migration (triggers, verify function), `AuditLogger`, `audit:verify`, concurrency test written. Not run. |
+| 6 Idempotency | Middleware and tests written. Not run. |
+| 7 OpenAPI, CI, restore drill | Scramble gate, `ci.yml`, `restore-drill.sh`, runbook written. Not run. RPO/RTO remain unconfirmed targets. |
+| 8 Arabic PDF spike | Both renderers, sample view and `pdf:spike` written. **Needs a native-reader review**; ADR-0001 is "Proposed". |
+| 11 Demo seed + docs | `DemoSeeder`, `docs/setup.md`, `admin-guide.md`, `security.md` written. The full green pass (step 4) has not happened. |
+
+**Deviations from the plan, and why:**
+
+1. `acct_owner` is created with `BYPASSRLS`. The plan forces RLS on tables and also has the owner connection seed rows across tenants; with `FORCE` the owner would be blocked too. The application role still has no bypass.
+2. The `owner` connection is registered in `AppServiceProvider` instead of editing `config/database.php`, so the skeleton needs no patching.
+3. Added `TenantUserProvider` and `auth_org_of_user()`. The plan's session guard loads the user before the tenant is set, which row-level security would hide, so every authenticated request would have returned 401.
+4. The audit hash renders `occurred_at` in UTC with a fixed format. Casting the timestamp to text depends on the session time zone and would report false tampering.
+5. `TenantContext::run` restores the outer tenant after a nested call.
+6. `pdf:spike` is one command with an engine argument instead of two commands.
+7. A separate `accounting_test` database is used for tests, because they run `migrate:fresh`.
+8. The Spatie permission migration is renamed to `2026_10_12_000005_...` by the bootstrap script so ordering is fixed.
+9. Scramble is limited to `v1` routes and gated; separate staff/portal tags are not done.
+10. `pint --test` in CI has not been run against the new PHP and may need `./vendor/bin/pint` first.
+
 ## Global Constraints
 
 - Money is `NUMERIC(19,4)` (no money tables yet in Phase 1; applies to later phases).

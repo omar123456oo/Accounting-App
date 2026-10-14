@@ -76,7 +76,7 @@ type Dialog = 'approve' | 'reject' | 'credit' | 'delete' | 'cancel' | null;
         @if (can().cancel) {
           <button type="button" class="btn btn-outline-danger" [disabled]="busy()" (click)="dialog.set('cancel')">{{ 'commercial.docs.cancel' | translate }}</button>
         }
-        @if (can().edit) {
+        @if (can().remove) {
           <button type="button" class="btn btn-outline-danger" [disabled]="busy()" (click)="dialog.set('delete')">{{ 'common.delete' | translate }}</button>
         }
         <button type="button" class="btn btn-outline-secondary" (click)="print()">{{ 'accounting.reports.print' | translate }}</button>
@@ -159,10 +159,11 @@ export class BillDetail {
     const has = (p: string) => this.auth.can(p);
     const open = b?.status === 'approved' || b?.status === 'partially_paid' || b?.status === 'overdue';
     return {
-      edit: b?.status === 'draft' && has('bills.create'),
+      edit: b?.status === 'draft' && has('bills.update'),
+      remove: b?.status === 'draft' && has('bills.delete'),
       submit: b?.status === 'draft' && has('bills.create'),
       decide: b?.status === 'pending_approval' && has('bills.approve'),
-      cancel: b?.status === 'pending_approval' && has('bills.create'),
+      cancel: b?.status === 'pending_approval' && has('bills.amend'),
       pay: open && has('payments.record'),
       credit: open && has('bills.approve') && isPositive(b?.balance ?? '0') && !b?.rebilledInvoiceId,
       rebill: !!b && b.bearer === 'client_reimbursable' && !!b.number && !b.rebilledInvoiceId && b.status !== 'cancelled' && has('invoices.create'),

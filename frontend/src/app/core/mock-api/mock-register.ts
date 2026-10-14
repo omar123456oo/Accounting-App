@@ -1,4 +1,4 @@
-import { DEMO_USERS, DemoUser } from './mock-users';
+import { DEMO_USERS, OWNER_PERMISSIONS } from './mock-users';
 
 export interface RegisterBody {
   officeName?: string;
@@ -34,11 +34,61 @@ const MESSAGES = {
 
 let counter = 0;
 
+const STORAGE_KEY = 'app.mock.registered';
+interface StoredRegistration {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+}
+
+function readStored(): StoredRegistration[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as StoredRegistration[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function addOwner(r: StoredRegistration): void {
+  DEMO_USERS.push({
+    email: r.email,
+    role: 'owner',
+    password: r.password,
+    mfaEnabled: false,
+    officeWide: true,
+    // An office owner, not a Super Admin: the Super Admin marker is never copied.
+    profile: { id: r.id, name: r.name, type: 'staff', permissions: [...OWNER_PERMISSIONS] },
+  });
+}
+
+/**
+ * DEMO ONLY. The in-memory mock forgets everything when the page reloads, so an account created on the register page used
+ * to vanish and sign-in answered "wrong credentials" until a new e-mail was registered. Registrations are therefore kept in this
+ * browser's localStorage and put back when the mock starts. The password is stored in clear text: acceptable only because this
+ * mock and its data are compiled out of production builds and never hold a real password.
+ */
+export function restoreRegisteredOffices(): void {
+  for (const r of readStored()) {
+    if (!DEMO_USERS.some((u) => u.email === r.email)) addOwner(r);
+    counter = Math.max(counter, Number(r.id.replace('u-reg-', '')) || 0);
+  }
+}
+
+function remember(r: StoredRegistration): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...readStored().filter((x) => x.email !== r.email), r]));
+  } catch {
+    /* storage unavailable: the account then lasts until the page is reloaded */
+  }
+}
+
 /**
  * DEMO ONLY. Mirrors the planned POST /api/v1/auth/register contract: validates the body, creates the office
  * owner in memory and does NOT sign the user in. The real server also checks the password against breach lists
  * and sends a verification e-mail; the mock skips both and reports `emailVerificationRequired: false`.
- * Registration creates a staff owner with the demo owner's permissions; the demo data it can see is shared.
+ * Registration creates a staff owner with every permission except Super Admin; the demo data it can see is shared.
  */
 export function registerOffice(body: RegisterBody, lang: string | null): RegisterResult {
   const t = MESSAGES[lang?.startsWith('ar') ? 'ar' : 'en'];
@@ -54,15 +104,9 @@ export function registerOffice(body: RegisterBody, lang: string | null): Registe
   if (body.password && body.password !== body.passwordConfirmation) errors['passwordConfirmation'] = [t.passwordMismatch];
   if (Object.keys(errors).length > 0) return { status: 422, errors };
 
-  const template = DEMO_USERS.find((u) => u.role === 'owner' && !u.mfaEnabled) as DemoUser;
   counter += 1;
-  DEMO_USERS.push({
-    email,
-    role: 'owner',
-    password: body.password as string,
-    mfaEnabled: false,
-    officeWide: true,
-    profile: { id: `u-reg-${counter}`, name: (body.name as string).trim(), type: 'staff', permissions: [...template.profile.permissions] },
-  });
+  const registration: StoredRegistration = { id: `u-reg-${counter}`, name: (body.name as string).trim(), email, password: body.password as string };
+  addOwner(registration);
+  remember(registration);
   return { status: 201, body: { emailVerificationRequired: false } };
 }

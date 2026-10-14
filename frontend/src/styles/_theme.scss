@@ -1,0 +1,218 @@
+// Theme layer over the precompiled Bootstrap CSS (loaded at runtime for LTR/RTL switching).
+// Only Bootstrap CSS variables and Bootstrap component classes are tuned here, so every
+// feature page picks the look up without per-component changes. Logical properties only.
+
+:root {
+  --bs-primary: #4f46e5;
+  --bs-primary-rgb: 79, 70, 229;
+  --bs-link-color: #4f46e5;
+  --bs-link-color-rgb: 79, 70, 229;
+  --bs-link-hover-color: #3730a3;
+  --bs-link-hover-color-rgb: 55, 48, 163;
+  --bs-body-bg: #f4f6fb;
+  --bs-body-color: #1e293b;
+  --bs-secondary-color: #64748b;
+  --bs-border-color: #e2e8f0;
+  --bs-border-radius: 0.5rem;
+  --bs-border-radius-lg: 0.75rem;
+  --bs-focus-ring-color: rgb(79 70 229 / 25%);
+  --app-surface: #fff;
+  --app-shadow: 0 1px 2px rgb(15 23 42 / 6%), 0 4px 12px rgb(15 23 42 / 4%);
+  --app-sidebar-bg: #111827;
+  --app-sidebar-text: #cbd5e1;
+}
+
+body {
+  background: var(--bs-body-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+// Buttons
+.btn {
+  --bs-btn-font-weight: 500;
+  --bs-btn-border-radius: 0.5rem;
+  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.05s;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  --bs-btn-bg: #4f46e5;
+  --bs-btn-border-color: #4f46e5;
+  --bs-btn-hover-bg: #4338ca;
+  --bs-btn-hover-border-color: #4338ca;
+  --bs-btn-active-bg: #3730a3;
+  --bs-btn-active-border-color: #3730a3;
+  --bs-btn-disabled-bg: #4f46e5;
+  --bs-btn-disabled-border-color: #4f46e5;
+  --bs-btn-focus-shadow-rgb: 79, 70, 229;
+  box-shadow: 0 1px 2px rgb(79 70 229 / 30%);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #4f46e5;
+  --bs-btn-border-color: #4f46e5;
+  --bs-btn-hover-bg: #4f46e5;
+  --bs-btn-hover-border-color: #4f46e5;
+  --bs-btn-active-bg: #4338ca;
+  --bs-btn-active-border-color: #4338ca;
+  --bs-btn-disabled-color: #4f46e5;
+  --bs-btn-disabled-border-color: #4f46e5;
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: #475569;
+  --bs-btn-border-color: #cbd5e1;
+  --bs-btn-hover-bg: #f1f5f9;
+  --bs-btn-hover-color: #1e293b;
+  --bs-btn-hover-border-color: #94a3b8;
+  --bs-btn-active-bg: #e2e8f0;
+  --bs-btn-active-color: #1e293b;
+  --bs-btn-active-border-color: #94a3b8;
+  background: var(--app-surface);
+}
+
+// Cards
+.card {
+  --bs-card-bg: var(--app-surface);
+  --bs-card-border-color: var(--bs-border-color);
+  --bs-card-border-radius: 0.75rem;
+  --bs-card-inner-border-radius: calc(0.75rem - 1px);
+  --bs-card-cap-bg: transparent;
+  box-shadow: var(--app-shadow);
+}
+
+.card-header {
+  font-weight: 600;
+}
+
+// Forms
+.form-control,
+.form-select {
+  background-color: var(--app-surface);
+  border-color: #cbd5e1;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 0.2rem var(--bs-focus-ring-color);
+}
+
+.form-label {
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-block-end: 0.35rem;
+}
+
+.form-check-input:checked {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+}
+
+.input-group-text {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+// Tables: contained surface, quiet header, tabular numerals for amounts.
+.table-responsive {
+  background: var(--app-surface);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.75rem;
+  box-shadow: var(--app-shadow);
+}
+
+.table-responsive > .table {
+  margin-block-end: 0;
+  --bs-table-bg: transparent;
+  --bs-table-hover-bg: #f5f3ff;
+  font-variant-numeric: tabular-nums;
+}
+
+.table > thead > tr > * {
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-block-end: 1px solid var(--bs-border-color);
+  padding-block: 0.75rem;
+}
+
+.table > :not(caption) > * > * {
+  padding-inline: 1rem;
+}
+
+.table > tbody > tr:last-child > * {
+  border-block-end-width: 0;
+}
+
+// Badges, alerts, nav, pagination, dropdowns
+.badge {
+  font-weight: 600;
+  padding: 0.4em 0.7em;
+  border-radius: 999px;
+}
+
+.alert {
+  border-radius: 0.75rem;
+  border-width: 1px;
+}
+
+.nav-tabs {
+  --bs-nav-tabs-link-active-color: #4f46e5;
+  --bs-nav-tabs-border-radius: 0.5rem;
+}
+
+.nav-tabs .nav-link {
+  color: var(--bs-secondary-color);
+  font-weight: 500;
+}
+
+.nav-pills {
+  --bs-nav-pills-link-active-bg: #4f46e5;
+}
+
+.page-link {
+  color: #4f46e5;
+}
+
+.page-item.active .page-link {
+  background: #4f46e5;
+  border-color: #4f46e5;
+}
+
+.progress {
+  border-radius: 999px;
+}
+
+.progress-bar {
+  background-color: #4f46e5;
+}
+
+.list-group {
+  --bs-list-group-border-radius: 0.75rem;
+}
+
+// Keyboard focus is always visible.
+:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

@@ -4,8 +4,8 @@ import { Component, input } from '@angular/core';
 @Component({
   selector: 'app-page-header',
   template: `
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-      <h1 class="h4 mb-0">{{ title() }}</h1>
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4 pb-3 border-bottom">
+      <h1 class="h3 mb-0">{{ title() }}</h1>
       <div class="d-flex flex-wrap gap-2"><ng-content /></div>
     </div>
   `,

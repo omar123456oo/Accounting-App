@@ -18,7 +18,7 @@ const STATEMENTS = ['/app/statements/income', '/app/statements/balance', '/app/s
 
 describe('Sidebar', () => {
   it('lists only the entries the user may see', () => {
-    expect(render(['journals.view', 'reports.view'])).toEqual(['/app', '/app/accounting/journals', '/app/accounting/reports', ...STATEMENTS]);
+    expect(render(['journals.view', 'reports.view'])).toEqual(['/app', '/app/analytics', '/app/accounting/journals', '/app/accounting/reports', ...STATEMENTS]);
   });
 
   it('shows the clients entry only with clients.view', () => {
@@ -35,7 +35,7 @@ describe('Sidebar', () => {
   });
 
   it.each([
-    [['ledger.view', 'journals.view', 'reports.view'], ['/app', '/app/accounting/accounts', '/app/accounting/periods', '/app/accounting/journals', '/app/accounting/reports', ...STATEMENTS]],
+    [['ledger.view', 'journals.view', 'reports.view'], ['/app', '/app/analytics', '/app/accounting/accounts', '/app/accounting/periods', '/app/accounting/journals', '/app/accounting/reports', ...STATEMENTS]],
     [['ledger.view'], ['/app', '/app/accounting/accounts', '/app/accounting/periods']],
     [['ledger.manage_accounts', 'journals.create'], ['/app']],
   ])('lists the accounting group in order, filtered by permission: %j', (permissions, expected) => {

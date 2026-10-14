@@ -228,7 +228,7 @@ export function buildRows(kind: StatementKind, data: FsData, from: string, to: s
       const open = data.balance(opening);
       const close = data.balance(to);
       const inc = data.income(from, to);
-      const profit = sections0(inc);
+      const profit = resultOf(inc);
       const dep = v(inc, 'is.depreciation');
       const dFixed = deltaAccounts(close, open, 'bs.fixed_assets', 1);
       const dRe = sub(v(close, 'bs.retained_earnings'), v(open, 'bs.retained_earnings'));
@@ -264,7 +264,7 @@ export function buildRows(kind: StatementKind, data: FsData, from: string, to: s
     default: {
       const open = data.balance(opening);
       const close = data.balance(to);
-      const profit = sections0(data.income(from, to));
+      const profit = resultOf(data.income(from, to));
       const comp = (b: Agg): string[] => {
         const capital = v(b, 'bs.capital');
         const retained = add(v(b, 'bs.retained_earnings'), v(b, 'bs.unclosed_result'));
@@ -305,7 +305,7 @@ export function buildRows(kind: StatementKind, data: FsData, from: string, to: s
 }
 
 /** Net result of the income aggregation: revenue + other income - all expenses. */
-function sections0(inc: Agg): string {
+export function resultOf(inc: Agg): string {
   return sub(add(v(inc, 'is.revenue'), v(inc, 'is.other_income')), sum([v(inc, 'is.cost_of_revenue'), v(inc, 'is.operating_expenses'), v(inc, 'is.depreciation'), v(inc, 'is.other_expenses')]));
 }
 
@@ -324,4 +324,9 @@ export function withComparison(rows: FsSection[], other: FsSection[]): FsSection
       return { ...r, compare: p, variance, variancePct: variance.map((d, i) => (isZero(p[i]) ? null : mulDiv(d, '100', abs(p[i]), 2))) };
     }),
   }));
+}
+
+/** Net result (profit or loss) of the posted books for a range: what the income statement shows as its last line. */
+export function periodResult(ctx: LedgerCtx, from: string, to: string): string {
+  return resultOf(new FsData(ctx, flatten(ctx, { includeUnposted: false })).income(from, to));
 }

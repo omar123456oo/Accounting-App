@@ -1,0 +1,19 @@
+{
+  "Registration is closed. Ask the office owner for an invitation.": "التسجيل مغلق. اطلب دعوة من مالك المكتب.",
+  "This field is required.": "هذا الحقل مطلوب.",
+  "Enter a valid email address.": "أدخل عنوان بريد إلكتروني صحيحًا.",
+  "This value is too long.": "القيمة أطول من المسموح.",
+  "The passwords do not match.": "كلمتا المرور غير متطابقتين.",
+  "Use at least 12 characters.": "استخدم 12 حرفًا على الأقل.",
+  "This password appears in known data breaches. Choose another.": "كلمة المرور هذه ظهرت في تسريبات بيانات معروفة. اختر غيرها.",
+  "An account with this email already exists.": "يوجد حساب بهذا البريد الإلكتروني بالفعل.",
+  "Confirm your e-mail address": "أكّد بريدك الإلكتروني",
+  "If this address has an unverified account, a new link is on its way.": "إذا كان لهذا العنوان حساب غير مؤكد فسيصله رابط جديد.",
+  "These credentials do not match our records.": "بيانات الدخول هذه لا تطابق سجلاتنا.",
+  "Too many failed attempts. The account is locked for 15 minutes.": "محاولات فاشلة كثيرة. الحساب مقفل لمدة 15 دقيقة.",
+  "Please verify your e-mail address first. Use the link we sent you.": "أكّد بريدك الإلكتروني أولًا باستخدام الرابط الذي أرسلناه إليك.",
+  "The verification code is required.": "رمز التحقق مطلوب.",
+  "The verification code is invalid.": "رمز التحقق غير صحيح.",
+  "Two-factor authentication is already enabled.": "التحقق بخطوتين مفعّل بالفعل.",
+  "Start the setup first.": "ابدأ الإعداد أولًا."
+}

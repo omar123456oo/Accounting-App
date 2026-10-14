@@ -83,7 +83,7 @@ type Dialog = 'reject' | 'approve' | 'credit' | 'recognize' | 'remind' | 'delete
         @if (can().cancel) {
           <button type="button" class="btn btn-outline-danger" [disabled]="busy()" (click)="dialog.set('cancel')">{{ 'commercial.docs.cancel' | translate }}</button>
         }
-        @if (can().edit) {
+        @if (can().remove) {
           <button type="button" class="btn btn-outline-danger" [disabled]="busy()" (click)="dialog.set('delete')">{{ 'common.delete' | translate }}</button>
         }
         <button type="button" class="btn btn-outline-secondary" (click)="print()">{{ 'accounting.reports.print' | translate }}</button>
@@ -220,11 +220,12 @@ export class InvoiceDetail {
     const has = (p: string) => this.auth.can(p);
     const open = i?.status === 'issued' || i?.status === 'partially_paid' || i?.status === 'overdue';
     return {
-      edit: i?.status === 'draft' && has('invoices.create'),
+      edit: i?.status === 'draft' && has('invoices.update'),
+      remove: i?.status === 'draft' && has('invoices.delete'),
       submit: i?.status === 'draft' && !!i.requiresApproval && has('invoices.create'),
       issue: i?.status === 'draft' && !i.requiresApproval && has('invoices.issue'),
       decide: i?.status === 'pending_approval' && has('invoices.approve'),
-      cancel: i?.status === 'pending_approval' && has('invoices.create'),
+      cancel: i?.status === 'pending_approval' && has('invoices.amend'),
       pay: open && has('payments.record'),
       credit: open && has('invoices.issue') && isPositive(i?.balance ?? '0'),
       remind: i?.status === 'overdue' && has('invoices.create'),

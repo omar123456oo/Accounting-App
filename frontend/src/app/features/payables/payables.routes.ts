@@ -31,7 +31,7 @@ export const PAYABLES_ROUTES: Routes = [
       { path: 'bills', pathMatch: 'full', ...guard('bills.view', { side: 'ap' }), loadComponent: () => import('../commercial/doc-list').then((m) => m.DocList) },
       { path: 'bills/new', canActivate: [permissionGuard], canDeactivate: [unsavedChangesGuard], data: { permission: 'bills.create' }, loadComponent: () => import('./bill-form').then((m) => m.BillForm) },
       { path: 'bills/:id', ...guard('bills.view'), loadComponent: () => import('./bill-detail').then((m) => m.BillDetail) },
-      { path: 'bills/:id/edit', canActivate: [permissionGuard], canDeactivate: [unsavedChangesGuard], data: { permission: 'bills.create' }, loadComponent: () => import('./bill-form').then((m) => m.BillForm) },
+      { path: 'bills/:id/edit', canActivate: [permissionGuard], canDeactivate: [unsavedChangesGuard], data: { permission: 'bills.update' }, loadComponent: () => import('./bill-form').then((m) => m.BillForm) },
       { path: 'payments', pathMatch: 'full', ...guard('bills.view', { side: 'ap' }), loadComponent: () => import('../commercial/payment-list').then((m) => m.PaymentList) },
       { path: 'payments/new', canActivate: [permissionGuard], canDeactivate: [unsavedChangesGuard], data: { permission: 'payments.record', side: 'ap' }, loadComponent: () => import('../commercial/payment-form').then((m) => m.PaymentForm) },
       { path: 'payments/:id', ...guard('bills.view', { side: 'ap' }), loadComponent: () => import('../commercial/payment-detail').then((m) => m.PaymentDetail) },

@@ -3,22 +3,27 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../core/auth/auth.service';
 import { AccountingSummary } from '../accounting/accounting-summary';
 import { CommercialSummaryWidget } from '../commercial/commercial-summary';
+import { ComplianceSummaryWidget } from '../tax/compliance-summary';
+import { OfficeSummary } from './office-summary';
 import { WorkSummary } from './work-summary';
 
-/** Honest dashboard: only the work counts that exist today, no fake widgets. */
+/** Honest dashboard: every widget shows real counts and appears only for users who may see them. */
 @Component({
   selector: 'app-dashboard',
-  imports: [TranslatePipe, WorkSummary, AccountingSummary, CommercialSummaryWidget],
+  imports: [TranslatePipe, WorkSummary, AccountingSummary, CommercialSummaryWidget, OfficeSummary, ComplianceSummaryWidget],
   template: `
-    <h1 class="h4 mb-3">{{ 'nav.dashboard' | translate }}</h1>
+    <h1 class="h3 mb-4">{{ 'nav.dashboard' | translate }}</h1>
     <app-work-summary />
+    <app-office-summary />
     @if (auth.can('ledger.view')) {
       <app-accounting-summary />
     }
     @if (auth.can('ledger.view') && (auth.can('invoices.view') || auth.can('bills.view'))) {
       <app-commercial-summary />
     }
-    <div class="alert alert-info" role="status">{{ 'dashboard.laterPhases' | translate }}</div>
+    @if (auth.can('tax.view')) {
+      <app-compliance-summary />
+    }
   `,
 })
 export class Dashboard {

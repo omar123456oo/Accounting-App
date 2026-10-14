@@ -1,4 +1,5 @@
 import { COMPLIANCE_MESSAGES, ComplianceKey } from './mock-messages-compliance';
+import { HRM_MESSAGES, HrmKey } from './mock-messages-hrm';
 
 type BaseKey = 'invalidCredentials' | 'otpRequired' | 'otpInvalid' | 'locked' | 'csrf' | 'unauthenticated' | 'notFound' | 'required' | 'forbidden' | 'invalidTransition' | 'digitsOnly' | 'invalidDecimal' | 'invalidChoice' | 'invalidDate' | 'invalidNumber' | 'invalidEmail'
   | 'conflict'
@@ -61,9 +62,31 @@ type BaseKey = 'invalidCredentials' | 'otpRequired' | 'otpInvalid' | 'locked' | 
   | 'receiptInvalid'
   | 'partyArchived'
   | 'docNotOpen'
+  | 'roleNameTaken'
+  | 'roleSystem'
+  | 'roleInUse'
+  | 'roleLocked'
+  | 'roleSelf'
+  | 'roleSuperOnly'
+  | 'roleLastSuper'
+  | 'leaveOverlap'
+  | 'leaveBalance'
+  | 'leaveYear'
+  | 'leaveNoDays'
+  | 'leaveSelf'
+  | 'payrollFinal'
+  | 'payrollEmpty'
+  | 'payrollMonth'
+  | 'notEmployee'
+  | 'ticketClosed'
+  | 'appointmentConflict'
+  | 'timesheetLocked'
+  | 'timesheetEmpty'
+  | 'timesheetSelf'
+  | 'timesheetDay'
   | `mappingMissing:${string}`;
 
-export type MockMessageKey = BaseKey | ComplianceKey;
+export type MockMessageKey = BaseKey | ComplianceKey | HrmKey;
 
 type StaticKey = Exclude<BaseKey, `mappingMissing:${string}`>;
 
@@ -77,6 +100,28 @@ const MESSAGES: Record<'ar' | 'en', Record<StaticKey, string>> = {
     unauthenticated: 'Unauthenticated.',
     notFound: 'Not found.',
     required: 'This field is required.',
+    roleNameTaken: 'A role with this name already exists.',
+    roleSystem: 'Built-in roles cannot be deleted.',
+    roleInUse: 'Remove this role from its users before deleting it.',
+    roleLocked: 'The Owner role always holds every permission and cannot be changed.',
+    roleSelf: 'You cannot change your own roles.',
+    roleSuperOnly: 'Only a Super Admin can grant or remove the Super Admin role.',
+    roleLastSuper: 'There must always be at least one Super Admin.',
+    leaveOverlap: "This person already has leave on some of these dates.",
+    leaveBalance: "Not enough leave balance for this type.",
+    leaveYear: "A leave request must stay within one calendar year; split it in two.",
+    leaveNoDays: "These dates contain no working days.",
+    leaveSelf: "You cannot decide your own leave request.",
+    payrollFinal: "This payroll run is final and cannot be changed.",
+    payrollEmpty: "There are no payslips to finalise.",
+    payrollMonth: "Choose a month that is not in the future.",
+    notEmployee: "This person is not an active employee.",
+    ticketClosed: "This conversation is closed. Open a new one.",
+    appointmentConflict: "You already have a confirmed appointment at that time.",
+    timesheetLocked: "Submitted or approved time cannot be changed.",
+    timesheetEmpty: "There is no unsubmitted time in that week.",
+    timesheetSelf: "You cannot decide your own time sheet.",
+    timesheetDay: "A day cannot hold more than 24 hours.",
     forbidden: 'You do not have permission to do this.',
     invalidTransition: 'This status change is not allowed.',
     digitsOnly: 'Enter digits only.',
@@ -155,6 +200,28 @@ const MESSAGES: Record<'ar' | 'en', Record<StaticKey, string>> = {
     unauthenticated: 'غير مصرح.',
     notFound: 'غير موجود.',
     required: 'هذا الحقل مطلوب.',
+    roleNameTaken: 'يوجد دور بهذا الاسم بالفعل.',
+    roleSystem: 'لا يمكن حذف الأدوار المدمجة.',
+    roleInUse: 'أزل هذا الدور من مستخدميه قبل حذفه.',
+    roleLocked: 'دور المالك يملك كل الصلاحيات دائمًا ولا يمكن تعديله.',
+    roleSelf: 'لا يمكنك تغيير أدوارك أنت.',
+    roleSuperOnly: 'لا يمنح دور المدير الأعلى أو يسحبه إلا مدير أعلى.',
+    roleLastSuper: 'يجب أن يبقى مدير أعلى واحد على الأقل.',
+    leaveOverlap: "لدى هذا الشخص إجازة في بعض هذه التواريخ.",
+    leaveBalance: "رصيد الإجازة غير كافٍ لهذا النوع.",
+    leaveYear: "يجب أن يكون طلب الإجازة ضمن سنة ميلادية واحدة؛ قسّمه إلى طلبين.",
+    leaveNoDays: "لا تحتوي هذه التواريخ على أيام عمل.",
+    leaveSelf: "لا يمكنك البت في طلب إجازتك أنت.",
+    payrollFinal: "كشف الرواتب هذا نهائي ولا يمكن تغييره.",
+    payrollEmpty: "لا توجد قسائم رواتب لاعتمادها.",
+    payrollMonth: "اختر شهرًا ليس في المستقبل.",
+    notEmployee: "هذا الشخص ليس موظفًا نشطًا.",
+    ticketClosed: "هذه المحادثة مغلقة. ابدأ محادثة جديدة.",
+    appointmentConflict: "لديك موعد مؤكد في هذا الوقت بالفعل.",
+    timesheetLocked: "لا يمكن تغيير وقت مُرسل أو معتمد.",
+    timesheetEmpty: "لا يوجد وقت غير مُرسل في هذا الأسبوع.",
+    timesheetSelf: "لا يمكنك البت في سجل وقتك أنت.",
+    timesheetDay: "لا يمكن أن يحوي اليوم أكثر من 24 ساعة.",
     forbidden: 'ليست لديك صلاحية للقيام بذلك.',
     invalidTransition: 'تغيير الحالة هذا غير مسموح.',
     digitsOnly: 'أدخل أرقامًا فقط.',
@@ -263,5 +330,5 @@ export function mockMessage(lang: string | null, key: MockMessageKey): string {
     const name = MAPPING_LABELS[l][key.slice('mappingMissing:'.length)] ?? key.slice('mappingMissing:'.length);
     return l === 'en' ? `The account mapping is missing: ${name}. Configure it in the account mappings first.` : `ربط الحساب غير مضبوط: ${name}. اضبطه في شاشة ربط الحسابات أولًا.`;
   }
-  return (COMPLIANCE_MESSAGES[l] as Record<string, string>)[key] ?? MESSAGES[l][key as StaticKey];
+  return (COMPLIANCE_MESSAGES[l] as Record<string, string>)[key] ?? (HRM_MESSAGES[l] as Record<string, string>)[key] ?? MESSAGES[l][key as StaticKey];
 }

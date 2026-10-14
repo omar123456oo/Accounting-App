@@ -30,7 +30,7 @@ export const INVOICING_ROUTES: Routes = [
       { path: 'invoices', pathMatch: 'full', data: { permission: 'invoices.view', side: 'ar' }, canActivate: [permissionGuard], loadComponent: () => import('../commercial/doc-list').then((m) => m.DocList) },
       { path: 'invoices/new', canActivate: [permissionGuard], canDeactivate: [unsavedChangesGuard], data: { permission: 'invoices.create' }, loadComponent: () => import('./invoice-form').then((m) => m.InvoiceForm) },
       { path: 'invoices/:id', ...guard('invoices.view'), loadComponent: () => import('./invoice-detail').then((m) => m.InvoiceDetail) },
-      { path: 'invoices/:id/edit', canActivate: [permissionGuard], canDeactivate: [unsavedChangesGuard], data: { permission: 'invoices.create' }, loadComponent: () => import('./invoice-form').then((m) => m.InvoiceForm) },
+      { path: 'invoices/:id/edit', canActivate: [permissionGuard], canDeactivate: [unsavedChangesGuard], data: { permission: 'invoices.update' }, loadComponent: () => import('./invoice-form').then((m) => m.InvoiceForm) },
       { path: 'quotations', pathMatch: 'full', ...guard('invoices.view'), loadComponent: () => import('./quotation-list').then((m) => m.QuotationList) },
       { path: 'quotations/new', canActivate: [permissionGuard], canDeactivate: [unsavedChangesGuard], data: { permission: 'invoices.create', mode: 'quotation' }, loadComponent: () => import('./invoice-form').then((m) => m.InvoiceForm) },
       { path: 'customers', data: { permission: 'invoices.view', side: 'ar' }, canActivate: [permissionGuard], loadComponent: () => import('../commercial/parties-page').then((m) => m.PartiesPage) },

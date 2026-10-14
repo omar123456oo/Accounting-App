@@ -3,7 +3,7 @@ import { mockToday } from './mock-clock';
 import { Rules, validate } from './mock-clients-rules';
 import { journalDto, linesError, needsHighApproval, parseLines, readiness, swapped } from './mock-ledger-journal-rules';
 import { LedgerCtx, StoredJournal, isPosted } from './mock-ledger-store';
-import { MockResult, fail, invalid, need, ok, pageQuery, paged } from './mock-types';
+import { MockResult, fail, invalid, need, ok, pageQuery, paged, docPermission } from './mock-types';
 
 const RULES: Rules = {
   entryType: { kind: ['standard', 'opening'] },
@@ -23,7 +23,7 @@ export function handleJournals(ctx: LedgerCtx, rest: string[]): MockResult {
     if (req.method === 'GET') return need(user, 'journals.view') ?? list(ctx);
     return req.method === 'POST' ? (need(user, 'journals.create') ?? create(ctx)) : fail(405, 'notFound');
   }
-  const denied = need(user, req.method === 'GET' ? 'journals.view' : 'journals.create');
+  const denied = need(user, docPermission('journals', req.method));
   const j = store.journals.find((x) => x.id === id && x.ledgerEntityId === entity.id);
   if (action && req.method === 'POST') return actionOn(ctx, j, action);
   if (denied) return denied;
@@ -97,7 +97,7 @@ function remove(ctx: LedgerCtx, j: StoredJournal): MockResult {
 }
 
 function actionOn(ctx: LedgerCtx, j: StoredJournal | undefined, action: string): MockResult {
-  const permission = { submit: 'journals.create', approve: 'journals.approve', reject: 'journals.approve', post: 'journals.post', reverse: 'journals.post' }[action];
+  const permission = { submit: 'journals.create', approve: 'journals.approve', reject: 'journals.approve', post: 'journals.post', reverse: 'journals.amend' }[action];
   if (!permission) return fail(404, 'notFound');
   const denied = need(ctx.user, permission);
   if (denied) return denied;

@@ -41,6 +41,15 @@ export class MockDocuments implements MockModule, DocumentLookup {
     return this.store.documents.some((d) => d.id === documentId && d.clientId === clientId);
   }
 
+  /** A portal user's own documents: name and review state only, no versions, hashes or internal comments. */
+  portalDocuments(clientId: string): Array<Pick<DocumentRecord, 'id' | 'name' | 'category' | 'year' | 'reviewStatus'>> {
+    return this.store.documents.filter((d) => d.clientId === clientId).map(({ id, name, category, year, reviewStatus }) => ({ id, name, category, year, reviewStatus }));
+  }
+
+  portalRequests(clientId: string): DocumentRequest[] {
+    return this.store.requests.filter((r) => r.clientId === clientId).map((r) => this.requestDto(r));
+  }
+
   /** Counts for other modules (dashboard-style lookups): documents the user may see. */
   visibleDocuments(user: DemoUser): StoredDocument[] {
     return this.store.documents.filter((d) => !!this.clients.find(d.clientId, user));

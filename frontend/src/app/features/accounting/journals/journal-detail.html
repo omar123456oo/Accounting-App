@@ -45,7 +45,7 @@
     @if (can().reverse && !e.reversedById) {
       <button type="button" class="btn btn-outline-danger" [disabled]="busy()" (click)="dialog.set('reverse')">{{ 'accounting.journals.reverse.title' | translate }}</button>
     }
-    @if (can().edit) {
+    @if (can().remove) {
       <button type="button" class="btn btn-outline-danger" [disabled]="busy()" (click)="dialog.set('delete')">{{ 'common.delete' | translate }}</button>
     }
   </div>

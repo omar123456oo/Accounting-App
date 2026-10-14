@@ -38,6 +38,9 @@ export function need(user: DemoUser, permission: string): MockResult | null {
   return user.profile.permissions.includes(permission) ? null : fail(403, 'forbidden');
 }
 
+/** The permission an HTTP verb needs on a document type: GET view, PATCH/PUT edit, DELETE delete, anything else create. */
+export const docPermission = (doc: string, method: string): string => `${doc}.${({ GET: 'view', PATCH: 'update', PUT: 'update', DELETE: 'delete' } as Record<string, string>)[method] ?? 'create'}`;
+
 export interface PageQuery {
   page: number;
   pageSize: number;

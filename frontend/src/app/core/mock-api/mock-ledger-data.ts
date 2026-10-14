@@ -1,6 +1,7 @@
 import { JournalEvent, JournalStatus, JournalType } from '../../features/accounting/accounting.models';
 import { normalize } from '../money/money';
 import { seedCommercial } from './mock-commercial-data';
+import { seedTax } from './mock-tax-data';
 import { LedgerStore, StoredJournal } from './mock-ledger-store';
 
 /**
@@ -132,6 +133,7 @@ export function seedLedgerStore(): LedgerStore {
       periods[1].status = 'closed';
       periods[1].history.push({ actor: 'Demo Chief Accountant', action: 'closed', at: '2026-03-15T08:00:00.000Z' });
     }
+    seedTax(store, e.id);
   }
   return store;
 }

@@ -9,3 +9,11 @@
   min-inline-size: 12rem;
   z-index: 1050;
 }
+
+.app-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1020;
+  background: rgb(255 255 255 / 85%);
+  backdrop-filter: blur(8px);
+}

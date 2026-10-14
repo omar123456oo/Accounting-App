@@ -1,4 +1,4 @@
-import { RegisterBody, registerOffice } from './mock-register';
+import { RegisterBody, registerOffice, restoreRegisteredOffices } from './mock-register';
 import { HttpErrorResponse, HttpEvent, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Observable, from, of, switchMap, throwError } from 'rxjs';
 import { AuthUser } from '../auth/auth.models';
@@ -10,6 +10,7 @@ import { MockMessageKey, mockMessage } from './mock-messages';
 
 const API = '/api/v1/auth';
 const STAFF_API = '/api/v1/staff/';
+const PORTAL_API = '/api/v1/portal/';
 const MAX_FAILURES = 5;
 const LOCK_MS = 15 * 60 * 1000;
 const COOKIE = 'XSRF-TOKEN';
@@ -23,6 +24,10 @@ interface Body {
 
 /** In-memory implementation of the Task 3 auth contracts. The session lives and dies with the page. */
 export class MockBackend {
+  constructor() {
+    restoreRegisteredOffices();
+  }
+
   private sessionUserId: string | null = null;
   private readonly failures = new Map<string, number>();
   private readonly lockedUntil = new Map<string, number>();
@@ -56,6 +61,10 @@ export class MockBackend {
         const result = this.staff.handle(request, u);
         return result instanceof Promise ? from(result).pipe(switchMap((r) => this.respond(r))) : this.respond(result);
       });
+    }
+    if (path.startsWith(PORTAL_API)) {
+      const request = { method: req.method, path: path.slice(PORTAL_API.length), query: new URL(req.urlWithParams, 'http://mock.local').searchParams, body: this.bodyOf(req.body) };
+      return this.withUser((u) => this.respond(this.staff.portal.handle(request, u)));
     }
     const body = (req.body ?? {}) as Body;
     switch (`${req.method} ${path}`) {

@@ -75,11 +75,12 @@ export class JournalDetail {
     const e = this.entry();
     const has = (p: string) => this.auth.can(p);
     return {
-      edit: e?.status === 'draft' && has('journals.create'),
+      edit: e?.status === 'draft' && has('journals.update'),
+      remove: e?.status === 'draft' && has('journals.delete'),
       submit: e?.status === 'draft' && has('journals.create'),
       decide: e?.status === 'pending_approval' && has('journals.approve'),
       post: e?.status === 'approved' && has('journals.post'),
-      reverse: e?.status === 'posted' && !e.reversalOfId && has('journals.post'),
+      reverse: e?.status === 'posted' && !e.reversalOfId && has('journals.amend'),
     };
   });
 
