@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import '../models/index.js';
 import '../hr/models.js';
 import '../hr/leave.models.js';
+import '../core/models.js';
 
 /** Creates collections and builds every declared index. Run on deploy (npm run db:indexes). */
 export async function syncAllIndexes(): Promise<void> {

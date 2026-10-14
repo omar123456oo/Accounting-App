@@ -14,3 +14,27 @@ assert.throws(() => mergeFields([f('a')], [f('a')]), /duplicate fieldname: a/);
 assert.equal(mergeFields([f('a')], [f('h', { hidden: true })])[1].hidden, true);
 
 console.log('core-smoke: pure checks passed');
+
+// ---- database: models ----------------------------------------------------------------------------------------------------
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
+import { Types } from 'mongoose';
+const mem = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
+process.env.MONGODB_URI = mem.getUri('accounting');
+const { connectDb, disconnectDb } = await import('../db/connection.js');
+const { syncAllIndexes } = await import('../db/indexes.js');
+const { CustomField } = await import('../core/models.js');
+await connectDb();
+await syncAllIndexes();
+
+try {
+  const orgA = new Types.ObjectId();
+  const orgB = new Types.ObjectId();
+  const row = (organizationId: Types.ObjectId) => ({ organizationId, doctype: 'leave_request', fieldname: 'ticket_ref', label: 'Ticket', fieldtype: 'text' });
+  await CustomField.create(row(orgA));
+  await assert.rejects(CustomField.create(row(orgA)), (e: { code?: number }) => e.code === 11000);
+  await CustomField.create(row(orgB));
+  console.log('core-smoke: model checks passed');
+} finally {
+  await disconnectDb();
+  await mem.stop();
+}
