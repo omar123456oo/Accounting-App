@@ -1,0 +1,22 @@
+:host {
+  flex: 1 1 auto;
+  max-inline-size: 32rem;
+  min-inline-size: 0;
+}
+
+.results {
+  position: absolute;
+  inset-block-start: calc(100% + 0.25rem);
+  inset-inline: 0;
+  max-block-size: 70vh;
+  overflow-y: auto;
+  z-index: 1060;
+}
+
+.result {
+  color: var(--bs-body-color);
+
+  &.active {
+    background: var(--bs-primary-bg-subtle);
+  }
+}

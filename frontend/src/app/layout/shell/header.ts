@@ -3,14 +3,17 @@ import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../core/auth/auth.service';
 import { LanguageSwitch } from '../../shared/components/language-switch/language-switch';
+import { GlobalSearch } from './global-search';
 import { NotificationBell } from '../../features/engage/notification-bell';
 
 @Component({
   selector: 'app-header',
-  imports: [LanguageSwitch, NotificationBell, TranslatePipe],
+  imports: [GlobalSearch, LanguageSwitch, NotificationBell, TranslatePipe],
   styleUrl: './header.scss',
   template: `
-    <header class="app-header d-flex align-items-center justify-content-end gap-3 px-4 py-2 border-bottom">
+    <header class="app-header d-flex align-items-center gap-3 px-4 py-2 border-bottom">
+      <app-global-search />
+      <span class="flex-grow-1"></span>
       <app-notification-bell side="staff" />
       <app-language-switch />
       <div class="user-menu">

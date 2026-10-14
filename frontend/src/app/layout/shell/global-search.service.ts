@@ -29,7 +29,7 @@ export interface SearchGroup {
 }
 
 /** Screens that are not in the sidebar but people look for by name. */
-const EXTRA_PAGES: ReadonlyArray<{ labelKey: string; route: string; permission?: string }> = [
+const EXTRA_PAGES: ReadonlyArray<{ labelKey: string; route: string; permission?: string; groupKey?: string }> = [
   { labelKey: 'search.pages.newClient', route: '/app/clients/new', permission: 'clients.create' },
   { labelKey: 'search.pages.newTask', route: '/app/tasks/new', permission: 'tasks.manage' },
   { labelKey: 'search.pages.newJournal', route: '/app/accounting/journals/new', permission: 'journals.create' },
@@ -74,7 +74,7 @@ export class GlobalSearchService {
     const seen = new Set<string>();
     return [...NAV_ITEMS, ...EXTRA_PAGES]
       .filter((p) => !p.permission || this.auth.can(p.permission))
-      .map((p) => ({ route: p.route, title: this.translate.instant(p.labelKey) as string, group: 'groupKey' in p && p.groupKey ? (this.translate.instant(p.groupKey) as string) : undefined }))
+      .map((p) => ({ route: p.route, title: this.translate.instant(p.labelKey) as string, group: p.groupKey ? (this.translate.instant(p.groupKey) as string) : undefined }))
       .filter((p) => norm(p.title).includes(t) && !seen.has(p.route) && !!seen.add(p.route))
       .slice(0, LIMIT)
       .map((p): SearchHit => ({ kind: 'page', title: p.title, subtitle: p.group, route: p.route }));

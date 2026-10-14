@@ -2172,5 +2172,35 @@
         "consultant": "Consultant"
       }
     }
+  },
+  "search": {
+    "label": "Search the application",
+    "placeholder": "Search clients, documents, invoices, people…",
+    "results": "Search results",
+    "none": "Nothing found for “{{term}}”.",
+    "kinds": {
+      "page": "Pages",
+      "client": "Clients",
+      "document": "Documents",
+      "task": "Tasks",
+      "invoice": "Invoices",
+      "bill": "Bills",
+      "journal": "Journal entries",
+      "employee": "Employees",
+      "ticket": "Tickets"
+    },
+    "pages": {
+      "newClient": "New client",
+      "newTask": "New task",
+      "newJournal": "New journal entry",
+      "newInvoice": "New invoice",
+      "hrDashboard": "HR dashboard",
+      "organization": "Organization structure",
+      "contracts": "Employment contracts",
+      "leave": "Leave requests",
+      "payroll": "Payroll",
+      "roles": "Roles and permissions",
+      "users": "User roles"
+    }
   }
 }
