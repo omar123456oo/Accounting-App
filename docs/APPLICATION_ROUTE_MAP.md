@@ -15,7 +15,7 @@ generated_by: "scripts/docs/scan.mjs"
 > Scope: Angular routes under `frontend/src/app`. A guard shown here is a screen restriction only; enforcement belongs to the backend.
 
 
-**110 routes.**
+**116 routes.**
 
 ## Routes
 
@@ -26,7 +26,7 @@ generated_by: "scripts/docs/scan.mjs"
 | `/app` | — | (lazy children) | `frontend/src/app/app.routes.ts:20` |
 | `/app` | — | Shell | `frontend/src/app/layout/shell/shell.routes.ts:6` |
 | `/app` | — | Dashboard | `frontend/src/app/layout/shell/shell.routes.ts:10` |
-| `/app/accounting` | — | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:22` |
+| `/app/accounting` | — | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:24` |
 | `/app/accounting` | — | AccountingLayout | `frontend/src/app/features/accounting/accounting.routes.ts:8` |
 | `/app/accounting` | — | redirect → journals | `frontend/src/app/features/accounting/accounting.routes.ts:12` |
 | `/app/accounting/accounts` | ledger.view | AccountsPage | `frontend/src/app/features/accounting/accounting.routes.ts:13` |
@@ -59,6 +59,9 @@ generated_by: "scripts/docs/scan.mjs"
 | `/app/clients/:id` | clients.view | ClientDetail | `frontend/src/app/features/clients/clients.routes.ts:14` |
 | `/app/clients/:id/edit` | clients.update | ClientForm | `frontend/src/app/features/clients/clients.routes.ts:15` |
 | `/app/clients/new` | clients.create | ClientForm | `frontend/src/app/features/clients/clients.routes.ts:7` |
+| `/app/doctypes` | — | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:22` |
+| `/app/doctypes` | admin.settings | DocTypeList | `frontend/src/app/features/core/core.routes.ts:6` |
+| `/app/doctypes/:name/customize` | admin.settings | CustomizeForm | `frontend/src/app/features/core/core.routes.ts:7` |
 | `/app/documents` | documents.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:12` |
 | `/app/documents` | documents.view | DocumentList | `frontend/src/app/features/documents/documents.routes.ts:4` |
 | `/app/forecast` | forecast.view | ForecastPage | `frontend/src/app/layout/shell/shell.routes.ts:19` |
@@ -73,7 +76,7 @@ generated_by: "scripts/docs/scan.mjs"
 | `/app/hr/organization` | hr.employees.view | OrganizationPage | `frontend/src/app/features/hr/hr.routes.ts:13` |
 | `/app/hr/payroll` | payroll.view | PayrollPage | `frontend/src/app/features/hr/hr.routes.ts:19` |
 | `/app/hr/settings` | hr.manage | HrSettingsPage | `frontend/src/app/features/hr/hr.routes.ts:20` |
-| `/app/invoicing` | invoices.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:24` |
+| `/app/invoicing` | invoices.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:26` |
 | `/app/invoicing` | invoices.view | AccountingLayout | `frontend/src/app/features/invoicing/invoicing.routes.ts:24` |
 | `/app/invoicing` | invoices.view | redirect → invoices | `frontend/src/app/features/invoicing/invoicing.routes.ts:29` |
 | `/app/invoicing/credit-notes` | invoices.view | CreditList | `frontend/src/app/features/invoicing/invoicing.routes.ts:41` |
@@ -89,7 +92,7 @@ generated_by: "scripts/docs/scan.mjs"
 | `/app/invoicing/quotations/new` | invoices.create | InvoiceForm | `frontend/src/app/features/invoicing/invoicing.routes.ts:35` |
 | `/app/invoicing/recurring` | invoices.view | RecurringPage | `frontend/src/app/features/invoicing/invoicing.routes.ts:42` |
 | `/app/invoicing/statements/:partyId` | invoices.view | StatementPage | `frontend/src/app/features/invoicing/invoicing.routes.ts:37` |
-| `/app/payables` | bills.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:25` |
+| `/app/payables` | bills.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:27` |
 | `/app/payables` | bills.view | AccountingLayout | `frontend/src/app/features/payables/payables.routes.ts:25` |
 | `/app/payables` | bills.view | redirect → bills | `frontend/src/app/features/payables/payables.routes.ts:30` |
 | `/app/payables/bills` | bills.view | DocList | `frontend/src/app/features/payables/payables.routes.ts:31` |
@@ -105,10 +108,13 @@ generated_by: "scripts/docs/scan.mjs"
 | `/app/payables/schedule` | bills.view | SchedulePage | `frontend/src/app/features/payables/payables.routes.ts:38` |
 | `/app/payables/statements/:partyId` | bills.view | StatementPage | `frontend/src/app/features/payables/payables.routes.ts:40` |
 | `/app/payables/suppliers` | bills.view | PartiesPage | `frontend/src/app/features/payables/payables.routes.ts:39` |
-| `/app/settings` | settings.manage | SettingsPage | `frontend/src/app/layout/shell/shell.routes.ts:31` |
-| `/app/settings/roles` | settings.manage | RolesPage | `frontend/src/app/layout/shell/shell.routes.ts:32` |
-| `/app/settings/users` | settings.manage | UserRolesPage | `frontend/src/app/layout/shell/shell.routes.ts:33` |
-| `/app/statements` | reports.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:23` |
+| `/app/records` | — | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:23` |
+| `/app/records/:doctype` | — | RecordList | `frontend/src/app/features/core/core.routes.ts:12` |
+| `/app/records/:doctype/:name` | — | RecordForm | `frontend/src/app/features/core/core.routes.ts:13` |
+| `/app/settings` | settings.manage | SettingsPage | `frontend/src/app/layout/shell/shell.routes.ts:33` |
+| `/app/settings/roles` | settings.manage | RolesPage | `frontend/src/app/layout/shell/shell.routes.ts:34` |
+| `/app/settings/users` | settings.manage | UserRolesPage | `frontend/src/app/layout/shell/shell.routes.ts:35` |
+| `/app/statements` | reports.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:25` |
 | `/app/statements` | reports.view | AccountingLayout | `frontend/src/app/features/reports-fs/fs.routes.ts:22` |
 | `/app/statements` | reports.view | redirect → income | `frontend/src/app/features/reports-fs/fs.routes.ts:27` |
 | `/app/statements/mapping` | mappings.manage | FsMappingPage | `frontend/src/app/features/reports-fs/fs.routes.ts:32` |
@@ -163,4 +169,5 @@ generated_by: "scripts/docs/scan.mjs"
 | nav.cashFlow | `/app/statements/cashflow` | reports.view | nav.statements |
 | nav.equityChanges | `/app/statements/equity` | reports.view | nav.statements |
 | nav.statementMapping | `/app/statements/mapping` | mappings.manage | nav.statements |
+| nav.docTypes | `/app/doctypes` | admin.settings | — |
 | nav.settings | `/app/settings` | settings.manage | — |

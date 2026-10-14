@@ -44,7 +44,7 @@ The search box in the page header.
 
 ## Records of admin-made document types
 
-The `record` group calls `GET /api/v1/staff/core/search?q=&type=`. The server returns at most five records per type, only for types the caller may view, matching the term literally (regex characters are escaped) in the type's `searchFields`. Tenant isolation and permission filtering are tested. On the mock API this path does not exist (the group is simply empty).
+The `record` group calls `GET /api/v1/staff/core/search?q=&type=`. The server returns at most five records per type, only for types the caller may view, matching the term literally (regex characters are escaped) in the type's `searchFields`. Tenant isolation and permission filtering are tested. On the mock API this path does not exist (the group is simply empty). Exercised in Chrome against the real API: typing a record's title showed it under "Records", clicking it opened `/app/records/<type>/<name>`, `record: abc` showed only that group, and the term then appeared in recent searches.
 
 ## Verification
 

@@ -22,18 +22,23 @@ A document type (DocType) describes a kind of document: its fields, who may see 
 | Read the merged field list of a document type | Implemented and tested |
 | Add, reorder, hide or require custom fields on a document type (API) | Implemented and tested |
 | Create and delete admin-made document types (API) | Implemented and tested |
-| Search over records of admin-made types (API) | Implemented and tested; no records can be created yet, so it returns nothing in real use |
-| Screens to customize forms or create document types | **Not built** |
-| Create, edit and list records of admin-made types | **Not built** |
+| Create, read, update, delete and list records of admin-made types (API) | Implemented and tested |
+| Search over records of admin-made types (API) | Implemented and tested |
+| Screens: document type list and creation, customize form, record list and record form | Implemented; unit-tested and exercised once end to end in Chrome against the real API (see each feature's verification section). They need the real API: the mock API does not serve them |
 | Built-in screens (for example leave) showing custom fields | **Not built**: custom fields are stored and returned by the API but no screen reads them and the leave API does not store their values |
 | Workflow, client scripts, server scripts | **Not built** |
 
 ## Features
 
+- [Manage records of a document type](features/manage-records.md)
 - [Customize a document type](features/customize-doctype.md)
 - [Create an admin-made document type](features/create-doctype.md)
 - [Read document type metadata](features/doctype-metadata.md)
 - Search over records is documented with the [global search](../search/features/global-search.md).
+
+## Navigation
+
+Sidebar entry **Document types** (`/app/doctypes`, shown to holders of `admin.settings`); from there each type links to its customize form (`/app/doctypes/<name>/customize`) and its records (`/app/records/<name>`, also reached from search). These pages sit outside **Settings** on purpose: the Settings section is guarded by `settings.manage`, a permission name the backend does not define, so in real-API mode nobody can open it yet. That mismatch is not fixed.
 
 ## Permissions
 
@@ -41,8 +46,10 @@ A document type (DocType) describes a kind of document: its fields, who may see 
 |---|---|---|
 | Customize, create or delete document types | `admin.settings` | Backend route (`can('admin.settings')`) |
 | Read metadata of a type | the type's own `viewPermission` | Backend handler; unknown and not-permitted both answer 404 |
+| Read records of a type | the type's `viewPermission` | Backend handler (404 otherwise) |
+| Create, change, delete records | the type's `managePermission` (set at creation; defaults to `admin.settings`) | Backend handler (403) |
 
-Roles holding `admin.settings` are listed in the [permissions matrix](../../PERMISSIONS_MATRIX.md). Note the Angular app guards its settings screens with `settings.manage`, a different name that the backend does not define; reconcile the two before building the customization screens.
+Roles holding `admin.settings` are listed in the [permissions matrix](../../PERMISSIONS_MATRIX.md).
 
 ## Built-in document types
 

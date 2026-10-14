@@ -15,7 +15,7 @@ generated_by: "scripts/docs/scan.mjs"
 > Scope: `backend-mongo` only. The Angular app uses an in-memory mock API for every module not listed here (see [SYSTEM_OVERVIEW](SYSTEM_OVERVIEW.md)).
 
 
-**49 endpoint definitions found; 49 reachable from `app.ts`.**
+**54 endpoint definitions found; 54 reachable from `app.ts`.**
 
 ## Endpoints
 
@@ -30,10 +30,15 @@ generated_by: "scripts/docs/scan.mjs"
 | GET | `/api/v1/me/hrm/employee` | — | no | `backend-mongo/src/hr/employee.routes.ts:227` |
 | GET | `/api/v1/staff/core/customize/:doctype` | admin.settings | no | `backend-mongo/src/core/customize.routes.ts:54` |
 | PUT | `/api/v1/staff/core/customize/:doctype` | admin.settings | yes | `backend-mongo/src/core/customize.routes.ts:60` |
-| GET | `/api/v1/staff/core/doctypes` | — | no | `backend-mongo/src/core/meta.routes.ts:16` |
+| GET | `/api/v1/staff/core/doctypes` | — | no | `backend-mongo/src/core/meta.routes.ts:20` |
 | POST | `/api/v1/staff/core/doctypes` | admin.settings | yes | `backend-mongo/src/core/customize.routes.ts:81` |
-| DELETE | `/api/v1/staff/core/doctypes/:name` | admin.settings | no | `backend-mongo/src/core/customize.routes.ts:108` |
+| DELETE | `/api/v1/staff/core/doctypes/:name` | admin.settings | no | `backend-mongo/src/core/customize.routes.ts:110` |
 | GET | `/api/v1/staff/core/meta/:doctype` | — | no | `backend-mongo/src/core/meta.routes.ts:9` |
+| GET | `/api/v1/staff/core/records/:doctype` | — | no | `backend-mongo/src/core/records.routes.ts:80` |
+| POST | `/api/v1/staff/core/records/:doctype` | — | yes | `backend-mongo/src/core/records.routes.ts:98` |
+| DELETE | `/api/v1/staff/core/records/:doctype/:name` | — | no | `backend-mongo/src/core/records.routes.ts:130` |
+| GET | `/api/v1/staff/core/records/:doctype/:name` | — | no | `backend-mongo/src/core/records.routes.ts:91` |
+| PUT | `/api/v1/staff/core/records/:doctype/:name` | — | yes | `backend-mongo/src/core/records.routes.ts:116` |
 | GET | `/api/v1/staff/core/search` | — | no | `backend-mongo/src/core/search.routes.ts:14` |
 | GET | `/api/v1/staff/hr/leave` | leave.apply | no | `backend-mongo/src/hr/leave.routes.ts:200` |
 | POST | `/api/v1/staff/hr/leave` | leave.apply | yes | `backend-mongo/src/hr/leave.routes.ts:214` |

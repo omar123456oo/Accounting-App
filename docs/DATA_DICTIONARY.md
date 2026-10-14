@@ -15,7 +15,7 @@ generated_by: "scripts/docs/scan.mjs"
 > Scope: Mongoose models in `backend-mongo`. Field types are shown as written in the schema.
 
 
-**26 models.** Every tenant collection carries `organizationId` (see `backend-mongo/src/db/tenant.ts`); a row `...x` is a spread of shared fields defined in the same file.
+**27 models.** Every tenant collection carries `organizationId` (see `backend-mongo/src/db/tenant.ts`); a row `...x` is a spread of shared fields defined in the same file.
 
 ## AuditChainHead
 
@@ -129,7 +129,7 @@ Indexes:
 
 ## CustomField
 
-Source: `backend-mongo/src/core/models.ts:30`
+Source: `backend-mongo/src/core/models.ts:32`
 
 | Field | Type | Required | Allowed values |
 |---|---|---|---|
@@ -160,9 +160,23 @@ Indexes:
 - `{ organizationId: 1, code: 1 }, { unique: true }`
 - `{ organizationId: 1, parentId: 1 }`
 
+## DocCounter
+
+Source: `backend-mongo/src/core/models.ts:45`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| doctype | String | yes |  |
+| seq | Number | no |  |
+
+Indexes:
+
+- `{ organizationId: 1, doctype: 1 }, { unique: true }`
+
 ## DocRecord
 
-Source: `backend-mongo/src/core/models.ts:34`
+Source: `backend-mongo/src/core/models.ts:36`
 
 | Field | Type | Required | Allowed values |
 |---|---|---|---|
@@ -189,6 +203,7 @@ Source: `backend-mongo/src/core/models.ts:17`
 | titleField | String | yes |  |
 | searchFields | [String] | no |  |
 | viewPermission | String | yes |  |
+| managePermission | String | yes |  |
 
 Indexes:
 

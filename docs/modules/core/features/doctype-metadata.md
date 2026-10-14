@@ -23,7 +23,7 @@ Any signed-in staff member whose role holds the document type's `viewPermission`
 
 | Call | Result |
 |---|---|
-| `GET /api/v1/staff/core/meta/:doctype` | `{ data: { name, label, module, fields: [...] } }` |
+| `GET /api/v1/staff/core/meta/:doctype` | `{ data: { name, label, module, isCustom, titleField, canManage, fields: [...] } }` (`canManage` tells a screen whether to offer editing; the server still enforces it) |
 | `GET /api/v1/staff/core/doctypes` | `{ data: [{ name, label, module, isCustom }] }`, only types the caller may view |
 
 Each field has `fieldname`, `label`, `fieldtype` (`text`, `number`, `date`, `select`, `link`, `checkbox`, `currency`) and, when set, `options`, `required`, `hidden`, `insertAfter`.
@@ -37,7 +37,7 @@ Each field has `fieldname`, `label`, `fieldtype` (`text`, `number`, `date`, `sel
 
 ## Known limitations
 
-- No screen uses this endpoint yet.
+- Used by the record screens; built-in screens do not use it.
 - The built-in `leave_request` definition lives in code and is not connected to the real leave form or leave API.
 
 ## Technical references

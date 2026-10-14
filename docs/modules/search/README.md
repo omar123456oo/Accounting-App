@@ -19,7 +19,7 @@ The search box in the application header finds pages and records across modules 
 |---|---|
 | Search across pages, clients, documents, tasks, invoices, bills, journal entries, employees, tickets | Implemented (on the mock API for all but HR) |
 | Ranking, `kind: term` filter, recent searches | Implemented and unit-tested |
-| Records of admin-made document types | Implemented in the frontend and backend; returns nothing until records can be created |
+| Records of admin-made document types | Implemented in the frontend and backend; opens the record's form. Exercised end to end in Chrome against the real API |
 
 ## Technical references
 

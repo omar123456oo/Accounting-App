@@ -15,12 +15,12 @@ generated_by: "scripts/docs/validate.mjs"
 
 | Category | Discovered | Described in a module guide | Coverage |
 |---|---|---|---|
-| Frontend feature folders with a module guide | 19 | 0 | 0.0% |
-| Backend endpoints described in a module guide | 49 | 7 | 14.3% |
-| Mongoose models described in a module guide | 26 | 3 | 11.5% |
-| Frontend routes described in a module guide | 110 | 0 | 0.0% |
+| Frontend feature folders with a module guide | 20 | 1 | 5.0% |
+| Backend endpoints described in a module guide | 54 | 12 | 22.2% |
+| Mongoose models described in a module guide | 27 | 4 | 14.8% |
+| Frontend routes described in a module guide | 116 | 2 | 1.7% |
 
-**Coverage is not accuracy.** Verification is reported separately: 1 of 6 module documents have `verification_status: verified` (16.7%). A document is only marked verified when the behaviour it describes was exercised (a passing test or a run), and the date is recorded.
+**Coverage is not accuracy.** Verification is reported separately: 1 of 7 module documents have `verification_status: verified` (14.3%). A document is only marked verified when the behaviour it describes was exercised (a passing test or a run), and the date is recorded.
 
 ## Items found by the scan that need review
 
@@ -51,12 +51,12 @@ generated_by: "scripts/docs/validate.mjs"
 
 ## Totals from the scan
 
-- endpoints: 49
-- models: 26
-- model fields: 193
+- endpoints: 54
+- models: 27
+- model fields: 197
 - permissions: 47
 - roles: 10
-- frontend routes: 110
-- navigation items: 28
-- frontend feature folders: 19
+- frontend routes: 116
+- navigation items: 29
+- frontend feature folders: 20
 - mock-API source files: 66

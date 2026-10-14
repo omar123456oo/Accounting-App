@@ -13,7 +13,7 @@ last_verified: "2026-10-14"
 
 ## Purpose
 
-Let an administrator add their own fields to a built-in or admin-made document type, without changing code. This is the backend of an ERPNext-style "Customize Form". **There is no screen for it yet; today it is an API only.**
+Let an administrator add their own fields to a built-in or admin-made document type, without changing code. This is the backend of an ERPNext-style "Customize Form". Screen: **Document types → Customize form** (`/app/doctypes/<name>/customize`) shows the built-in fields read-only and lets the admin add, reorder, hide or require custom fields, and choose which field each follows.
 
 ## Users and permissions
 
@@ -54,7 +54,7 @@ Every successful `PUT` appends an audit event `customize.update` with the previo
 
 ## Known limitations
 
-- Custom fields are returned by the metadata API only. No form shows them, and no API stores values for them on built-in types.
+- Custom fields appear in the forms of admin-made types (records). They do **not** appear in built-in screens such as leave, and no built-in API stores values for them.
 - Fields cannot be removed individually: send the full list without them.
 - Select options are plain text; they are not translated.
 
@@ -64,4 +64,4 @@ Every successful `PUT` appends an audit event `customize.update` with the previo
 
 ## Verification
 
-Partial: the table above states which rules a passing test (2026-10-14) exercises and which do not.
+Partial: the table above states which rules a passing backend test (2026-10-14) exercises and which do not. The screen has unit tests (add a field, save sends the full list with positions, a rejected save shows the server message and keeps the rows) and was exercised in Chrome against the real API: adding `plate_no` saved, and `Bad Name` was refused with the server's message. Validation messages from the server are English only.
