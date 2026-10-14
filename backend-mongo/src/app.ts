@@ -3,7 +3,7 @@ import { authRouter } from './auth/routes.js';
 import { can, cookieParser, csrf, issueXsrf, loadSession, requireAuth, requireType } from './auth/session.js';
 import { dbHealthy } from './db/connection.js';
 import { HttpError } from './hr/common.js';
-import { hrRouter, meHrRouter } from './hr/index.js';
+import { hrRouter, leaveApiRouter, meHrRouter } from './hr/index.js';
 
 export function createApp() {
   const app = express();
@@ -24,6 +24,7 @@ export function createApp() {
   app.use('/api/v1/staff', requireAuth, requireType('staff'));
   app.get("/api/v1/staff/ping", requireAuth, requireType("staff"), can("clients.view"), (_req, res) => { res.json({ pong: true }); });
 
+  app.use('/api/v1/staff/hr', requireAuth, requireType('staff'), leaveApiRouter);
   app.use('/api/v1/staff/hrm', requireAuth, requireType('staff'), hrRouter);
   app.use('/api/v1/me/hrm', requireAuth, requireType('staff'), meHrRouter);
 

@@ -35,3 +35,16 @@ Permissions: `hr.employees.view|manage`, `hr.bank.view`, `hr.org.manage`, `hr.co
 After changing the permission matrix run `npm run db:sync-roles` to update roles in organizations that already exist. `npm run hr:check` runs the acceptance test (access control, hierarchy cycles, history, contract rules, tenant isolation).
 
 Not yet built: documents/photos, recruitment, attendance, leave ledger, payroll stages, benefits, performance, training, HR request center, offboarding. Future-dated organizational changes are rejected; changes take effect now with an effective date in the history.
+
+## Leave module (`backend-mongo/src/hr/leave.*`)
+
+Served at `/api/v1/staff/hr/*`, the same paths the Angular leave screens already call, so `npm run start:api` now works for leave: `leave-types`, `settings`, `leave-balances`, `leave` (list, apply, `:id/approve|reject|cancel`) and `leave-adjustments`.
+
+- Balances are a **ledger** (`leaveledgers`): every request writes `hold` (pending), then `hold_release` plus `use` (approved) or `hold_release` (rejected/cancelled), and `use_reverse` when HR undoes an approved one. A request can write each kind only once (unique index), so a day cannot be deducted twice. `leavebalanceheads` caches the totals and changes in the same transaction.
+- Concurrency: every change for one employee takes a per-employee lock row inside the transaction, and the balance check and reservation are one atomic update. Tests fire parallel requests at the same balance and the same dates.
+- Rules: working days skip the weekend days and holidays in `hrsettings`; a request stays in one calendar year; overlapping pending/approved leave is refused; nobody decides their own request; only people with `hr.manage` file on behalf of others or undo an approved leave. Server messages follow `Accept-Language` (Arabic or English).
+- Entitlements are **placeholders** (annual 21, sick 15, emergency 6, unpaid unlimited) created on first use. The office must set its own; they are not a statement of Egyptian labour law.
+- A registered office owner automatically gets employee file `EMP-00001`, so they can request leave immediately.
+- Test: `npm run leave:check`.
+
+Not yet built: half-day leave, accrual and carry-forward rules, leave calendar, supporting documents, notifications to approvers.

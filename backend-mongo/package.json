@@ -11,6 +11,7 @@
     "db:seed": "tsx src/scripts/seed.ts",
     "db:sync-roles": "tsx src/scripts/sync-roles.ts",
     "hr:check": "tsx src/scripts/hr-smoke.ts",
+    "leave:check": "tsx src/scripts/leave-smoke.ts",
     "db:check": "tsx src/scripts/smoke.ts",
     "api:check": "tsx src/scripts/api-smoke.ts",
     "typecheck": "tsc -p . --noEmit"

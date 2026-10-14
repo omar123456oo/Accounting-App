@@ -3,6 +3,7 @@ import { Types } from 'mongoose';
 import { env } from '../config/env.js';
 import { appendAudit } from '../db/audit-chain.js';
 import { roleMatrix } from '../db/permissions.js';
+import { Counter, Employee } from '../hr/models.js';
 import { Organization, Role, Session, User } from '../models/index.js';
 import { DUMMY_HASH, hashPassword, verifyPassword } from './password.js';
 import { SESSION_COOKIE, permissionsOf, requireAuth, startSession } from './session.js';
@@ -36,6 +37,10 @@ authRouter.post('/register', async (req, res) => {
     // TODO: e-mail verification needs a mail transport; until then accounts are verified on registration.
     emailVerifiedAt: new Date(),
   });
+  // The owner is the first employee, so they can use leave and the rest of HR straight away.
+  const [firstName, ...rest] = name.trim().split(/\s+/);
+  await Employee.create({ organizationId: org._id, employeeNo: 'EMP-00001', userId: owner._id, firstName, lastName: rest.join(' ') || '-', email: mail, employmentType: 'full_time', hireDate: new Date().toISOString().slice(0, 10) });
+  await Counter.updateOne({ organizationId: org._id, key: 'employeeNo' }, { $set: { seq: 1 } }, { upsert: true });
   await appendAudit({ organizationId: org._id, actorId: owner._id, action: 'organization.registered', entityType: 'Organization', entityId: String(org._id), ip: req.ip });
   res.status(201).json({ emailVerificationRequired: false });
 });

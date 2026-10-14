@@ -164,7 +164,7 @@ try {
   await other.call('POST', '/api/v1/auth/register', { officeName: 'Other Office', name: 'Eve', email: 'eve@other.example', password: 'a-long-unique-passphrase-1', passwordConfirmation: 'a-long-unique-passphrase-1' });
   await other.call('POST', '/api/v1/auth/login', { email: 'eve@other.example', password: 'a-long-unique-passphrase-1' });
   assert.equal((await other.call('GET', `${H}/employees/${lina.id}`)).status, 404);
-  assert.equal((await other.call('GET', `${H}/employees`)).json.meta.total, 0);
+  assert.equal((await other.call('GET', `${H}/employees`)).json.meta.total, 1); // only Eve, the owner's own file
   assert.equal((await other.call('POST', `${H}/employees`, { firstName: 'E', lastName: 'E', employmentType: 'full_time', hireDate: '2026-10-01', managerId: lina.id })).status, 422); // foreign reference
   assert.equal((await other.call('GET', `${H}/contracts/${c1.json.data.id}`)).status, 404);
   assert.equal((await owner.call('GET', `${H}/employees`)).json.meta.total, 6);
