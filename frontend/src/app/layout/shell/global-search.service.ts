@@ -11,6 +11,7 @@ import { HrApiService } from '../../features/hr/hr-api.service';
 import { InvoicingApiService } from '../../features/invoicing/invoicing-api.service';
 import { PayablesApiService } from '../../features/payables/payables-api.service';
 import { TasksApiService } from '../../features/workflows/tasks-api.service';
+import { CoreSearchApi } from './core-search.api';
 import { NAV_ITEMS } from './nav.config';
 import { SearchKind, norm, parseQuery, rankHits } from './search-rank';
 
@@ -63,6 +64,7 @@ export class GlobalSearchService {
   private readonly hr = inject(HrApiService);
   private readonly engage = inject(EngageApiService);
   private readonly ledgers = inject(LedgerContext);
+  private readonly core = inject(CoreSearchApi);
 
   /** Needed for invoices, bills and journals, which live in a ledger. */
   prepare(): void {
@@ -101,6 +103,7 @@ export class GlobalSearchService {
       part(can('bills.view') && !!ledger, 'bill', () => this.bills.list(ledger!, { q, pageSize: LIMIT }).pipe(map((p) => p.data)), (b) => ({ kind: 'bill', title: b.reference, subtitle: b.partyName, route: `/app/payables/bills/${b.id}` })),
       part(can('journals.view') && !!ledger, 'journal', () => this.journals.list(ledger!, { q, pageSize: LIMIT }).pipe(map((p) => p.data)), (j) => ({ kind: 'journal', title: j.reference, subtitle: j.description, route: `/app/accounting/journals/${j.id}` })),
       part(can('hr.view'), 'employee', () => this.hr.employees({ q }), (e) => ({ kind: 'employee', title: e.name, subtitle: e.jobTitle, route: `/app/hr/employees/${e.userId}` })),
+      part(true, 'record', () => this.core.search(q, undefined), (r) => ({ kind: 'record', title: r.title, subtitle: r.doctypeLabel, route: r.route })),
       part(can('tickets.manage'), 'ticket', () => this.engage.tickets('staff').pipe(map((rows) => rows.filter((t) => contains(t.subject, t.clientName)))), (t) => ({ kind: 'ticket', title: t.subject, subtitle: t.clientName, route: `/app/tickets/${t.id}` })),
     ]).pipe(map((groups) => groups.filter((g) => g.hits.length > 0)));
   }

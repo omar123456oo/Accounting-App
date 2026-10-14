@@ -2,10 +2,12 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { LanguageService } from '../../core/i18n/language.service';
 import { clientTestProviders, settle, signInAs } from '../../testing/test-utils';
+import { of, throwError } from 'rxjs';
+import { CoreSearchApi } from './core-search.api';
 import { GlobalSearch } from './global-search';
 
-async function render(login: readonly [string, string]) {
-  TestBed.configureTestingModule({ imports: [GlobalSearch], providers: clientTestProviders() });
+async function render(login: readonly [string, string], core?: Partial<CoreSearchApi>) {
+  TestBed.configureTestingModule({ imports: [GlobalSearch], providers: [...clientTestProviders(), ...(core ? [{ provide: CoreSearchApi, useValue: core }] : [])] });
   TestBed.inject(LanguageService).use('en');
   await signInAs(...login);
   const fixture = TestBed.createComponent(GlobalSearch);
@@ -81,5 +83,25 @@ describe('Global search', () => {
     await type('employee: demo');
     const heads = [...el.querySelectorAll('[role="listbox"] .text-uppercase')].map((h) => h.textContent!.trim());
     expect(heads).toEqual(['search.kinds.employee']);
+  });
+
+  it('shows records of admin-made document types as their own group', async () => {
+    const search = vi.fn(() => of([{ doctype: 'vehicle', doctypeLabel: 'Vehicle', name: 'VEH-1', title: 'ABC-123', route: '/app/records/vehicle/VEH-1' }]));
+    const { el, type } = await render(['owner@demo.test', 'Owner-Demo-123!'], { search });
+    await type('abc');
+    const heads = [...el.querySelectorAll('[role="listbox"] .text-uppercase')].map((h) => h.textContent!.trim());
+    expect(heads).toContain('search.kinds.record');
+    expect(el.textContent).toContain('ABC-123');
+    expect(el.textContent).toContain('Vehicle');
+    expect(search).toHaveBeenCalledWith('abc', undefined);
+  });
+
+  it('keeps the other groups when the records source fails', async () => {
+    const search = vi.fn(() => throwError(() => new Error('down')));
+    const { el, type } = await render(['owner@demo.test', 'Owner-Demo-123!'], { search });
+    await type('demo');
+    const heads = [...el.querySelectorAll('[role="listbox"] .text-uppercase')].map((h) => h.textContent!.trim());
+    expect(heads).not.toContain('search.kinds.record');
+    expect(heads).toContain('search.kinds.employee');
   });
 });
