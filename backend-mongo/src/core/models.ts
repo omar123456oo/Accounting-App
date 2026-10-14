@@ -38,6 +38,17 @@ const docRecord = new Schema({
   doctype: { type: String, required: true },
   name: { type: String, required: true },
   data: { type: Schema.Types.Mixed, default: {} },
+  createdBy: Schema.Types.ObjectId,
+  // Workflow bookkeeping (see workflow.service.ts). Absent on types without a workflow, or on records older than it.
+  workflowState: String,
+  stateEnteredAt: Date,
+  /** Approvals given so far in the current state, for transitions that need several distinct approvers. */
+  approvals: [new Schema({ transition: String, userId: Schema.Types.ObjectId, at: Date }, { _id: false })],
+  escalatedAt: Date,
+  history: [new Schema({
+    at: { type: Date, required: true }, actorId: Schema.Types.ObjectId, actorName: String,
+    action: { type: String, required: true }, from: String, to: String, comment: String, onBehalfOf: String,
+  }, { _id: false })],
 }, { timestamps: true });
 docRecord.index({ organizationId: 1, doctype: 1, name: 1 }, { unique: true });
 

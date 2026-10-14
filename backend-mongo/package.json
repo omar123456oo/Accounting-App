@@ -14,6 +14,8 @@
     "leave:check": "tsx src/scripts/leave-smoke.ts",
     "core:check": "tsx src/scripts/core-smoke.ts",
     "dev:memory": "tsx src/scripts/dev-memory.ts",
+    "workflow:check": "tsx src/scripts/workflow-smoke.ts",
+    "workflow:escalate": "tsx src/scripts/workflow-escalate.ts",
     "db:check": "tsx src/scripts/smoke.ts",
     "api:check": "tsx src/scripts/api-smoke.ts",
     "typecheck": "tsc -p . --noEmit"
