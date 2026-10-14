@@ -23,6 +23,8 @@ const docType = new Schema({
   titleField: { type: String, required: true },
   searchFields: [String],
   viewPermission: { type: String, required: true },
+  /** Who may create, change and delete records of this type. */
+  managePermission: { type: String, required: true, default: 'admin.settings' },
 }, { timestamps: true });
 docType.index({ organizationId: 1, name: 1 }, { unique: true });
 
@@ -39,6 +41,11 @@ const docRecord = new Schema({
 }, { timestamps: true });
 docRecord.index({ organizationId: 1, doctype: 1, name: 1 }, { unique: true });
 
+/** Next number per organization and DocType, so record names are sequential. */
+const docCounter = new Schema({ organizationId: org, doctype: { type: String, required: true }, seq: { type: Number, default: 0 } });
+docCounter.index({ organizationId: 1, doctype: 1 }, { unique: true });
+
 export const DocType = model('DocType', docType);
 export const CustomField = model('CustomField', customField);
 export const DocRecord = model('DocRecord', docRecord);
+export const DocCounter = model('DocCounter', docCounter);

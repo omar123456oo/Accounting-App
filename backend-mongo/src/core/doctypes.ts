@@ -8,6 +8,8 @@ export interface ResolvedDocType {
   label: string;
   module: string;
   viewPermission: string;
+  /** Admin-made types only. */
+  managePermission?: string;
   isCustom: boolean;
   /** Own fields only: built-in fields, or the fields of an admin-made type. Custom fields are not included. */
   base: FieldDef[];
@@ -28,7 +30,7 @@ export async function resolveDocType(org: Types.ObjectId, name: string): Promise
   if (b) return { name: b.name, label: b.label, module: b.module, viewPermission: b.viewPermission, isCustom: false, base: b.fields, searchFields: [] };
   const d = await DocType.findOne({ organizationId: org, name }).lean();
   if (!d) return null;
-  return { name: d.name, label: d.label, module: d.module, viewPermission: d.viewPermission, isCustom: true, base: d.fields.map(plain), titleField: d.titleField, searchFields: d.searchFields };
+  return { name: d.name, label: d.label, module: d.module, viewPermission: d.viewPermission, managePermission: d.managePermission, isCustom: true, base: d.fields.map(plain), titleField: d.titleField, searchFields: d.searchFields };
 }
 
 export async function customFieldsOf(org: Types.ObjectId, doctype: string): Promise<FieldDef[]> {

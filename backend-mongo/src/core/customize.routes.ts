@@ -8,7 +8,7 @@ import { Errors, HttpError, isDuplicateKey, notFound, orgOf, text, wrap } from '
 import { BUILTIN_DOCTYPES } from './builtin-doctypes.js';
 import { customFieldsOf, plainField, resolveDocType } from './doctypes.js';
 import { FIELD_TYPES, isValidFieldname, type FieldDef } from './fields.js';
-import { CustomField, DocType } from './models.js';
+import { CustomField, DocCounter, DocRecord, DocType } from './models.js';
 
 export const customizeRouter = Router();
 
@@ -94,14 +94,16 @@ customizeRouter.post('/doctypes', can('admin.settings'), wrap(async (req, res) =
   const searchFields: string[] = Array.isArray(b.searchFields) ? b.searchFields.filter((s: unknown): s is string => typeof s === 'string') : [];
   if (searchFields.some((s) => !fields.some((f) => f.fieldname === s))) errors.add('searchFields', 'Each search field must be one of the fields.');
   if (typeof b.viewPermission !== 'string' || !KNOWN_PERMISSIONS.has(b.viewPermission)) errors.add('viewPermission', 'Unknown permission.');
+  const managePermission = b.managePermission === undefined ? 'admin.settings' : b.managePermission;
+  if (typeof managePermission !== 'string' || !KNOWN_PERMISSIONS.has(managePermission)) errors.add('managePermission', 'Unknown permission.');
   errors.throwIfAny();
   try {
-    await DocType.create({ organizationId: org, name: b.name, label, module: mod, fields, titleField: b.titleField, searchFields, viewPermission: b.viewPermission });
+    await DocType.create({ organizationId: org, name: b.name, label, module: mod, fields, titleField: b.titleField, searchFields, viewPermission: b.viewPermission, managePermission });
   } catch (e) {
     if (isDuplicateKey(e)) throw new HttpError(422, 'The given data was invalid.', { name: ['A document type with this name already exists.'] });
     throw e;
   }
-  await audit(req, 'doctype.created', b.name, null, { name: b.name, label, module: mod, fields, titleField: b.titleField, searchFields, viewPermission: b.viewPermission });
+  await audit(req, 'doctype.created', b.name, null, { name: b.name, label, module: mod, fields, titleField: b.titleField, searchFields, viewPermission: b.viewPermission, managePermission });
   res.status(201).json({ data: { name: b.name, label, module: mod, isCustom: true } });
 }));
 
@@ -115,6 +117,8 @@ customizeRouter.delete('/doctypes/:name', can('admin.settings'), wrap(async (req
     await session.withTransaction(async () => {
       await DocType.deleteOne({ organizationId: org, name }, { session });
       await CustomField.deleteMany({ organizationId: org, doctype: name }, { session });
+      await DocRecord.deleteMany({ organizationId: org, doctype: name }, { session });
+      await DocCounter.deleteMany({ organizationId: org, doctype: name }, { session });
     });
   } finally { await session.endSession(); }
   await audit(req, 'doctype.deleted', name, { name, label: existing.label, fields: existing.fields.map(plainField) }, null);

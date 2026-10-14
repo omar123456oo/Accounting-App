@@ -146,6 +146,103 @@ try {
   assert.equal((await s(accountant, 'abc')).json.data.length, 1);
   assert.equal((await s(accountant, 'abc', '&type=salary_note')).json.data.length, 0);
 
+  // ---- records of admin-made types ---------------------------------------------------------------------------------------
+  const asset = {
+    name: 'asset', label: 'Asset', module: 'operations', titleField: 'tag', searchFields: ['tag'],
+    viewPermission: 'clients.view', managePermission: 'clients.update',
+    fields: [
+      { fieldname: 'tag', label: 'Tag', fieldtype: 'text', required: true },
+      { fieldname: 'price', label: 'Price', fieldtype: 'currency' },
+      { fieldname: 'bought', label: 'Bought', fieldtype: 'date' },
+      { fieldname: 'status', label: 'Status', fieldtype: 'select', options: ['new', 'used'] },
+      { fieldname: 'active', label: 'Active', fieldtype: 'checkbox' },
+      { fieldname: 'parent', label: 'Parent', fieldtype: 'link', options: ['asset'] },
+    ],
+  };
+  assert.equal((await owner.call('POST', `${C}/doctypes`, asset)).status, 201);
+  assert.equal((await owner.call('POST', `${C}/doctypes`, { ...asset, name: 'asset2', managePermission: 'nope.nope' })).status, 422, 'unknown managePermission');
+  const R = `${C}/records/asset`;
+  const created = await owner.call('POST', R, { data: { tag: 'A-1', price: 10.5, bought: '2026-01-02', status: 'new', active: true } });
+  assert.equal(created.status, 201);
+  assert.equal(created.json.data.name, 'ASSET-000001');
+  assert.deepEqual(created.json.data.data, { tag: 'A-1', price: 10.5, bought: '2026-01-02', status: 'new', active: true });
+  assert.equal((await owner.call('POST', R, { data: { tag: 'B-2' } })).json.data.name, 'ASSET-000002');
+
+  // names stay unique under concurrency
+  const burst = await Promise.all([3, 4, 5, 6, 7].map((i) => owner.call('POST', R, { data: { tag: `C-${i}` } })));
+  assert.ok(burst.every((r) => r.status === 201));
+  assert.equal(new Set(burst.map((r) => r.json.data.name)).size, 5);
+
+  // list, filter, read
+  const listed = await owner.call('GET', `${R}?pageSize=3`);
+  assert.equal(listed.json.meta.total, 7);
+  assert.equal(listed.json.data.length, 3);
+  assert.deepEqual((await owner.call('GET', `${R}?q=a-1`)).json.data.map((r: any) => r.name), ['ASSET-000001']);
+  assert.deepEqual((await owner.call('GET', `${R}?q=(`)).json.data, [], 'regex characters are literal');
+  assert.equal((await owner.call('GET', `${R}/ASSET-000001`)).json.data.data.tag, 'A-1');
+  assert.equal((await owner.call('GET', `${R}/ASSET-999999`)).status, 404);
+
+  // update merges the fields sent; null clears an optional field
+  const upd = await owner.call('PUT', `${R}/ASSET-000001`, { data: { price: 12, status: null } });
+  assert.equal(upd.status, 200);
+  assert.deepEqual(upd.json.data.data, { tag: 'A-1', price: 12, bought: '2026-01-02', active: true });
+
+  // validation: everything wrong at once, nothing saved
+  const badRec = async (data: unknown, expectField: string) => {
+    const r = await owner.call('POST', R, { data });
+    assert.equal(r.status, 422, JSON.stringify(data));
+    assert.ok(r.json.errors[expectField], `${expectField} in ${JSON.stringify(r.json.errors)}`);
+  };
+  await badRec({}, 'data.tag');
+  await badRec({ tag: '   ' }, 'data.tag');
+  await badRec({ tag: 5 }, 'data.tag');
+  await badRec({ tag: 'x'.repeat(2001) }, 'data.tag');
+  await badRec({ tag: 'a', price: 'abc' }, 'data.price');
+  await badRec({ tag: 'a', price: 1.234 }, 'data.price');
+  await badRec({ tag: 'a', price: null, bought: '2026-13-40' }, 'data.bought');
+  await badRec({ tag: 'a', status: 'weird' }, 'data.status');
+  await badRec({ tag: 'a', active: 'yes' }, 'data.active');
+  await badRec({ tag: 'a', foo: 1 }, 'data.foo');
+  await badRec({ tag: 'a', parent: 'ASSET-424242' }, 'data.parent');
+  assert.equal((await owner.call('POST', R, { data: { tag: 'ok', parent: 'ASSET-000001' } })).status, 201, 'link to an existing record');
+  assert.equal((await owner.call('POST', R, {})).status, 422, 'missing data object');
+  assert.equal((await owner.call('PUT', `${R}/ASSET-000001`, { data: { tag: '' } })).status, 422, 'required stays required on update');
+  assert.equal((await owner.call('GET', `${R}?pageSize=100`)).json.meta.total, 8, 'failed requests saved nothing');
+
+  // custom fields apply to records, including required ones
+  assert.equal((await put(owner, [{ fieldname: 'cost_center', label: 'Cost center', fieldtype: 'text', required: true }, { fieldname: 'notes', label: 'Notes', fieldtype: 'text' }], 'asset')).status, 200);
+  await badRec({ tag: 'z' }, 'data.cost_center');
+  const withCustom = await owner.call('POST', R, { data: { tag: 'Z', cost_center: 'CC-1', notes: 'hello' } });
+  assert.equal(withCustom.status, 201);
+  assert.equal(withCustom.json.data.data.notes, 'hello');
+
+  // permissions: viewer reads but cannot write; no-view role sees nothing; other organization sees nothing
+  const viewer = await Client.as('tax_specialist'); // holds clients.view, not clients.update
+  assert.equal((await viewer.call('GET', R)).status, 200);
+  assert.equal((await viewer.call('POST', R, { data: { tag: 'v', cost_center: 'x' } })).status, 403);
+  assert.equal((await viewer.call('PUT', `${R}/ASSET-000001`, { data: { price: 1 } })).status, 403);
+  assert.equal((await viewer.call('DELETE', `${R}/ASSET-000001`)).status, 403);
+  const manager = await Client.as('accountant'); // holds clients.update
+  assert.equal((await manager.call('POST', R, { data: { tag: 'M', cost_center: 'x' } })).status, 201);
+  assert.equal((await accountant.call('GET', `${C}/records/salary_note`)).status, 404, 'a type the caller cannot view is invisible');
+  assert.equal((await outsider.call('GET', R)).status, 404);
+  assert.equal((await owner.call('GET', `${C}/records/leave_request`)).status, 404, 'built-in types have their own API');
+  assert.equal((await owner.call('POST', `${C}/records/leave_request`, { data: {} })).status, 404);
+
+  // search sees created records
+  const found = (await s(owner, 'a-1', '&type=asset')).json.data;
+  assert.deepEqual(found.map((h: any) => [h.name, h.title, h.route]), [['ASSET-000001', 'A-1', '/app/records/asset/ASSET-000001']]);
+
+  // delete
+  assert.equal((await owner.call('DELETE', `${R}/ASSET-000002`)).status, 204);
+  assert.equal((await owner.call('GET', `${R}/ASSET-000002`)).status, 404);
+  assert.equal((await owner.call('DELETE', `${R}/ASSET-000002`)).status, 404);
+  for (const a of ['record.create', 'record.update', 'record.delete']) assert.ok(await AuditEvent.exists({ organizationId: org._id, action: a }), a);
+
+  // deleting a type removes its records
+  assert.equal((await owner.call('DELETE', `${C}/doctypes/asset`)).status, 204);
+  assert.equal(await DocRecord.countDocuments({ organizationId: org._id, doctype: 'asset' }), 0);
+
   // audit
   assert.ok(await AuditEvent.exists({ organizationId: org._id, action: 'customize.update' }));
   assert.ok(await AuditEvent.exists({ organizationId: org._id, action: 'doctype.created' }));
