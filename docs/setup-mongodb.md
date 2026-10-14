@@ -48,3 +48,22 @@ Served at `/api/v1/staff/hr/*`, the same paths the Angular leave screens already
 - Test: `npm run leave:check`.
 
 Not yet built: half-day leave, accrual and carry-forward rules, leave calendar, supporting documents, notifications to approvers.
+
+## Core metadata (`backend-mongo/src/core/`)
+
+Served at `/api/v1/staff/core/*` (staff only). A DocType describes a kind of document. Built-in types are declared in `builtin-doctypes.ts` (today only `leave_request`); admin-made types are stored per organization.
+
+| Endpoint | Permission | Purpose |
+|---|---|---|
+| `GET meta/:doctype` | the DocType's own `viewPermission` | Built-in or own fields merged with custom fields, in order. Unknown or not-permitted both answer 404. |
+| `GET doctypes` | authenticated staff | DocTypes the caller may view |
+| `GET/PUT customize/:doctype` | `admin.settings` | Read, or atomically replace, the custom fields of a DocType |
+| `POST doctypes`, `DELETE doctypes/:name` | `admin.settings` | Create or delete an admin-made DocType (deleting also removes its custom fields) |
+| `GET search?q=&type=` | per DocType `viewPermission` | Up to 5 records per admin-made DocType, matched literally on its `searchFields`; under 2 characters returns nothing |
+
+Rules: field names are lowercase letters, digits and underscores (max 64); a custom field cannot reuse a built-in field name; select fields need options; at most 100 custom fields. Every customize or DocType write is added to the audit chain (`customize.update`, `doctype.created`, `doctype.deleted`).
+
+`npm run core:check` is the acceptance test (merge order, validation, permissions, tenant isolation, search, audit chain).
+
+Not yet built: UI to customize forms, create or edit records of admin-made types (there is no record write API yet, so search finds nothing until there is), workflow engine, client and server scripts.
+
