@@ -2187,7 +2187,8 @@
       "bill": "Bills",
       "journal": "Journal entries",
       "employee": "Employees",
-      "ticket": "Tickets"
+      "ticket": "Tickets",
+      "record": "Records"
     },
     "pages": {
       "newClient": "New client",
@@ -2201,6 +2202,8 @@
       "payroll": "Payroll",
       "roles": "Roles and permissions",
       "users": "User roles"
-    }
+    },
+    "recent": "Recent searches",
+    "clearRecent": "Clear"
   }
 }

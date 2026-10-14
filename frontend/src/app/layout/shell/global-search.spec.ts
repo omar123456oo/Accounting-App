@@ -59,4 +59,27 @@ describe('Global search', () => {
     expect(heads).not.toContain('search.kinds.employee'); // the HR files need hr.view
     expect(heads).toContain('search.kinds.document'); // documents the auditor may read still appear
   });
+
+  it('shows recent searches when the box is empty and runs one when chosen', async () => {
+    localStorage.setItem('recent-searches', JSON.stringify(['demo']));
+    const { fixture, el, input, type } = await render(['owner@demo.test', 'Owner-Demo-123!']);
+    input.dispatchEvent(new Event('focus'));
+    await settle(fixture);
+    const recent = el.querySelector<HTMLButtonElement>('#global-search-recent .recent')!;
+    expect(recent.textContent).toContain('demo');
+    recent.click();
+    await new Promise((r) => setTimeout(r, 400));
+    await settle(fixture);
+    expect(input.value).toBe('demo');
+    expect(el.querySelectorAll('[role="option"]').length).toBeGreaterThan(0);
+    void type;
+    localStorage.clear();
+  });
+
+  it('limits results to one kind with a "kind: term" filter', async () => {
+    const { el, type } = await render(['owner@demo.test', 'Owner-Demo-123!']);
+    await type('employee: demo');
+    const heads = [...el.querySelectorAll('[role="listbox"] .text-uppercase')].map((h) => h.textContent!.trim());
+    expect(heads).toEqual(['search.kinds.employee']);
+  });
 });

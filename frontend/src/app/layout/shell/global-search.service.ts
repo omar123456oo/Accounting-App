@@ -12,8 +12,9 @@ import { InvoicingApiService } from '../../features/invoicing/invoicing-api.serv
 import { PayablesApiService } from '../../features/payables/payables-api.service';
 import { TasksApiService } from '../../features/workflows/tasks-api.service';
 import { NAV_ITEMS } from './nav.config';
+import { SearchKind, norm, parseQuery, rankHits } from './search-rank';
 
-export type SearchKind = 'page' | 'client' | 'document' | 'task' | 'invoice' | 'bill' | 'journal' | 'employee' | 'ticket';
+export type { SearchKind } from './search-rank';
 
 export interface SearchHit {
   kind: SearchKind;
@@ -44,7 +45,6 @@ const EXTRA_PAGES: ReadonlyArray<{ labelKey: string; route: string; permission?:
 ];
 
 const LIMIT = 5;
-const norm = (s: string): string => s.toLowerCase().normalize('NFKD').replace(/[ً-ٰٟ]/g, '');
 
 /**
  * One search across the whole application. Every source is limited to what the signed-in person may open, runs in
@@ -72,27 +72,28 @@ export class GlobalSearchService {
   pages(term: string): SearchHit[] {
     const t = norm(term);
     const seen = new Set<string>();
-    return [...NAV_ITEMS, ...EXTRA_PAGES]
+    const hits = [...NAV_ITEMS, ...EXTRA_PAGES]
       .filter((p) => !p.permission || this.auth.can(p.permission))
       .map((p) => ({ route: p.route, title: this.translate.instant(p.labelKey) as string, group: p.groupKey ? (this.translate.instant(p.groupKey) as string) : undefined }))
       .filter((p) => norm(p.title).includes(t) && !seen.has(p.route) && !!seen.add(p.route))
-      .slice(0, LIMIT)
       .map((p): SearchHit => ({ kind: 'page', title: p.title, subtitle: p.group, route: p.route }));
+    return rankHits(term, hits).slice(0, LIMIT);
   }
 
-  search(term: string): Observable<SearchGroup[]> {
-    const q = term.trim();
+  search(raw: string): Observable<SearchGroup[]> {
+    const { term: q, kind: only } = parseQuery(raw);
+    if (q.length < 2) return of([]);
     const can = (p: string) => this.auth.can(p);
     const ledger = this.ledgers.activeId();
     const part = <T>(allowed: boolean, kind: SearchKind, source: () => Observable<T[]>, hit: (row: T) => SearchHit): Observable<SearchGroup> =>
-      (allowed ? source() : of([] as T[])).pipe(
-        map((rows): SearchGroup => ({ kind, hits: rows.slice(0, LIMIT).map(hit) })),
+      (allowed && (!only || only === kind) ? source() : of([] as T[])).pipe(
+        map((rows): SearchGroup => ({ kind, hits: rankHits(q, rows.map(hit)).slice(0, LIMIT) })),
         catchError(() => of<SearchGroup>({ kind, hits: [] })),
       );
     const contains = (...fields: Array<string | undefined>) => fields.some((f) => f && norm(f).includes(norm(q)));
 
     return forkJoin([
-      of<SearchGroup>({ kind: 'page', hits: this.pages(q) }),
+      of<SearchGroup>({ kind: 'page', hits: !only || only === 'page' ? this.pages(q) : [] }),
       part(can('clients.view'), 'client', () => this.clients.list({ q, pageSize: LIMIT }).pipe(map((p) => p.data)), (c) => ({ kind: 'client', title: c.legalName, subtitle: c.tradeName, route: `/app/clients/${c.id}` })),
       part(can('documents.view'), 'document', () => this.documents.list({ q, pageSize: LIMIT }).pipe(map((p) => p.data)), (d) => ({ kind: 'document', title: d.name, subtitle: d.clientName, route: '/app/documents', query: { q } })),
       part(can('tasks.view'), 'task', () => this.tasks.list({ q, pageSize: LIMIT }).pipe(map((p) => p.data)), (t) => ({ kind: 'task', title: t.title, subtitle: t.clientName, route: `/app/tasks/${t.id}` })),

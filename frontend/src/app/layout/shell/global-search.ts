@@ -4,10 +4,11 @@ import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Subject, debounceTime, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 import { GlobalSearchService, SearchGroup, SearchHit, SearchKind } from './global-search.service';
+import { RecentSearches } from './recent-searches';
 
 const ICONS: Record<SearchKind, string> = {
   page: 'compass', client: 'users', document: 'folder-open', task: 'list-check', invoice: 'file-invoice-dollar',
-  bill: 'file-invoice', journal: 'pen-to-square', employee: 'id-badge', ticket: 'comments',
+  bill: 'file-invoice', journal: 'pen-to-square', employee: 'id-badge', ticket: 'comments', record: 'table-list',
 };
 
 /** The header search box: finds pages, clients, documents, tasks, invoices, bills, journals, employees and tickets in one go. */
@@ -39,6 +40,20 @@ const ICONS: Record<SearchKind, string> = {
         />
         <span class="input-group-text d-none d-md-inline text-body-secondary" aria-hidden="true">/</span>
       </div>
+      @if (recentOpen()) {
+        <div class="results card shadow" id="global-search-recent" role="group" [attr.aria-label]="'search.recent' | translate">
+          <div class="d-flex justify-content-between align-items-center px-3 pt-2 pb-1 small text-uppercase text-body-secondary">
+            <span>{{ 'search.recent' | translate }}</span>
+            <button type="button" class="btn btn-link btn-sm p-0" (mousedown)="$event.preventDefault()" (click)="clearRecent()">{{ 'search.clearRecent' | translate }}</button>
+          </div>
+          @for (r of recent(); track r) {
+            <button type="button" class="result recent d-flex align-items-center gap-2 px-3 py-2 border-0 bg-transparent w-100 text-start" (mousedown)="$event.preventDefault()" (click)="useRecent(r)">
+              <i class="fa-solid fa-clock-rotate-left fa-fw text-body-secondary" aria-hidden="true"></i>
+              <span class="text-truncate">{{ r }}</span>
+            </button>
+          }
+        </div>
+      }
       @if (panelOpen()) {
         <div class="results card shadow" id="global-search-list" role="listbox" [attr.aria-label]="'search.results' | translate">
           @if (loading()) {
@@ -76,6 +91,7 @@ const ICONS: Record<SearchKind, string> = {
 })
 export class GlobalSearch {
   private readonly service = inject(GlobalSearchService);
+  private readonly recents = inject(RecentSearches);
   private readonly router = inject(Router);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly box = viewChild.required<ElementRef<HTMLInputElement>>('box');
@@ -86,6 +102,8 @@ export class GlobalSearch {
   protected readonly loading = signal(false);
   protected readonly groups = signal<SearchGroup[]>([]);
   protected readonly active = signal(0);
+  protected readonly recent = signal<string[]>([]);
+  protected readonly recentOpen = computed(() => this.open() && this.term().trim().length === 0 && this.recent().length > 0);
   protected readonly flat = computed(() => this.groups().flatMap((g) => g.hits));
   protected readonly panelOpen = computed(() => this.open() && this.term().trim().length >= 2);
   protected readonly activeId = computed(() => (this.panelOpen() && this.flat().length ? 'gs-' + this.active() : null));
@@ -116,6 +134,7 @@ export class GlobalSearch {
 
   protected onFocus(): void {
     this.service.prepare();
+    this.recent.set(this.recents.list());
     this.open.set(true);
   }
 
@@ -134,7 +153,18 @@ export class GlobalSearch {
     else if (e.key === 'Escape') { this.open.set(false); this.box().nativeElement.blur(); }
   }
 
+  protected useRecent(term: string): void {
+    this.onInput(term);
+    this.box().nativeElement.focus();
+  }
+
+  protected clearRecent(): void {
+    this.recents.clear();
+    this.recent.set([]);
+  }
+
   protected go(hit: SearchHit): void {
+    this.recents.add(this.term());
     this.open.set(false);
     this.term.set('');
     this.groups.set([]);
