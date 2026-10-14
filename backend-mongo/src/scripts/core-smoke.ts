@@ -23,7 +23,7 @@ process.env.MONGODB_URI = mem.getUri('accounting');
 const { connectDb, disconnectDb } = await import('../db/connection.js');
 const { createApp } = await import('../app.js');
 const { seed } = await import('./seed.js');
-const { CustomField } = await import('../core/models.js');
+const { CustomField, DocRecord } = await import('../core/models.js');
 const { Organization, Role, User } = await import('../models/index.js');
 const { hashPassword } = await import('../auth/password.js');
 const { roleMatrix } = await import('../db/permissions.js');
@@ -119,6 +119,32 @@ try {
   assert.equal((await owner.call('GET', `${C}/meta/vehicle`)).status, 404);
   assert.equal(await CustomField.countDocuments({ organizationId: org._id, doctype: 'vehicle' }), 0);
   assert.equal((await owner.call('DELETE', `${C}/doctypes/leave_request`)).status, 404, 'built-ins cannot be deleted');
+
+  // search over admin-made DocTypes
+  assert.equal((await owner.call('POST', `${C}/doctypes`, vehicle)).status, 201);
+  const rec = (name: string, plate: string) => DocRecord.create({ organizationId: org._id, doctype: 'vehicle', name, data: { plate } });
+  await rec('VEH-1', 'ABC-123'); await rec('VEH-2', 'XYZ-999'); await rec('VEH-3', 'A.C-777');
+  const s = async (c: Client, q: string, extra = '') => c.call('GET', `${C}/search?q=${encodeURIComponent(q)}${extra}`);
+  const hit = (await s(owner, 'abc')).json.data;
+  assert.equal(hit.length, 1);
+  assert.deepEqual({ doctype: hit[0].doctype, name: hit[0].name, title: hit[0].title, doctypeLabel: hit[0].doctypeLabel }, { doctype: 'vehicle', name: 'VEH-1', title: 'ABC-123', doctypeLabel: 'Vehicle' });
+  assert.equal(hit[0].route, '/app/records/vehicle/VEH-1');
+  assert.equal((await s(owner, 'ab')).json.data.length, 1);
+  assert.deepEqual((await s(owner, 'a.c')).json.data.map((h: any) => h.name), ['VEH-3'], 'dot is literal, not a wildcard');
+  for (const q of ['(', '.*', '[', '\\', 'a(b']) { const r = await s(owner, q); assert.equal(r.status, 200, q); assert.deepEqual(r.json.data, [], q); }
+  assert.deepEqual((await s(owner, 'a')).json.data, [], 'under two characters');
+  assert.deepEqual((await s(owner, '')).json.data, []);
+  assert.equal((await s(owner, 'abc', '&type=vehicle')).json.data.length, 1);
+  assert.deepEqual((await s(owner, 'abc', '&type=leave_request')).json.data, []);
+  assert.equal((await s(accountant, 'abc')).json.data.length, 1, 'accountant holds clients.view');
+  assert.deepEqual((await s(outsider, 'abc')).json.data, [], 'other organization');
+  // a type the caller may not view leaves no trace
+  const secret = { ...vehicle, name: 'salary_note', label: 'Salary note', viewPermission: 'payroll.view' };
+  assert.equal((await owner.call('POST', `${C}/doctypes`, secret)).status, 201);
+  await DocRecord.create({ organizationId: org._id, doctype: 'salary_note', name: 'SN-1', data: { plate: 'ABC-SECRET' } });
+  assert.equal((await s(owner, 'abc')).json.data.length, 2);
+  assert.equal((await s(accountant, 'abc')).json.data.length, 1);
+  assert.equal((await s(accountant, 'abc', '&type=salary_note')).json.data.length, 0);
 
   // audit
   assert.ok(await AuditEvent.exists({ organizationId: org._id, action: 'customize.update' }));

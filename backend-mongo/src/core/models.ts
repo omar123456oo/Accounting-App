@@ -30,5 +30,15 @@ docType.index({ organizationId: 1, name: 1 }, { unique: true });
 const customField = new Schema({ organizationId: org, doctype: { type: String, required: true }, ...fieldShape }, { timestamps: true });
 customField.index({ organizationId: 1, doctype: 1, fieldname: 1 }, { unique: true });
 
+/** One record of an admin-made DocType. `data` holds the values keyed by fieldname. */
+const docRecord = new Schema({
+  organizationId: org,
+  doctype: { type: String, required: true },
+  name: { type: String, required: true },
+  data: { type: Schema.Types.Mixed, default: {} },
+}, { timestamps: true });
+docRecord.index({ organizationId: 1, doctype: 1, name: 1 }, { unique: true });
+
 export const DocType = model('DocType', docType);
 export const CustomField = model('CustomField', customField);
+export const DocRecord = model('DocRecord', docRecord);
