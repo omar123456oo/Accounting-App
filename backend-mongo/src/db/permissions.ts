@@ -13,13 +13,16 @@ export const PERMISSIONS = [
   'admin.users', 'admin.roles', 'admin.settings', 'admin.audit',
   // HR module. Salary and payroll keep their own names above; these guard the HR file itself.
   'hr.employees.view', 'hr.employees.manage', 'hr.bank.view', 'hr.org.manage', 'hr.contracts.view', 'hr.contracts.manage', 'hr.reports.view',
+  // Writes code that runs on the server and in every user's browser. Held by the owner only unless an office grants it on purpose.
+  'developer.scripts',
 ] as const;
 
 const HR_FILE = ['hr.employees.view', 'hr.employees.manage', 'hr.bank.view', 'hr.org.manage', 'hr.contracts.view', 'hr.contracts.manage', 'hr.reports.view'];
 
 export function roleMatrix(): Record<string, string[]> {
   const all: string[] = [...PERMISSIONS];
-  const nonPayroll = all.filter((p) => !p.startsWith('payroll.'));
+  const shared = all.filter((p) => p !== 'developer.scripts'); // scripts: the owner role only
+  const nonPayroll = shared.filter((p) => !p.startsWith('payroll.'));
   const nonHr = nonPayroll.filter((p) => !p.startsWith('hr.') && p !== 'leave.approve');
   const view = all.filter((p) => p.endsWith('.view') && !p.startsWith('payroll.') && !p.startsWith('hr.'));
   return {

@@ -2,9 +2,10 @@ import { Router } from 'express';
 import { customizeRouter } from './customize.routes.js';
 import { metaRouter } from './meta.routes.js';
 import { recordsRouter } from './records.routes.js';
+import { scriptsRouter } from './scripts.routes.js';
 import { searchRouter } from './search.routes.js';
 import { workflowRouter } from './workflow.routes.js';
 
 /** Mounted at /api/v1/staff/core (staff only; write routes add their own permission). */
 export const coreRouter = Router();
-coreRouter.use(metaRouter, customizeRouter, searchRouter, recordsRouter, workflowRouter);
+coreRouter.use(metaRouter, customizeRouter, searchRouter, recordsRouter, workflowRouter, scriptsRouter);

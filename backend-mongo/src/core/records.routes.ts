@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { appendAudit } from '../db/audit-chain.js';
 import { Errors, HttpError, escapeRegex, isDate, notFound, orgOf, pageOf, wrap } from '../hr/common.js';
 import { mergedFields, resolveDocType, type ResolvedDocType } from './doctypes.js';
+import { runHooks } from './scripts.service.js';
 import { activeWorkflow, assertEditable, loadActor, workflowBlock, type ActiveWorkflow, type Actor } from './workflow.service.js';
 import type { FieldDef } from './fields.js';
 import { DocCounter, DocRecord } from './models.js';
@@ -107,9 +108,13 @@ recordsRouter.post('/records/:doctype', wrap(async (req, res) => {
   const dt = await typeOf(req);
   requireManage(req, dt);
   const org = orgOf(req);
-  const data = await validate(req, await mergedFields(org, dt), req.body?.data, {});
+  const fields = await mergedFields(org, dt);
+  let data = await validate(req, fields, req.body?.data, {});
   const prefix = dt.name.toUpperCase().replace(/_/g, '-');
   const wf = await activeWorkflow(org, dt.name);
+  // scripts may adjust the data; what they hand back is checked exactly like what the person typed
+  const hooked = await runHooks(req, dt, 'before_save', { name: '', isNew: true, state: wf?.initialState ?? null, data });
+  if (hooked.data !== data) data = await validate(req, fields, hooked.data, {});
   const now = new Date();
   const start = wf ? { workflowState: wf.initialState, stateEnteredAt: now, history: [{ at: now, actorId: req.auth!.userId, actorName: req.auth!.name, action: 'created', to: wf.initialState }] } : {};
   const session = await mongoose.startSession();
@@ -121,7 +126,9 @@ recordsRouter.post('/records/:doctype', wrap(async (req, res) => {
     });
   } finally { await session.endSession(); }
   await audit(req, 'record.create', dt, created.name, null, data);
-  res.status(201).json({ data: dto(dt, created.toObject(), wf, wf ? await loadActor(req) : undefined) });
+  const after = await runHooks(req, dt, 'after_save', { name: created.name, isNew: true, state: wf?.initialState ?? null, data });
+  const messages = [...hooked.messages, ...after.messages];
+  res.status(201).json({ data: dto(dt, created.toObject(), wf, wf ? await loadActor(req) : undefined), ...(messages.length ? { messages } : {}) });
 }));
 
 recordsRouter.put('/records/:doctype/:name', wrap(async (req, res) => {
@@ -134,10 +141,15 @@ recordsRouter.put('/records/:doctype/:name', wrap(async (req, res) => {
   const wf = await activeWorkflow(org, dt.name);
   assertEditable(wf, existing as never);
   const before = (existing.data ?? {}) as Data;
-  const data = await validate(req, await mergedFields(org, dt), req.body?.data, before);
+  const fields = await mergedFields(org, dt);
+  let data = await validate(req, fields, req.body?.data, before);
+  const hooked = await runHooks(req, dt, 'before_save', { name, isNew: false, state: existing.workflowState ?? wf?.initialState ?? null, data });
+  if (hooked.data !== data) data = await validate(req, fields, hooked.data, {});
   const updated = await DocRecord.findOneAndUpdate({ _id: existing._id, organizationId: org }, { $set: { data } }, { new: true }).lean();
   await audit(req, 'record.update', dt, name, before, data);
-  res.json({ data: dto(dt, updated!, wf, wf ? await loadActor(req) : undefined) });
+  const after = await runHooks(req, dt, 'after_save', { name, isNew: false, state: updated!.workflowState ?? wf?.initialState ?? null, data });
+  const messages = [...hooked.messages, ...after.messages];
+  res.json({ data: dto(dt, updated!, wf, wf ? await loadActor(req) : undefined), ...(messages.length ? { messages } : {}) });
 }));
 
 recordsRouter.delete('/records/:doctype/:name', wrap(async (req, res) => {
@@ -146,7 +158,9 @@ recordsRouter.delete('/records/:doctype/:name', wrap(async (req, res) => {
   const name = String(req.params.name);
   const existing = await DocRecord.findOne({ organizationId: orgOf(req), doctype: dt.name, name }).lean();
   if (!existing) throw notFound();
-  assertEditable(await activeWorkflow(orgOf(req), dt.name), existing as never);
+  const wfNow = await activeWorkflow(orgOf(req), dt.name);
+  assertEditable(wfNow, existing as never);
+  await runHooks(req, dt, 'before_delete', { name, isNew: false, state: existing.workflowState ?? wfNow?.initialState ?? null, data: (existing.data ?? {}) as Data });
   const gone = await DocRecord.findOneAndDelete({ _id: existing._id, organizationId: orgOf(req) }).lean();
   if (!gone) throw notFound();
   await audit(req, 'record.delete', dt, name, gone.data, null);

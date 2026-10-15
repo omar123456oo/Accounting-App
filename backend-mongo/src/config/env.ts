@@ -11,5 +11,7 @@ export const env = {
   port: Number(process.env.PORT ?? 3000),
   mongoUri: required('MONGODB_URI'),
   registrationOpen: (process.env.REGISTRATION_OPEN ?? 'true') === 'true',
+  /** Server scripts run only while this is not 'false'. A switch for incidents. */
+  scriptsEnabled: process.env.SCRIPTS_ENABLED !== 'false',
   autoIndex: (process.env.MONGODB_AUTO_INDEX ?? 'true') === 'true',
 };

@@ -9,6 +9,7 @@ import { BUILTIN_DOCTYPES } from './builtin-doctypes.js';
 import { customFieldsOf, plainField, resolveDocType } from './doctypes.js';
 import { FIELD_TYPES, isValidFieldname, type FieldDef } from './fields.js';
 import { CustomField, DocCounter, DocRecord, DocType } from './models.js';
+import { Script, ScriptLog } from './script.models.js';
 import { Workflow } from './workflow.models.js';
 
 export const customizeRouter = Router();
@@ -121,6 +122,9 @@ customizeRouter.delete('/doctypes/:name', can('admin.settings'), wrap(async (req
       await DocRecord.deleteMany({ organizationId: org, doctype: name }, { session });
       await DocCounter.deleteMany({ organizationId: org, doctype: name }, { session });
       await Workflow.deleteMany({ organizationId: org, doctype: name }, { session });
+      const scriptIds = (await Script.find({ organizationId: org, doctype: name }, '_id', { session }).lean()).map((s) => s._id);
+      await ScriptLog.deleteMany({ organizationId: org, scriptId: { $in: scriptIds } }, { session });
+      await Script.deleteMany({ organizationId: org, doctype: name }, { session });
     });
   } finally { await session.endSession(); }
   await audit(req, 'doctype.deleted', name, { name, label: existing.label, fields: existing.fields.map(plainField) }, null);

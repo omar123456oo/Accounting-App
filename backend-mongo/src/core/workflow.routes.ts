@@ -9,6 +9,7 @@ import { DocRecord } from './models.js';
 import { dto, typeOf } from './records.routes.js';
 import { validateDefinition, type Condition, type Escalation, type Transition, type WorkflowDef, type WorkflowState } from './workflow-rules.js';
 import { Delegation, Notification, Workflow } from './workflow.models.js';
+import { runHooks } from './scripts.service.js';
 import { actionsFor, activeWorkflow, alreadyApproved, approvalKey, approversOf, candidates, loadActor, notify, qualifier, recordLink, stateOf } from './workflow.service.js';
 
 export const workflowRouter = Router();
@@ -127,6 +128,9 @@ workflowRouter.post('/records/:doctype/:name/actions', wrap(async (req, res) => 
   const guard = { _id: rec._id, organizationId: org, stateEnteredAt: rec.stateEnteredAt ?? null };
   const conflict = () => new HttpError(409, 'This record was changed by someone else. Reload and try again.');
   const me = actor.self.userId;
+  const recData = (rec.data ?? {}) as Record<string, unknown>;
+  // a script may refuse the action before anything changes
+  const gate = await runHooks(req, dt, 'before_action', { name, isNew: false, state, data: recData }, { action: t.action, comment });
 
   if (t.approvals > 1) {
     if (alreadyApproved(rec as never, t, me)) throw new HttpError(422, 'You have already approved this.', { action: ['You have already approved this.'] });
@@ -136,7 +140,7 @@ workflowRouter.post('/records/:doctype/:name/actions', wrap(async (req, res) => 
     if (given < t.approvals) {
       const partial = await DocRecord.findOneAndUpdate({ _id: rec._id }, { $push: { history: { ...entry, to: state } } }, { new: true }).lean();
       await appendAudit({ organizationId: org, actorId: req.auth!.userId, action: 'workflow.action', entityType: 'DocRecord', entityId: `${dt.name}/${name}`, before: { state }, after: { state, action: t.action, pending: t.approvals - given, comment }, ip: req.ip });
-      res.json({ data: dto(dt, partial!, wf, actor), pending: t.approvals - given });
+      res.json({ data: dto(dt, partial!, wf, actor), pending: t.approvals - given, ...(gate.messages.length ? { messages: gate.messages } : {}) });
       return;
     }
   }
@@ -151,7 +155,9 @@ workflowRouter.post('/records/:doctype/:name/actions', wrap(async (req, res) => 
   if (creator) approvers.delete(creator);
   await notify(org, approvers, { kind: 'workflow', title: `${dt.label} ${name}: ${stateLabel(t.to)}`, body: comment, link });
   if (creator && creator !== me) await notify(org, [creator], { kind: 'workflow', title: `${dt.label} ${name} is now ${stateLabel(t.to)}`, body: comment, link });
-  res.json({ data: dto(dt, updated, wf, await loadActor(req)) });
+  const after = await runHooks(req, dt, 'after_action', { name, isNew: false, state: t.to, data: recData }, { action: t.action, comment });
+  const messages = [...gate.messages, ...after.messages];
+  res.json({ data: dto(dt, updated, wf, await loadActor(req)), ...(messages.length ? { messages } : {}) });
 }));
 
 // ---- inbox: records waiting for the caller ---------------------------------------------------------------------------------
