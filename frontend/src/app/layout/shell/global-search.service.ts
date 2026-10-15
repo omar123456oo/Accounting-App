@@ -12,6 +12,7 @@ import { InvoicingApiService } from '../../features/invoicing/invoicing-api.serv
 import { PayablesApiService } from '../../features/payables/payables-api.service';
 import { TasksApiService } from '../../features/workflows/tasks-api.service';
 import { CoreSearchApi } from './core-search.api';
+import { environment } from '../../../environments/environment';
 import { NAV_ITEMS } from './nav.config';
 import { SearchKind, norm, parseQuery, rankHits } from './search-rank';
 
@@ -74,7 +75,7 @@ export class GlobalSearchService {
   pages(term: string): SearchHit[] {
     const t = norm(term);
     const seen = new Set<string>();
-    const hits = [...NAV_ITEMS, ...EXTRA_PAGES]
+    const hits = [...NAV_ITEMS.filter((i) => !i.liveOnly || !environment.useMockApi), ...EXTRA_PAGES]
       .filter((p) => !p.permission || this.auth.can(p.permission))
       .map((p) => ({ route: p.route, title: this.translate.instant(p.labelKey) as string, group: p.groupKey ? (this.translate.instant(p.groupKey) as string) : undefined }))
       .filter((p) => norm(p.title).includes(t) && !seen.has(p.route) && !!seen.add(p.route))

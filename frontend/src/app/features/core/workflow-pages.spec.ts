@@ -154,6 +154,20 @@ describe('Workflow editor', () => {
     expect(body.states[0].name).toBe('new_draft');
   });
 
+  it('changes the roles of the transition it was clicked in, not another one', async () => {
+    const t = (action: string) => ({ from: 'draft', to: 'review', action, label: action, allowedRoles: [] as string[], allowedUsers: [], approvals: 1, requireComment: false, preventSelfApproval: false, conditions: [] });
+    const existing = { name: 'W', active: true, initialState: 'draft', states: [{ name: 'draft', label: 'Draft', editable: true }, { name: 'review', label: 'Review', editable: false }], transitions: [t('one'), t('two')], escalations: [{ state: 'draft', afterHours: 5, notifyRoles: [], notifyUsers: [], remindApprovers: false }, { state: 'review', afterHours: 5, notifyRoles: [], notifyUsers: [], remindApprovers: false }] };
+    const { http, el, harness } = await render(existing);
+    expect(new Set([...el().querySelectorAll('[id^="tr-r-"]')].map((i) => i.id)).size).toBe(4); // two transitions x two roles, all different
+    (el().querySelector('#tr-r-1-owner') as HTMLInputElement).click();
+    (el().querySelector('#es-r-1-accountant') as HTMLInputElement).click();
+    harness.detectChanges();
+    click(el(), 'common.save');
+    const body = http.expectOne(`${T}/workflows/expense_req`).request.body;
+    expect(body.transitions.map((x: { allowedRoles: string[] }) => x.allowedRoles)).toEqual([[], ['owner']]);
+    expect(body.escalations.map((x: { notifyRoles: string[] }) => x.notifyRoles)).toEqual([[], ['accountant']]);
+  });
+
   it('lists every server problem when the save is refused and keeps the form', async () => {
     const { http, el, harness } = await render();
     click(el(), 'common.save');

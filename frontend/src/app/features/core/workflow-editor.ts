@@ -64,7 +64,7 @@ import { Directory, Escalation, OPS, Op, WorkflowState } from './workflow.models
               <div class="col-md-6">
                 <div class="form-label">{{ 'core.workflow.roles' | translate }}</div>
                 @for (r of directory()?.roles ?? []; track r) {
-                  <div class="form-check form-check-inline"><input type="checkbox" class="form-check-input" [id]="'tr-r-' + $index + '-' + r" [checked]="t.allowedRoles.includes(r)" (change)="toggle($index, 'allowedRoles', r)" /><label class="form-check-label" dir="ltr" [for]="'tr-r-' + $index + '-' + r">{{ r }}</label></div>
+                  <div class="form-check form-check-inline"><input type="checkbox" class="form-check-input" [id]="'tr-r-' + ti + '-' + r" [checked]="t.allowedRoles.includes(r)" (change)="toggle(ti, 'allowedRoles', r)" /><label class="form-check-label" dir="ltr" [for]="'tr-r-' + ti + '-' + r">{{ r }}</label></div>
                 }
               </div>
               <div class="col-md-6">
@@ -74,7 +74,7 @@ import { Directory, Escalation, OPS, Op, WorkflowState } from './workflow.models
                   @for (u of directory()?.users ?? []; track u.id) { <option [value]="u.id">{{ u.name }}</option> }
                 </select>
                 @for (id of t.allowedUsers; track id) {
-                  <span class="badge text-bg-light border me-1 mt-1">{{ userName(id) }} <button type="button" class="btn-close btn-close-sm ms-1" style="font-size:.6rem" [attr.aria-label]="'core.fields.remove' | translate" (click)="toggle($index, 'allowedUsers', id)"></button></span>
+                  <span class="badge text-bg-light border me-1 mt-1">{{ userName(id) }} <button type="button" class="btn-close btn-close-sm ms-1" style="font-size:.6rem" [attr.aria-label]="'core.fields.remove' | translate" (click)="toggle(ti, 'allowedUsers', id)"></button></span>
                 }
               </div>
 
@@ -104,11 +104,11 @@ import { Directory, Escalation, OPS, Op, WorkflowState } from './workflow.models
       <section class="card mb-3" aria-labelledby="es-title"><div class="card-body">
         <h2 class="h5" id="es-title">{{ 'core.workflow.escalations' | translate }}</h2>
         <p class="text-body-secondary small">{{ 'core.workflow.escalationsHint' | translate }}</p>
-        @for (e of m.escalations; track $index) {
+        @for (e of m.escalations; track $index; let ei = $index) {
           <div class="row g-2 align-items-end mb-2">
             <div class="col-md-3"><label class="form-label" [for]="'es-s-' + $index">{{ 'core.workflow.state' | translate }}</label><select class="form-select" dir="ltr" [id]="'es-s-' + $index" [ngModel]="e.state" (ngModelChange)="patchE($index, { state: $event })">@for (n of stateNames(); track n) { <option [value]="n">{{ n }}</option> }</select></div>
             <div class="col-md-2"><label class="form-label" [for]="'es-h-' + $index">{{ 'core.workflow.afterHours' | translate }}</label><input type="number" min="1" class="form-control" dir="ltr" [id]="'es-h-' + $index" [ngModel]="e.afterHours" (ngModelChange)="patchE($index, { afterHours: $event })" /></div>
-            <div class="col-md-4"><div class="form-label">{{ 'core.workflow.notifyRoles' | translate }}</div>@for (r of directory()?.roles ?? []; track r) { <div class="form-check form-check-inline"><input type="checkbox" class="form-check-input" [id]="'es-r-' + $index + '-' + r" [checked]="e.notifyRoles.includes(r)" (change)="toggleE($index, r)" /><label class="form-check-label" dir="ltr" [for]="'es-r-' + $index + '-' + r">{{ r }}</label></div> }</div>
+            <div class="col-md-4"><div class="form-label">{{ 'core.workflow.notifyRoles' | translate }}</div>@for (r of directory()?.roles ?? []; track r) { <div class="form-check form-check-inline"><input type="checkbox" class="form-check-input" [id]="'es-r-' + ei + '-' + r" [checked]="e.notifyRoles.includes(r)" (change)="toggleE(ei, r)" /><label class="form-check-label" dir="ltr" [for]="'es-r-' + ei + '-' + r">{{ r }}</label></div> }</div>
             <div class="col-auto form-check"><input type="checkbox" class="form-check-input" [id]="'es-a-' + $index" [ngModel]="e.remindApprovers" (ngModelChange)="patchE($index, { remindApprovers: $event })" /><label class="form-check-label" [for]="'es-a-' + $index">{{ 'core.workflow.remindApprovers' | translate }}</label></div>
             <div class="col text-end"><button type="button" class="btn btn-outline-danger btn-sm" (click)="removeE($index)" [attr.aria-label]="'core.fields.remove' | translate"><i class="fa-solid fa-trash" aria-hidden="true"></i></button></div>
           </div>

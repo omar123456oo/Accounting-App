@@ -41,7 +41,7 @@ import { WorkflowAction, WorkflowBlock } from './workflow.models';
               <strong>{{ h.actorName ?? '—' }}</strong>
               @if (h.onBehalfOf) { <span class="text-body-secondary"> ({{ 'core.workflow.onBehalfOf' | translate: { name: h.onBehalfOf } }})</span> }
               · {{ h.action }}@if (h.from && h.to && h.from !== h.to) { <span> : {{ h.from }} → {{ h.to }}</span> }
-              <span class="text-body-secondary"> · {{ h.at | date: 'medium' }}</span>
+              <span class="text-body-secondary"> · <bdi>{{ h.at | date: 'medium' }}</bdi></span>
               @if (h.comment) { <div class="fst-italic">“{{ h.comment }}”</div> }
             </li>
           }

@@ -2,6 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../core/auth/auth.service';
+import { environment } from '../../../environments/environment';
 import { NAV_ITEMS } from './nav.config';
 
 @Component({
@@ -83,7 +84,7 @@ export class Sidebar {
   private readonly auth = inject(AuthService);
   /** Permission-filtered entries; the first visible entry of a group carries the group heading. */
   protected readonly items = computed(() => {
-    const visible = NAV_ITEMS.filter((i) => !i.permission || this.auth.can(i.permission));
+    const visible = NAV_ITEMS.filter((i) => (!i.liveOnly || !environment.useMockApi) && (!i.permission || this.auth.can(i.permission)));
     return visible.map((item, index) => ({ ...item, heading: item.groupKey && visible[index - 1]?.groupKey !== item.groupKey ? item.groupKey : null }));
   });
 }
