@@ -16,6 +16,7 @@
     "dev:memory": "tsx src/scripts/dev-memory.ts",
     "workflow:check": "tsx src/scripts/workflow-smoke.ts",
     "workflow:escalate": "tsx src/scripts/workflow-escalate.ts",
+    "scripts:check": "tsx src/scripts/scripts-smoke.ts",
     "db:check": "tsx src/scripts/smoke.ts",
     "api:check": "tsx src/scripts/api-smoke.ts",
     "typecheck": "tsc -p . --noEmit"
@@ -23,7 +24,8 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
-    "mongoose": "^8.8.0"
+    "mongoose": "^8.8.0",
+    "quickjs-emscripten": "^0.32.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
