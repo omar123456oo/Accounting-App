@@ -7,6 +7,7 @@ import { forkJoin, of, switchMap } from 'rxjs';
 import { apiErrorMessage, fieldErrors } from '../../core/http/api-errors';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { PageHeader } from '../../shared/components/page-header/page-header';
+import { WorkflowPanel } from './workflow-panel';
 import { CoreApiService } from './core-api.service';
 import { DocRecordView, DocTypeMeta } from './core.models';
 import { buildGroup, toPayload, visibleFields } from './record-form-model';
@@ -14,11 +15,11 @@ import { buildGroup, toPayload, visibleFields } from './record-form-model';
 /** One record of an admin-made document type, drawn from the type's current field list (built-in plus custom fields). */
 @Component({
   selector: 'app-record-form',
-  imports: [ReactiveFormsModule, RouterLink, TranslatePipe, PageHeader, ConfirmDialog],
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe, PageHeader, ConfirmDialog, WorkflowPanel],
   template: `
     <app-page-header [title]="record() ? record()!.title : meta() ? (('core.record.newTitle' | translate: { label: meta()!.label })) : ('common.loading' | translate)">
       <a class="btn btn-outline-secondary" [routerLink]="['/app/records', type]">{{ 'core.record.back' | translate }}</a>
-      @if (record() && meta()?.canManage) {
+      @if (record() && canEdit()) {
         <button type="button" class="btn btn-outline-danger" (click)="confirmDelete.set(true)">{{ 'common.delete' | translate }}</button>
       }
     </app-page-header>
@@ -26,6 +27,9 @@ import { buildGroup, toPayload, visibleFields } from './record-form-model';
     @if (loadFailed()) {
       <div class="alert alert-danger" role="alert">{{ 'core.records.notFound' | translate }}</div>
     } @else if (form(); as f) {
+      @if (record()?.workflow; as wf) {
+        <app-workflow-panel [block]="wf" [doctype]="type" [name]="record()!.name" (changed)="onChanged($event)" />
+      }
       <form [formGroup]="f" (ngSubmit)="save()" novalidate class="card"><div class="card-body">
         @if (record(); as r) { <p class="text-body-secondary small" dir="ltr">{{ r.name }}</p> }
         <div class="row g-3">
@@ -57,7 +61,7 @@ import { buildGroup, toPayload, visibleFields } from './record-form-model';
           }
         </div>
         @if (error(); as e) { <div class="alert alert-danger mt-3" role="alert">{{ e }}</div> }
-        @if (meta()?.canManage) {
+        @if (canEdit()) {
           <div class="d-flex justify-content-end gap-2 mt-3">
             <button type="submit" class="btn btn-primary" [disabled]="saving()">{{ 'common.save' | translate }}</button>
           </div>
@@ -90,6 +94,8 @@ export class RecordForm {
   protected readonly serverErrors = signal<Record<string, string>>({});
   protected readonly confirmDelete = signal(false);
   protected readonly fields = computed(() => visibleFields(this.meta()?.fields ?? []));
+  /** The person may manage this type and, when a workflow governs it, the record is in a state that allows changes. */
+  protected readonly canEdit = computed(() => !!this.meta()?.canManage && (this.record()?.workflow?.editable ?? true));
 
   constructor() {
     this.route.paramMap
@@ -105,12 +111,22 @@ export class RecordForm {
         next: ({ meta, record }) => {
           this.meta.set(meta);
           this.record.set(record);
-          const group = buildGroup(meta.fields, record?.data ?? {});
-          if (!meta.canManage) group.disable();
-          this.form.set(group);
+          this.form.set(this.groupFor(meta, record));
         },
         error: () => this.loadFailed.set(true),
       });
+  }
+
+  private groupFor(meta: DocTypeMeta, record: DocRecordView | null) {
+    const group = buildGroup(meta.fields, record?.data ?? {});
+    if (!meta.canManage || (record?.workflow && !record.workflow.editable)) group.disable();
+    return group;
+  }
+
+  /** After a workflow action: show the record in its new state, with the form locked or open as that state says. */
+  protected onChanged(r: DocRecordView): void {
+    this.record.set(r);
+    this.form.set(this.groupFor(this.meta()!, r));
   }
 
   protected invalid(name: string): boolean {

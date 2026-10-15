@@ -50,6 +50,7 @@ export const TYPE_PERMISSIONS: readonly string[] = [
                   <td class="text-end text-nowrap">
                     <a class="btn btn-outline-secondary btn-sm" [routerLink]="['/app/doctypes', t.name, 'customize']">{{ 'core.docTypes.customize' | translate }}<span class="visually-hidden"> {{ t.label }}</span></a>
                     @if (t.isCustom) {
+                      <a class="btn btn-outline-secondary btn-sm ms-1" [routerLink]="['/app/doctypes', t.name, 'workflow']">{{ 'core.docTypes.workflow' | translate }}<span class="visually-hidden"> {{ t.label }}</span></a>
                       <a class="btn btn-outline-secondary btn-sm ms-1" [routerLink]="['/app/records', t.name]">{{ 'core.docTypes.records' | translate }}<span class="visually-hidden"> {{ t.label }}</span></a>
                       <button type="button" class="btn btn-outline-danger btn-sm ms-1" (click)="toDelete.set(t)">{{ 'common.delete' | translate }}<span class="visually-hidden"> {{ t.label }}</span></button>
                     }

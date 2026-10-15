@@ -19,6 +19,7 @@ export const SHELL_ROUTES: Routes = [
       { path: 'forecast', canActivate: [permissionGuard], data: { permission: 'forecast.view' }, loadComponent: () => import('../../features/engage/forecast-page').then((m) => m.ForecastPage) },
       { path: 'analytics', canActivate: [permissionGuard], data: { permission: 'reports.view' }, loadComponent: () => import('../../features/analytics/analytics-layout').then((m) => m.AnalyticsLayout) },
       { path: 'hr', loadChildren: () => import('../../features/hr/hr.routes').then((m) => m.HR_ROUTES), canActivate: [permissionGuard], data: { permission: 'leave.apply' } },
+      { path: 'inbox', loadComponent: () => import('../../features/core/inbox-page').then((m) => m.InboxPage) },
       { path: 'doctypes', loadChildren: () => import('../../features/core/core.routes').then((m) => m.DOCTYPE_ROUTES) },
       { path: 'records', loadChildren: () => import('../../features/core/core.routes').then((m) => m.RECORD_ROUTES) },
       { path: 'accounting', loadChildren: () => import('../../features/accounting/accounting.routes').then((m) => m.ACCOUNTING_ROUTES) },

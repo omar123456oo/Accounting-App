@@ -1,3 +1,5 @@
+import type { WorkflowBlock } from './workflow.models';
+
 export const FIELD_TYPES = ['text', 'number', 'date', 'select', 'link', 'checkbox', 'currency'] as const;
 export type FieldType = (typeof FIELD_TYPES)[number];
 
@@ -50,6 +52,11 @@ export interface DocRecordView {
   data: RecordData;
   createdAt?: string;
   updatedAt?: string;
+  /** Full workflow block, on a single record of a type with an active workflow. */
+  workflow?: WorkflowBlock;
+  /** Current state, on rows of a list of such a type. */
+  state?: string;
+  stateLabel?: string;
 }
 
 export interface RecordPage {

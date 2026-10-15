@@ -35,6 +35,19 @@ function parseDefinition(body: any, errors: Errors): (WorkflowDef & { name: stri
   return { name: name ?? '', active: body?.active !== false, states, initialState: String(body?.initialState ?? ''), transitions, escalations };
 }
 
+/** Roles and staff of this organization, for the pickers of the workflow editor. Names and roles only. */
+workflowRouter.get('/directory', can('admin.settings'), wrap(async (req, res) => {
+  const org = orgOf(req);
+  const [roles, users] = await Promise.all([Role.find({ organizationId: org }).select('name').sort({ name: 1 }).lean(), User.find({ organizationId: org, type: 'staff' }).select('name roles').sort({ name: 1 }).lean()]);
+  res.json({ data: { roles: roles.map((r) => r.name), users: users.map((u) => ({ id: String(u._id), name: u.name, roles: u.roles })) } });
+}));
+
+/** Colleagues a person may delegate to: id and name only, never the caller. */
+workflowRouter.get('/people', wrap(async (req, res) => {
+  const users = await User.find({ organizationId: orgOf(req), type: 'staff', _id: { $ne: req.auth!.userId } }).select('name').sort({ name: 1 }).lean();
+  res.json({ data: users.map((u) => ({ id: String(u._id), name: u.name })) });
+}));
+
 workflowRouter.get('/workflows/:doctype', can('admin.settings'), wrap(async (req, res) => {
   const dt = await resolveDocType(orgOf(req), String(req.params.doctype));
   if (!dt?.isCustom) throw notFound();

@@ -38,12 +38,14 @@ const COLUMNS = 4;
             <thead><tr>
               <th scope="col">{{ 'core.records.name' | translate }}</th>
               @for (c of columns(); track c.fieldname) { <th scope="col">{{ c.label }}</th> }
+              @if (hasState()) { <th scope="col">{{ 'core.workflow.status' | translate }}</th> }
             </tr></thead>
             <tbody>
               @for (r of rows(); track r.name) {
                 <tr>
                   <td><a [routerLink]="['/app/records', type, r.name]" dir="ltr">{{ r.name }}</a></td>
                   @for (c of columns(); track c.fieldname) { <td>{{ show(r, c.fieldname) }}</td> }
+                  @if (hasState()) { <td><span class="badge text-bg-primary">{{ r.stateLabel ?? r.state }}</span></td> }
                 </tr>
               }
             </tbody>
@@ -76,6 +78,7 @@ export class RecordList {
   protected readonly loadFailed = signal(false);
   protected readonly typed = new Subject<string>();
   private q = '';
+  protected readonly hasState = computed(() => this.rows().some((r) => !!r.state));
   protected readonly columns = computed(() => visibleFields(this.meta()?.fields ?? []).slice(0, COLUMNS));
 
   constructor() {

@@ -132,6 +132,23 @@ try {
   });
   const W = `${C}/workflows/${T}`;
 
+  // ---- directory (pickers for the editor) --------------------------------------------------------------------------------------
+  const dir = await owner.call('GET', `${C}/directory`);
+  assert.equal(dir.status, 200);
+  assert.ok(dir.json.data.roles.includes('accountant') && dir.json.data.roles.includes('owner'));
+  assert.ok(dir.json.data.users.some((u: any) => u.id === taxId && u.roles.includes('tax_specialist') && u.name));
+  assert.ok(dir.json.data.users.every((u: any) => !('email' in u) && !('passwordHash' in u)), 'only what a picker needs');
+  assert.equal((await accountant.call('GET', `${C}/directory`)).status, 403);
+  assert.ok(!(await outsider.call('GET', `${C}/directory`)).json.data.users.some((u: any) => u.id === taxId), 'own organization only');
+
+  // ---- people (for delegation pickers): any staff member, names only ---------------------------------------------------------
+  const people = await accountant.call('GET', `${C}/people`);
+  assert.equal(people.status, 200);
+  assert.ok(people.json.data.some((p: any) => p.id === taxId && p.name));
+  assert.ok(people.json.data.every((p: any) => Object.keys(p).sort().join() === 'id,name'), 'id and name only');
+  assert.ok(!people.json.data.some((p: any) => p.id === accountantId), 'not the caller');
+  assert.ok(!(await outsider.call('GET', `${C}/people`)).json.data.some((p: any) => p.id === taxId), 'own organization only');
+
   // ---- definition API ------------------------------------------------------------------------------------------------------
   assert.equal((await owner.call('GET', W)).status, 404, 'no workflow yet');
   assert.equal((await accountant.call('PUT', W, definition())).status, 403);
