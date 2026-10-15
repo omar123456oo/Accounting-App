@@ -2359,6 +2359,9 @@
       "notifications": "الإشعارات",
       "noNotifications": "لا توجد إشعارات.",
       "markRead": "تحديد كمقروء"
+    },
+    "scripts": {
+      "loadWarnings": "تعذر تحميل بعض نصوص هذا النموذج:"
     }
   }
 }

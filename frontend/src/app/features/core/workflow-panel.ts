@@ -80,10 +80,11 @@ export class WorkflowPanel {
     this.error.set(null);
     this.notice.set(null);
     this.api.act(this.doctype(), this.name(), a.action, this.comment().trim()).subscribe({
-      next: ({ record, pending }) => {
+      next: ({ record, pending, messages }) => {
         this.busy.set(false);
         this.comment.set('');
-        if (pending) this.notice.set(this.translate.instant('core.workflow.pending', { count: pending }) as string);
+        const parts = [...(pending ? [this.translate.instant('core.workflow.pending', { count: pending }) as string] : []), ...(messages ?? [])];
+        if (parts.length) this.notice.set(parts.join(' '));
         this.changed.emit(record);
       },
       error: (e) => {

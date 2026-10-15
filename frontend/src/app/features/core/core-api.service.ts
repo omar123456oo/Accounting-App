@@ -51,11 +51,11 @@ export class CoreApiService {
   }
 
   createRecord(doctype: string, data: RecordData): Observable<DocRecordView> {
-    return this.data(this.http.post<{ data: DocRecordView }>(`${BASE}/records/${encodeURIComponent(doctype)}`, { data }));
+    return this.http.post<{ data: DocRecordView; messages?: string[] }>(`${BASE}/records/${encodeURIComponent(doctype)}`, { data }).pipe(map((r) => ({ ...r.data, messages: r.messages })));
   }
 
   updateRecord(doctype: string, name: string, data: RecordData): Observable<DocRecordView> {
-    return this.data(this.http.put<{ data: DocRecordView }>(`${BASE}/records/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`, { data }));
+    return this.http.put<{ data: DocRecordView; messages?: string[] }>(`${BASE}/records/${encodeURIComponent(doctype)}/${encodeURIComponent(name)}`, { data }).pipe(map((r) => ({ ...r.data, messages: r.messages })));
   }
 
   deleteRecord(doctype: string, name: string): Observable<void> {

@@ -38,10 +38,10 @@ export class WorkflowApiService {
   }
 
   /** `pending` is set when more approvals are still needed before the record moves. */
-  act(doctype: string, name: string, action: string, comment?: string): Observable<{ record: DocRecordView; pending?: number }> {
+  act(doctype: string, name: string, action: string, comment?: string): Observable<{ record: DocRecordView; pending?: number; messages?: string[] }> {
     return this.http
-      .post<{ data: DocRecordView; pending?: number }>(`${BASE}/records/${enc(doctype)}/${enc(name)}/actions`, { action, ...(comment ? { comment } : {}) })
-      .pipe(map((r) => ({ record: r.data, pending: r.pending })));
+      .post<{ data: DocRecordView; pending?: number; messages?: string[] }>(`${BASE}/records/${enc(doctype)}/${enc(name)}/actions`, { action, ...(comment ? { comment } : {}) })
+      .pipe(map((r) => ({ record: r.data, pending: r.pending, messages: r.messages })));
   }
 
   inbox(): Observable<InboxItem[]> {

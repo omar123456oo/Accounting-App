@@ -2359,6 +2359,9 @@
       "notifications": "Notifications",
       "noNotifications": "No notifications.",
       "markRead": "Mark as read"
+    },
+    "scripts": {
+      "loadWarnings": "Some scripts for this form did not load:"
     }
   }
 }

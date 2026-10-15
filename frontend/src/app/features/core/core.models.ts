@@ -54,6 +54,8 @@ export interface DocRecordView {
   updatedAt?: string;
   /** Full workflow block, on a single record of a type with an active workflow. */
   workflow?: WorkflowBlock;
+  /** What the server's scripts said while saving (never stored with the record). */
+  messages?: string[];
   /** Current state, on rows of a list of such a type. */
   state?: string;
   stateLabel?: string;
