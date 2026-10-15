@@ -15,6 +15,7 @@ generated_by: "scripts/docs/validate.mjs"
 
 | Document | ID | Status | Verification | Last verified |
 |---|---|---|---|---|
+| [Approval Workflow](modules/core/features/approval-workflow.md) | `CORE-FEATURE-005` | active | partial | 2026-10-15 |
 | [Create an Admin-made Document Type](modules/core/features/create-doctype.md) | `CORE-FEATURE-003` | active | partial | 2026-10-14 |
 | [Customize a Document Type](modules/core/features/customize-doctype.md) | `CORE-FEATURE-002` | active | partial | 2026-10-14 |
 | [Read Document Type Metadata](modules/core/features/doctype-metadata.md) | `CORE-FEATURE-001` | active | verified | 2026-10-14 |

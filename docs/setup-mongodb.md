@@ -70,5 +70,7 @@ Screens: sidebar **Document types** (`/app/doctypes`) and `/app/records/<type>`.
 
 Try it without Docker: `npm run dev:memory` starts the real API on port 3000 against a throwaway in-memory MongoDB, seeds the demo office and prints the sign-in password; stop it and everything is gone.
 
-Not yet built: workflow engine, client and server scripts, custom fields on built-in screens.
+Workflow (see `docs/modules/core/features/approval-workflow.md`): `GET/PUT workflows/:doctype`, `POST records/:doctype/:name/actions`, `GET workflow/inbox`, `GET/POST/DELETE workflow/delegations`, `GET notifications`, `POST notifications/:id/read`, `GET directory` (admin.settings), `GET people`. `npm run workflow:check` is its acceptance test. `npm run workflow:escalate` raises escalations once; schedule it (for example from cron every 15 minutes), because nothing does.
+
+Not yet built: client and server scripts, custom fields on built-in screens, workflows for built-in document types.
 

@@ -15,7 +15,7 @@ generated_by: "scripts/docs/scan.mjs"
 > Scope: Mongoose models in `backend-mongo`. Field types are shown as written in the schema.
 
 
-**27 models.** Every tenant collection carries `organizationId` (see `backend-mongo/src/db/tenant.ts`); a row `...x` is a spread of shared fields defined in the same file.
+**30 models.** Every tenant collection carries `organizationId` (see `backend-mongo/src/db/tenant.ts`); a row `...x` is a spread of shared fields defined in the same file.
 
 ## AuditChainHead
 
@@ -141,6 +141,23 @@ Indexes:
 
 - `{ organizationId: 1, doctype: 1, fieldname: 1 }, { unique: true }`
 
+## Delegation
+
+Source: `backend-mongo/src/core/workflow.models.ts:23`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| fromUserId | Schema.Types.ObjectId | yes |  |
+| toUserId | Schema.Types.ObjectId | yes |  |
+| startDate | String | yes |  |
+| endDate | String | yes |  |
+
+Indexes:
+
+- `{ organizationId: 1, toUserId: 1 }`
+- `{ organizationId: 1, fromUserId: 1 }`
+
 ## Department
 
 Source: `backend-mongo/src/hr/models.ts:15`
@@ -162,7 +179,7 @@ Indexes:
 
 ## DocCounter
 
-Source: `backend-mongo/src/core/models.ts:45`
+Source: `backend-mongo/src/core/models.ts:56`
 
 | Field | Type | Required | Allowed values |
 |---|---|---|---|
@@ -184,6 +201,12 @@ Source: `backend-mongo/src/core/models.ts:36`
 | doctype | String | yes |  |
 | name | String | yes |  |
 | data | Schema.Types.Mixed | no |  |
+| createdBy | Schema.Types.ObjectId | no |  |
+| workflowState | String | no |  |
+| stateEnteredAt | Date | no |  |
+| approvals | [new Schema({ transition: String, userId: Schema.Types.ObjectId, at: Date }, { _id: false  | no |  |
+| escalatedAt | Date | no |  |
+| history | [new Schema({ at: { type: Date, required: true }, actorId: Schema.Types.ObjectId, actorNam | no |  |
 
 Indexes:
 
@@ -415,6 +438,24 @@ Indexes:
 
 - `{ organizationId: 1, nameEn: 1 }, { unique: true }`
 
+## Notification
+
+Source: `backend-mongo/src/core/workflow.models.ts:30`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| userId | Schema.Types.ObjectId | yes |  |
+| kind | String | yes | ['workflow', 'escalation'] |
+| title | String | yes |  |
+| body | String | no |  |
+| link | String | no |  |
+| readAt | Date | no |  |
+
+Indexes:
+
+- `{ organizationId: 1, userId: 1, createdAt: -1 }`
+
 ## Organization
 
 Source: `backend-mongo/src/models/organization.ts:3`
@@ -500,4 +541,23 @@ Source: `backend-mongo/src/models/user.ts:3`
 | failedLogins | Number | no |  |
 | mfaSecret | String | no |  |
 | mfaEnabled | Boolean | no |  |
+
+## Workflow
+
+Source: `backend-mongo/src/core/workflow.models.ts:16`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| doctype | String | yes |  |
+| name | String | yes |  |
+| active | Boolean | no |  |
+| states | [state] | no |  |
+| initialState | String | yes |  |
+| transitions | [transition] | no |  |
+| escalations | [escalation] | no |  |
+
+Indexes:
+
+- `{ organizationId: 1, doctype: 1 }, { unique: true }`
 

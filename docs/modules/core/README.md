@@ -26,11 +26,13 @@ A document type (DocType) describes a kind of document: its fields, who may see 
 | Search over records of admin-made types (API) | Implemented and tested |
 | Screens: document type list and creation, customize form, record list and record form | Implemented; unit-tested and exercised once end to end in Chrome against the real API (see each feature's verification section). They need the real API: the mock API does not serve them |
 | Built-in screens (for example leave) showing custom fields | **Not built**: custom fields are stored and returned by the API but no screen reads them and the leave API does not store their values |
-| Workflow, client scripts, server scripts | **Not built** |
+| Approval workflow: states, transitions, parallel approvals, conditions, delegation, notifications, escalation (API, editor, record panel, inbox) | Implemented; backend tested, screens unit-tested and exercised once in Chrome on the real API. Escalation is not scheduled |
+| Client scripts, server scripts | **Not built** |
 
 ## Features
 
 - [Manage records of a document type](features/manage-records.md)
+- [Approval workflow](features/approval-workflow.md)
 - [Customize a document type](features/customize-doctype.md)
 - [Create an admin-made document type](features/create-doctype.md)
 - [Read document type metadata](features/doctype-metadata.md)
@@ -38,7 +40,7 @@ A document type (DocType) describes a kind of document: its fields, who may see 
 
 ## Navigation
 
-Sidebar entry **Document types** (`/app/doctypes`, shown to holders of `admin.settings`); from there each type links to its customize form (`/app/doctypes/<name>/customize`) and its records (`/app/records/<name>`, also reached from search). These pages sit outside **Settings** on purpose: the Settings section is guarded by `settings.manage`, a permission name the backend does not define, so in real-API mode nobody can open it yet. That mismatch is not fixed.
+Sidebar entries **Inbox** (live API only) and **Document types** (`/app/doctypes`, shown to holders of `admin.settings`); from there each type links to its customize form (`/app/doctypes/<name>/customize`) and its records (`/app/records/<name>`, also reached from search). These pages sit outside **Settings** on purpose: the Settings section is guarded by `settings.manage`, a permission name the backend does not define, so in real-API mode nobody can open it yet. That mismatch is not fixed.
 
 ## Permissions
 
@@ -48,6 +50,8 @@ Sidebar entry **Document types** (`/app/doctypes`, shown to holders of `admin.se
 | Read metadata of a type | the type's own `viewPermission` | Backend handler; unknown and not-permitted both answer 404 |
 | Read records of a type | the type's `viewPermission` | Backend handler (404 otherwise) |
 | Create, change, delete records | the type's `managePermission` (set at creation; defaults to `admin.settings`) | Backend handler (403) |
+| Define or change a workflow | `admin.settings` | Backend route |
+| Act on a record in a workflow | named by the transition (role, person or delegation) and able to view the type | Backend handler (403) |
 
 Roles holding `admin.settings` are listed in the [permissions matrix](../../PERMISSIONS_MATRIX.md).
 

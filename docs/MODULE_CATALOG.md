@@ -26,7 +26,7 @@ generated_by: "scripts/docs/scan.mjs"
 | `features/auth` | 7 | 5 | 2 | not yet written |
 | `features/clients` | 23 | 6 | 8 | not yet written |
 | `features/commercial` | 35 | 18 | 8 | not yet written |
-| `features/core` | 14 | 5 | 4 | [modules/core](modules/core/README.md) |
+| `features/core` | 22 | 8 | 6 | [modules/core](modules/core/README.md) |
 | `features/dashboard` | 4 | 3 | 1 | not yet written |
 | `features/documents` | 12 | 4 | 3 | not yet written |
 | `features/engage` | 11 | 6 | 2 | not yet written |
@@ -51,7 +51,7 @@ generated_by: "scripts/docs/scan.mjs"
 | `/api/v1/auth/me` | 1 |
 | `/api/v1/auth/register` | 1 |
 | `/api/v1/me/hrm` | 2 |
-| `/api/v1/staff/core` | 12 |
+| `/api/v1/staff/core` | 23 |
 | `/api/v1/staff/hr` | 33 |
 | `/api/v1/staff/hrm` | 21 |
 | `/api/v1/staff/ping` | 1 |

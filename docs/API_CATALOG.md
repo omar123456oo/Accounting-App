@@ -15,7 +15,7 @@ generated_by: "scripts/docs/scan.mjs"
 > Scope: `backend-mongo` only. The Angular app uses an in-memory mock API for every module not listed here (see [SYSTEM_OVERVIEW](SYSTEM_OVERVIEW.md)).
 
 
-**54 endpoint definitions found; 54 reachable from `app.ts`.**
+**65 endpoint definitions found; 65 reachable from `app.ts`.**
 
 ## Endpoints
 
@@ -28,18 +28,29 @@ generated_by: "scripts/docs/scan.mjs"
 | POST | `/api/v1/auth/register` | — | yes | `backend-mongo/src/auth/routes.ts:20` |
 | GET | `/api/v1/me/hrm/contracts` | — | no | `backend-mongo/src/hr/contract.routes.ts:189` |
 | GET | `/api/v1/me/hrm/employee` | — | no | `backend-mongo/src/hr/employee.routes.ts:227` |
-| GET | `/api/v1/staff/core/customize/:doctype` | admin.settings | no | `backend-mongo/src/core/customize.routes.ts:54` |
-| PUT | `/api/v1/staff/core/customize/:doctype` | admin.settings | yes | `backend-mongo/src/core/customize.routes.ts:60` |
+| GET | `/api/v1/staff/core/customize/:doctype` | admin.settings | no | `backend-mongo/src/core/customize.routes.ts:55` |
+| PUT | `/api/v1/staff/core/customize/:doctype` | admin.settings | yes | `backend-mongo/src/core/customize.routes.ts:61` |
+| GET | `/api/v1/staff/core/directory` | admin.settings | no | `backend-mongo/src/core/workflow.routes.ts:39` |
 | GET | `/api/v1/staff/core/doctypes` | — | no | `backend-mongo/src/core/meta.routes.ts:20` |
-| POST | `/api/v1/staff/core/doctypes` | admin.settings | yes | `backend-mongo/src/core/customize.routes.ts:81` |
-| DELETE | `/api/v1/staff/core/doctypes/:name` | admin.settings | no | `backend-mongo/src/core/customize.routes.ts:110` |
+| POST | `/api/v1/staff/core/doctypes` | admin.settings | yes | `backend-mongo/src/core/customize.routes.ts:82` |
+| DELETE | `/api/v1/staff/core/doctypes/:name` | admin.settings | no | `backend-mongo/src/core/customize.routes.ts:111` |
 | GET | `/api/v1/staff/core/meta/:doctype` | — | no | `backend-mongo/src/core/meta.routes.ts:9` |
-| GET | `/api/v1/staff/core/records/:doctype` | — | no | `backend-mongo/src/core/records.routes.ts:80` |
-| POST | `/api/v1/staff/core/records/:doctype` | — | yes | `backend-mongo/src/core/records.routes.ts:98` |
-| DELETE | `/api/v1/staff/core/records/:doctype/:name` | — | no | `backend-mongo/src/core/records.routes.ts:130` |
-| GET | `/api/v1/staff/core/records/:doctype/:name` | — | no | `backend-mongo/src/core/records.routes.ts:91` |
-| PUT | `/api/v1/staff/core/records/:doctype/:name` | — | yes | `backend-mongo/src/core/records.routes.ts:116` |
+| GET | `/api/v1/staff/core/notifications` | — | no | `backend-mongo/src/core/workflow.routes.ts:214` |
+| POST | `/api/v1/staff/core/notifications/:id/read` | — | no | `backend-mongo/src/core/workflow.routes.ts:221` |
+| GET | `/api/v1/staff/core/people` | — | no | `backend-mongo/src/core/workflow.routes.ts:46` |
+| GET | `/api/v1/staff/core/records/:doctype` | — | no | `backend-mongo/src/core/records.routes.ts:86` |
+| POST | `/api/v1/staff/core/records/:doctype` | — | yes | `backend-mongo/src/core/records.routes.ts:106` |
+| DELETE | `/api/v1/staff/core/records/:doctype/:name` | — | no | `backend-mongo/src/core/records.routes.ts:143` |
+| GET | `/api/v1/staff/core/records/:doctype/:name` | — | no | `backend-mongo/src/core/records.routes.ts:98` |
+| PUT | `/api/v1/staff/core/records/:doctype/:name` | — | yes | `backend-mongo/src/core/records.routes.ts:127` |
+| POST | `/api/v1/staff/core/records/:doctype/:name/actions` | — | yes | `backend-mongo/src/core/workflow.routes.ts:102` |
 | GET | `/api/v1/staff/core/search` | — | no | `backend-mongo/src/core/search.routes.ts:14` |
+| GET | `/api/v1/staff/core/workflow/delegations` | — | no | `backend-mongo/src/core/workflow.routes.ts:183` |
+| POST | `/api/v1/staff/core/workflow/delegations` | — | yes | `backend-mongo/src/core/workflow.routes.ts:188` |
+| DELETE | `/api/v1/staff/core/workflow/delegations/:id` | — | no | `backend-mongo/src/core/workflow.routes.ts:205` |
+| GET | `/api/v1/staff/core/workflow/inbox` | — | no | `backend-mongo/src/core/workflow.routes.ts:158` |
+| GET | `/api/v1/staff/core/workflows/:doctype` | admin.settings | no | `backend-mongo/src/core/workflow.routes.ts:51` |
+| PUT | `/api/v1/staff/core/workflows/:doctype` | admin.settings | yes | `backend-mongo/src/core/workflow.routes.ts:60` |
 | GET | `/api/v1/staff/hr/leave` | leave.apply | no | `backend-mongo/src/hr/leave.routes.ts:200` |
 | POST | `/api/v1/staff/hr/leave` | leave.apply | yes | `backend-mongo/src/hr/leave.routes.ts:214` |
 | POST | `/api/v1/staff/hr/leave-adjustments` | hr.manage | yes | `backend-mongo/src/hr/leave.routes.ts:172` |
