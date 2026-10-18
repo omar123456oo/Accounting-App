@@ -9,6 +9,8 @@ export const PERMISSIONS = [
   'payroll.view', 'payroll.process',
   'reports.view',
   'documents.view', 'documents.upload', 'documents.review',
+  // Smart documents: download, edit, archive, delete, configure types and reminders, and read fields marked sensitive.
+  'documents.download', 'documents.edit', 'documents.archive', 'documents.delete', 'documents.manage', 'documents.sensitive',
   'workflows.view', 'workflows.approve',
   'admin.users', 'admin.roles', 'admin.settings', 'admin.audit',
   // HR module. Salary and payroll keep their own names above; these guard the HR file itself.
@@ -32,11 +34,11 @@ export function roleMatrix(): Record<string, string[]> {
     accountant: [
       'leave.apply', 'clients.view', 'clients.update', 'journals.view', 'journals.create', 'journals.update', 'journals.delete',
       'invoices.view', 'invoices.create', 'invoices.update', 'invoices.delete', 'expenses.view', 'expenses.create',
-      'tax.view', 'tax.prepare', 'reports.view', 'documents.view', 'documents.upload', 'workflows.view',
+      'tax.view', 'tax.prepare', 'reports.view', 'documents.view', 'documents.upload', 'documents.download', 'documents.edit', 'workflows.view',
     ],
-    tax_specialist: ['leave.apply', 'clients.view', 'journals.view', 'invoices.view', 'tax.view', 'tax.prepare', 'tax.review', 'reports.view', 'documents.view', 'documents.upload'],
+    tax_specialist: ['leave.apply', 'clients.view', 'journals.view', 'invoices.view', 'tax.view', 'tax.prepare', 'tax.review', 'reports.view', 'documents.view', 'documents.upload', 'documents.download', 'documents.edit'],
     auditor: [...view, 'leave.apply', 'admin.audit'],
-    hr_payroll: ['clients.view', 'hr.view', 'hr.manage', ...HR_FILE, 'leave.apply', 'leave.approve', 'payroll.view', 'payroll.process', 'documents.view', 'documents.upload'],
+    hr_payroll: ['clients.view', 'hr.view', 'hr.manage', ...HR_FILE, 'leave.apply', 'leave.approve', 'payroll.view', 'payroll.process', 'documents.view', 'documents.upload', 'documents.download', 'documents.edit', 'documents.sensitive'],
     sales: ['leave.apply', 'clients.view', 'clients.create', 'clients.update', 'invoices.view', 'invoices.create', 'documents.view'],
     client: [],
     read_only: view,

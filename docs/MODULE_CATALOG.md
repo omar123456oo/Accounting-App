@@ -26,7 +26,7 @@ generated_by: "scripts/docs/scan.mjs"
 | `features/auth` | 7 | 5 | 2 | not yet written |
 | `features/clients` | 23 | 6 | 8 | not yet written |
 | `features/commercial` | 35 | 18 | 8 | not yet written |
-| `features/core` | 22 | 8 | 6 | [modules/core](modules/core/README.md) |
+| `features/core` | 30 | 9 | 10 | [modules/core](modules/core/README.md) |
 | `features/dashboard` | 4 | 3 | 1 | not yet written |
 | `features/documents` | 12 | 4 | 3 | not yet written |
 | `features/engage` | 11 | 6 | 2 | not yet written |
@@ -38,6 +38,7 @@ generated_by: "scripts/docs/scan.mjs"
 | `features/portal` | 7 | 6 | 0 | not yet written |
 | `features/reports-fs` | 10 | 3 | 2 | not yet written |
 | `features/settings` | 6 | 3 | 1 | not yet written |
+| `features/smart-docs` | 19 | 10 | 4 | not yet written |
 | `features/tax` | 4 | 2 | 0 | not yet written |
 | `features/workflows` | 14 | 4 | 5 | not yet written |
 
@@ -51,7 +52,8 @@ generated_by: "scripts/docs/scan.mjs"
 | `/api/v1/auth/me` | 1 |
 | `/api/v1/auth/register` | 1 |
 | `/api/v1/me/hrm` | 2 |
-| `/api/v1/staff/core` | 23 |
+| `/api/v1/staff/core` | 31 |
+| `/api/v1/staff/docs` | 34 |
 | `/api/v1/staff/hr` | 33 |
 | `/api/v1/staff/hrm` | 21 |
 | `/api/v1/staff/ping` | 1 |

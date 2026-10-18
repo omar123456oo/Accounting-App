@@ -15,7 +15,7 @@ generated_by: "scripts/docs/scan.mjs"
 > Roles and permissions are read from `backend-mongo/src/db/permissions.ts` by running `roleMatrix()`. The note in that file asks for the owner to review the matrix before production use.
 
 
-**47 permissions, 10 roles.** ✔ = granted.
+**54 permissions, 10 roles.** ✔ = granted.
 
 | Permission | owner | office_manager | chief_accountant | accountant | tax_specialist | auditor | hr_payroll | sales | client | read_only |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -53,6 +53,12 @@ generated_by: "scripts/docs/scan.mjs"
 | `documents.view` | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ |  | ✔ |
 | `documents.upload` | ✔ | ✔ | ✔ | ✔ | ✔ |  | ✔ |  |  |  |
 | `documents.review` | ✔ | ✔ | ✔ |  |  |  |  |  |  |  |
+| `documents.download` | ✔ | ✔ | ✔ | ✔ | ✔ |  | ✔ |  |  |  |
+| `documents.edit` | ✔ | ✔ | ✔ | ✔ | ✔ |  | ✔ |  |  |  |
+| `documents.archive` | ✔ | ✔ | ✔ |  |  |  |  |  |  |  |
+| `documents.delete` | ✔ | ✔ | ✔ |  |  |  |  |  |  |  |
+| `documents.manage` | ✔ | ✔ | ✔ |  |  |  |  |  |  |  |
+| `documents.sensitive` | ✔ | ✔ | ✔ |  |  |  | ✔ |  |  |  |
 | `workflows.view` | ✔ | ✔ | ✔ | ✔ |  | ✔ |  |  |  | ✔ |
 | `workflows.approve` | ✔ | ✔ | ✔ |  |  |  |  |  |  |  |
 | `admin.users` | ✔ | ✔ |  |  |  |  |  |  |  |  |
@@ -66,11 +72,19 @@ generated_by: "scripts/docs/scan.mjs"
 | `hr.contracts.view` | ✔ | ✔ |  |  |  |  | ✔ |  |  |  |
 | `hr.contracts.manage` | ✔ | ✔ |  |  |  |  | ✔ |  |  |  |
 | `hr.reports.view` | ✔ | ✔ |  |  |  |  | ✔ |  |  |  |
+| `developer.scripts` | ✔ |  |  |  |  |  |  |  |  |  |
 
 ## Enforced by backend routes
 
 - `admin.settings`
 - `clients.view`
+- `developer.scripts`
+- `documents.delete`
+- `documents.edit`
+- `documents.manage`
+- `documents.review`
+- `documents.upload`
+- `documents.view`
 - `hr.contracts.manage`
 - `hr.contracts.view`
 - `hr.employees.manage`

@@ -10,6 +10,7 @@ export const SHELL_ROUTES: Routes = [
       { path: '', pathMatch: 'full', loadComponent: () => import('../../features/dashboard/dashboard').then((m) => m.Dashboard) },
       { path: 'clients', loadChildren: () => import('../../features/clients/clients.routes').then((m) => m.CLIENT_ROUTES), canActivate: [permissionGuard], data: { permission: 'clients.view' } },
       { path: 'documents', loadChildren: () => import('../../features/documents/documents.routes').then((m) => m.DOCUMENT_ROUTES), canActivate: [permissionGuard], data: { permission: 'documents.view' } },
+      { path: 'smart-documents', loadChildren: () => import('../../features/smart-docs/smart-docs.routes').then((m) => m.SMART_DOC_ROUTES) },
       { path: 'tasks', loadChildren: () => import('../../features/workflows/workflows.routes').then((m) => m.TASK_ROUTES), canActivate: [permissionGuard], data: { permission: 'tasks.view' } },
       { path: 'approvals', canActivate: [permissionGuard], data: { permission: 'workflows.approve' }, loadComponent: () => import('../../features/workflows/approvals/approvals-inbox').then((m) => m.ApprovalsInbox) },
       { path: 'tickets', canActivate: [permissionGuard], data: { permission: 'tickets.manage' }, loadComponent: () => import('../../features/engage/tickets-page').then((m) => m.TicketsPage) },

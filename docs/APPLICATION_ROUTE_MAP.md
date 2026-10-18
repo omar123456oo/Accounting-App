@@ -15,7 +15,7 @@ generated_by: "scripts/docs/scan.mjs"
 > Scope: Angular routes under `frontend/src/app`. A guard shown here is a screen restriction only; enforcement belongs to the backend.
 
 
-**118 routes.**
+**127 routes.**
 
 ## Routes
 
@@ -26,7 +26,7 @@ generated_by: "scripts/docs/scan.mjs"
 | `/app` | — | (lazy children) | `frontend/src/app/app.routes.ts:20` |
 | `/app` | — | Shell | `frontend/src/app/layout/shell/shell.routes.ts:6` |
 | `/app` | — | Dashboard | `frontend/src/app/layout/shell/shell.routes.ts:10` |
-| `/app/accounting` | — | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:25` |
+| `/app/accounting` | — | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:26` |
 | `/app/accounting` | — | AccountingLayout | `frontend/src/app/features/accounting/accounting.routes.ts:8` |
 | `/app/accounting` | — | redirect → journals | `frontend/src/app/features/accounting/accounting.routes.ts:12` |
 | `/app/accounting/accounts` | ledger.view | AccountsPage | `frontend/src/app/features/accounting/accounting.routes.ts:13` |
@@ -51,22 +51,23 @@ generated_by: "scripts/docs/scan.mjs"
 | `/app/accounting/settings/mappings` | mappings.manage | MappingsPage | `frontend/src/app/features/accounting/accounting.routes.ts:36` |
 | `/app/accounting/settings/service-types` | mappings.manage | CataloguePage | `frontend/src/app/features/accounting/accounting.routes.ts:37` |
 | `/app/accounting/settings/tax-rates` | tax.rates.manage | TaxRatesPage | `frontend/src/app/features/accounting/accounting.routes.ts:39` |
-| `/app/analytics` | reports.view | AnalyticsLayout | `frontend/src/app/layout/shell/shell.routes.ts:20` |
-| `/app/appointments` | appointments.manage | AppointmentsPage | `frontend/src/app/layout/shell/shell.routes.ts:17` |
-| `/app/approvals` | workflows.approve | ApprovalsInbox | `frontend/src/app/layout/shell/shell.routes.ts:14` |
+| `/app/analytics` | reports.view | AnalyticsLayout | `frontend/src/app/layout/shell/shell.routes.ts:21` |
+| `/app/appointments` | appointments.manage | AppointmentsPage | `frontend/src/app/layout/shell/shell.routes.ts:18` |
+| `/app/approvals` | workflows.approve | ApprovalsInbox | `frontend/src/app/layout/shell/shell.routes.ts:15` |
 | `/app/clients` | clients.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:11` |
 | `/app/clients` | clients.view | ClientList | `frontend/src/app/features/clients/clients.routes.ts:6` |
 | `/app/clients/:id` | clients.view | ClientDetail | `frontend/src/app/features/clients/clients.routes.ts:14` |
 | `/app/clients/:id/edit` | clients.update | ClientForm | `frontend/src/app/features/clients/clients.routes.ts:15` |
 | `/app/clients/new` | clients.create | ClientForm | `frontend/src/app/features/clients/clients.routes.ts:7` |
-| `/app/doctypes` | — | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:23` |
+| `/app/doctypes` | — | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:24` |
 | `/app/doctypes` | admin.settings | DocTypeList | `frontend/src/app/features/core/core.routes.ts:6` |
-| `/app/doctypes/:name/customize` | admin.settings | CustomizeForm | `frontend/src/app/features/core/core.routes.ts:8` |
-| `/app/doctypes/:name/workflow` | admin.settings | WorkflowEditor | `frontend/src/app/features/core/core.routes.ts:7` |
+| `/app/doctypes/:name/customize` | admin.settings | CustomizeForm | `frontend/src/app/features/core/core.routes.ts:9` |
+| `/app/doctypes/:name/scripts` | developer.scripts | ScriptsPage | `frontend/src/app/features/core/core.routes.ts:7` |
+| `/app/doctypes/:name/workflow` | admin.settings | WorkflowEditor | `frontend/src/app/features/core/core.routes.ts:8` |
 | `/app/documents` | documents.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:12` |
 | `/app/documents` | documents.view | DocumentList | `frontend/src/app/features/documents/documents.routes.ts:4` |
-| `/app/forecast` | forecast.view | ForecastPage | `frontend/src/app/layout/shell/shell.routes.ts:19` |
-| `/app/hr` | leave.apply | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:21` |
+| `/app/forecast` | forecast.view | ForecastPage | `frontend/src/app/layout/shell/shell.routes.ts:20` |
+| `/app/hr` | leave.apply | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:22` |
 | `/app/hr` | leave.apply | HrLayout | `frontend/src/app/features/hr/hr.routes.ts:7` |
 | `/app/hr` | leave.apply | redirect → leave | `frontend/src/app/features/hr/hr.routes.ts:11` |
 | `/app/hr/contracts` | hr.contracts.view | ContractsPage | `frontend/src/app/features/hr/hr.routes.ts:14` |
@@ -77,8 +78,8 @@ generated_by: "scripts/docs/scan.mjs"
 | `/app/hr/organization` | hr.employees.view | OrganizationPage | `frontend/src/app/features/hr/hr.routes.ts:13` |
 | `/app/hr/payroll` | payroll.view | PayrollPage | `frontend/src/app/features/hr/hr.routes.ts:19` |
 | `/app/hr/settings` | hr.manage | HrSettingsPage | `frontend/src/app/features/hr/hr.routes.ts:20` |
-| `/app/inbox` | — | InboxPage | `frontend/src/app/layout/shell/shell.routes.ts:22` |
-| `/app/invoicing` | invoices.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:27` |
+| `/app/inbox` | — | InboxPage | `frontend/src/app/layout/shell/shell.routes.ts:23` |
+| `/app/invoicing` | invoices.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:28` |
 | `/app/invoicing` | invoices.view | AccountingLayout | `frontend/src/app/features/invoicing/invoicing.routes.ts:24` |
 | `/app/invoicing` | invoices.view | redirect → invoices | `frontend/src/app/features/invoicing/invoicing.routes.ts:29` |
 | `/app/invoicing/credit-notes` | invoices.view | CreditList | `frontend/src/app/features/invoicing/invoicing.routes.ts:41` |
@@ -94,7 +95,7 @@ generated_by: "scripts/docs/scan.mjs"
 | `/app/invoicing/quotations/new` | invoices.create | InvoiceForm | `frontend/src/app/features/invoicing/invoicing.routes.ts:35` |
 | `/app/invoicing/recurring` | invoices.view | RecurringPage | `frontend/src/app/features/invoicing/invoicing.routes.ts:42` |
 | `/app/invoicing/statements/:partyId` | invoices.view | StatementPage | `frontend/src/app/features/invoicing/invoicing.routes.ts:37` |
-| `/app/payables` | bills.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:28` |
+| `/app/payables` | bills.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:29` |
 | `/app/payables` | bills.view | AccountingLayout | `frontend/src/app/features/payables/payables.routes.ts:25` |
 | `/app/payables` | bills.view | redirect → bills | `frontend/src/app/features/payables/payables.routes.ts:30` |
 | `/app/payables/bills` | bills.view | DocList | `frontend/src/app/features/payables/payables.routes.ts:31` |
@@ -110,24 +111,32 @@ generated_by: "scripts/docs/scan.mjs"
 | `/app/payables/schedule` | bills.view | SchedulePage | `frontend/src/app/features/payables/payables.routes.ts:38` |
 | `/app/payables/statements/:partyId` | bills.view | StatementPage | `frontend/src/app/features/payables/payables.routes.ts:40` |
 | `/app/payables/suppliers` | bills.view | PartiesPage | `frontend/src/app/features/payables/payables.routes.ts:39` |
-| `/app/records` | — | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:24` |
-| `/app/records/:doctype` | — | RecordList | `frontend/src/app/features/core/core.routes.ts:13` |
-| `/app/records/:doctype/:name` | — | RecordForm | `frontend/src/app/features/core/core.routes.ts:14` |
-| `/app/settings` | settings.manage | SettingsPage | `frontend/src/app/layout/shell/shell.routes.ts:34` |
-| `/app/settings/roles` | settings.manage | RolesPage | `frontend/src/app/layout/shell/shell.routes.ts:35` |
-| `/app/settings/users` | settings.manage | UserRolesPage | `frontend/src/app/layout/shell/shell.routes.ts:36` |
-| `/app/statements` | reports.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:26` |
+| `/app/records` | — | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:25` |
+| `/app/records/:doctype` | — | RecordList | `frontend/src/app/features/core/core.routes.ts:14` |
+| `/app/records/:doctype/:name` | — | RecordForm | `frontend/src/app/features/core/core.routes.ts:15` |
+| `/app/settings` | settings.manage | SettingsPage | `frontend/src/app/layout/shell/shell.routes.ts:35` |
+| `/app/settings/roles` | settings.manage | RolesPage | `frontend/src/app/layout/shell/shell.routes.ts:36` |
+| `/app/settings/users` | settings.manage | UserRolesPage | `frontend/src/app/layout/shell/shell.routes.ts:37` |
+| `/app/smart-documents` | — | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:13` |
+| `/app/smart-documents` | documents.view | SmartDocsDashboard | `frontend/src/app/features/smart-docs/smart-docs.routes.ts:8` |
+| `/app/smart-documents/:id` | documents.view | SmartDocDetail | `frontend/src/app/features/smart-docs/smart-docs.routes.ts:14` |
+| `/app/smart-documents/:id/review` | documents.view | SmartDocReview | `frontend/src/app/features/smart-docs/smart-docs.routes.ts:13` |
+| `/app/smart-documents/list` | documents.view | SmartDocsList | `frontend/src/app/features/smart-docs/smart-docs.routes.ts:9` |
+| `/app/smart-documents/reminders` | documents.view | SmartReminders | `frontend/src/app/features/smart-docs/smart-docs.routes.ts:11` |
+| `/app/smart-documents/types` | documents.manage | SmartDocTypes | `frontend/src/app/features/smart-docs/smart-docs.routes.ts:12` |
+| `/app/smart-documents/upload` | documents.upload | SmartDocsUpload | `frontend/src/app/features/smart-docs/smart-docs.routes.ts:10` |
+| `/app/statements` | reports.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:27` |
 | `/app/statements` | reports.view | AccountingLayout | `frontend/src/app/features/reports-fs/fs.routes.ts:22` |
 | `/app/statements` | reports.view | redirect → income | `frontend/src/app/features/reports-fs/fs.routes.ts:27` |
 | `/app/statements/mapping` | mappings.manage | FsMappingPage | `frontend/src/app/features/reports-fs/fs.routes.ts:32` |
-| `/app/tasks` | tasks.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:13` |
+| `/app/tasks` | tasks.view | (lazy children) | `frontend/src/app/layout/shell/shell.routes.ts:14` |
 | `/app/tasks` | tasks.view | TaskList | `frontend/src/app/features/workflows/workflows.routes.ts:5` |
 | `/app/tasks/:id` | tasks.view | TaskDetail | `frontend/src/app/features/workflows/workflows.routes.ts:7` |
 | `/app/tasks/:id/edit` | tasks.manage | TaskForm | `frontend/src/app/features/workflows/workflows.routes.ts:8` |
 | `/app/tasks/new` | tasks.manage | TaskForm | `frontend/src/app/features/workflows/workflows.routes.ts:6` |
-| `/app/tickets` | tickets.manage | TicketsPage | `frontend/src/app/layout/shell/shell.routes.ts:15` |
-| `/app/tickets/:id` | tickets.manage | TicketsPage | `frontend/src/app/layout/shell/shell.routes.ts:16` |
-| `/app/timesheets` | timesheets.log | TimesheetsPage | `frontend/src/app/layout/shell/shell.routes.ts:18` |
+| `/app/tickets` | tickets.manage | TicketsPage | `frontend/src/app/layout/shell/shell.routes.ts:16` |
+| `/app/tickets/:id` | tickets.manage | TicketsPage | `frontend/src/app/layout/shell/shell.routes.ts:17` |
+| `/app/timesheets` | timesheets.log | TimesheetsPage | `frontend/src/app/layout/shell/shell.routes.ts:19` |
 | `/login` | — | Login | `frontend/src/app/app.routes.ts:7` |
 | `/mfa-setup` | — | MfaSetupPage | `frontend/src/app/app.routes.ts:15` |
 | `/portal` | — | (lazy children) | `frontend/src/app/app.routes.ts:25` |
@@ -147,6 +156,10 @@ generated_by: "scripts/docs/scan.mjs"
 | nav.dashboard | `/app` | — | — |
 | nav.clients | `/app/clients` | clients.view | — |
 | nav.documents | `/app/documents` | documents.view | — |
+| nav.smartDashboard | `/app/smart-documents` | documents.view | nav.smartDocs |
+| nav.smartList | `/app/smart-documents/list` | documents.view | nav.smartDocs |
+| nav.smartReminders | `/app/smart-documents/reminders` | documents.view | nav.smartDocs |
+| nav.smartTypes | `/app/smart-documents/types` | documents.manage | nav.smartDocs |
 | nav.tasks | `/app/tasks` | tasks.view | — |
 | nav.approvals | `/app/approvals` | workflows.approve | — |
 | nav.tickets | `/app/tickets` | tickets.manage | — |

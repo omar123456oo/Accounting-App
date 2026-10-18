@@ -41,7 +41,12 @@
     "timesheets": "Time sheets",
     "forecast": "Cash forecast",
     "docTypes": "Document types",
-    "inbox": "Inbox"
+    "inbox": "Inbox",
+    "smartDocs": "Smart documents",
+    "smartDashboard": "Overview",
+    "smartList": "All documents",
+    "smartReminders": "Reminders",
+    "smartTypes": "Document types"
   },
   "login": {
     "title": "Sign in",
@@ -2232,7 +2237,8 @@
       "searchFieldsHint": "Field IDs separated by commas.",
       "fields": "Fields",
       "defaultTitle": "Title",
-      "workflow": "Workflow"
+      "workflow": "Workflow",
+      "scripts": "Scripts"
     },
     "loadFailed": "Could not load this page. Document types need the live server; the demo data does not include them.",
     "saveFailed": "Could not save. Please try again.",
@@ -2361,7 +2367,533 @@
       "markRead": "Mark as read"
     },
     "scripts": {
+      "title": "Scripts: {{label}}",
+      "titlePlain": "Scripts",
+      "newServer": "New server script",
+      "newClient": "New client script",
+      "intro": "Server scripts run on the server when a record is saved, deleted or moved by a workflow action. Client scripts run in the person's browser, inside their own sandbox. Scripts see only what is described in the reference.",
+      "none": "No scripts yet.",
+      "name": "Name",
+      "kind": "Kind",
+      "kinds": {
+        "server": "Server",
+        "client": "Client"
+      },
+      "event": "Event",
+      "order": "Order",
+      "enabled": "On",
+      "version": "Version",
+      "description": "Description",
+      "code": "Code",
+      "logs": "Logs",
+      "logsOf": "Logs: {{name}}",
+      "noLogs": "No runs recorded yet.",
+      "when": "When",
+      "output": "Output",
+      "reference": "What a script can use",
+      "test": "Test",
+      "testHintServer": "Runs the saved script once on a sample record as you. Nothing is saved.",
+      "testHintClient": "Runs the code in the browser sandbox on an empty form and lists what it would do.",
+      "sample": "Sample record data (JSON)",
+      "run": "Run test",
+      "passed": "Passed",
+      "messages": "Messages",
+      "logOutput": "Log",
+      "resultData": "Record data afterwards",
+      "badSample": "The sample must be a JSON object.",
+      "saveToTest": "Save the script to test it.",
+      "deleteMessage": "Delete the script “{{name}}”? The audit trail keeps its code.",
       "loadWarnings": "Some scripts for this form did not load:"
+    }
+  },
+  "tips": {
+    "title": "Tips",
+    "hide": "Hide tips",
+    "show": "Show tips",
+    "clients": [
+      "Owners, office managers and super admins see every client; everyone else sees only the clients assigned to them.",
+      "Chief accountants see all clients unless office-wide access is turned off in the configuration."
+    ],
+    "documents": [
+      "Documents rejected in review count toward the rejection rate in Analytics.",
+      "Check expiring and expired files regularly; Analytics → Documents lists them."
+    ],
+    "tasks": [
+      "Blocked and overdue tasks are tracked in Analytics → Tasks, with workload per person.",
+      "Keep task assignments current so nothing sits with nobody."
+    ],
+    "approvals": [
+      "Nobody can approve or decide their own request.",
+      "Your inbox shows only the items waiting for you."
+    ],
+    "tickets": [
+      "Add internal notes for the team; the client never sees them.",
+      "You only see tickets of clients you are allowed to see.",
+      "Close a ticket when done; you can reopen it later."
+    ],
+    "appointments": [
+      "Confirm a request, propose another time, or decline with a reason.",
+      "A person cannot be double-booked."
+    ],
+    "timesheets": [
+      "Log time per client and mark it billable or not; at most 24 hours a day.",
+      "The week runs Sunday to Thursday. Submit it for approval when complete.",
+      "Nobody approves their own week. Submitted and approved time is locked."
+    ],
+    "forecast": [
+      "The forecast covers thirteen weeks from open invoices and bills by due date.",
+      "Collection rate and overdue delay are assumptions you can change. It is an estimate, not a promise.",
+      "Payroll is assumed to be paid on the 28th."
+    ],
+    "analytics": [
+      "There is one tab per module; you see only the tabs for modules you may open.",
+      "Figures are computed live from current records. Ratios show a dash when the divisor is zero."
+    ],
+    "hr": [
+      "Leave counts working days only and must stay inside one calendar year.",
+      "Payroll does not calculate income tax or social insurance; enter them as deductions once the office confirms the rules.",
+      "Finalising a payroll run locks it and makes payslips visible to employees."
+    ],
+    "inbox": [
+      "Notifications cover tickets, appointments, leave decisions and time sheets awaiting approval."
+    ],
+    "doctypes": [
+      "Changes to a document type affect every record of that type.",
+      "Scripts run in a sandbox with limits; a script that keeps failing is disabled automatically."
+    ],
+    "records": [
+      "Client scripts run in a sandbox when you open or edit a record.",
+      "Permissions are checked on the server; hidden buttons are only a convenience."
+    ],
+    "accounting": [
+      "Check that the trial balance balances before closing a period.",
+      "Entries awaiting approval are tracked in Analytics → Accounting."
+    ],
+    "statements": [
+      "Statements are built from the ledger through the statement mapping; review the mapping after changing accounts.",
+      "Use the date filters to compare periods."
+    ],
+    "invoicing": [
+      "Clients see only issued invoices in the portal, never drafts.",
+      "Overdue invoices feed the aging buckets and the cash forecast."
+    ],
+    "payables": [
+      "Supplier bills by due date feed the cash forecast.",
+      "Aging shows what the office owes and when."
+    ],
+    "settings": [
+      "Review the role-to-permission grid before production use; payroll permissions belong only to the owner and HR.",
+      "Keep super admin for one or two named people.",
+      "Five wrong passwords lock an account for 15 minutes; passwords need at least 12 characters."
+    ],
+    "smart-documents": [
+      "Upload a PDF and it is read automatically. Nothing is saved to the document until you review and approve the proposed values.",
+      "Check the highlighted fields first: they have low confidence or a warning. Use \"Show source\" to see where a value came from.",
+      "Reminders are calculated and sent by the server, even when nobody is signed in. Set them per office, per document type or per document.",
+      "Replacing a file or changing a date recalculates the reminders; renewing a document pauses and then restarts them."
+    ]
+  },
+  "smartDocs": {
+    "status": {
+      "uploaded": "Uploaded",
+      "processing": "Processing",
+      "extraction_failed": "Extraction failed",
+      "pending_review": "Pending review",
+      "approved": "Approved",
+      "active": "Active",
+      "expiring_soon": "Expiring soon",
+      "expired": "Expired",
+      "renewal_in_progress": "Renewal in progress",
+      "renewed": "Renewed",
+      "archived": "Archived"
+    },
+    "extraction": {
+      "none": "Not read",
+      "queued": "Waiting to be read",
+      "running": "Being read",
+      "succeeded": "Fields proposed",
+      "text_only": "Text read, no AI",
+      "needs_ocr": "Scanned, needs OCR",
+      "failed": "Reading failed"
+    },
+    "reminderStatus": {
+      "none": "No reminders",
+      "scheduled": "Reminders scheduled",
+      "partially_sent": "Some reminders sent",
+      "completed": "Reminders done",
+      "cancelled": "Reminders cancelled"
+    },
+    "job": {
+      "scheduled": "Scheduled",
+      "processing": "Sending",
+      "sent": "Sent",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "skipped": "Skipped"
+    },
+    "delivery": {
+      "submitted": "Delivered to the mail or in-app service",
+      "failed": "Failed",
+      "skipped": "Not sent",
+      "note": "\"Delivered\" for e-mail means the mail server accepted the message. It does not prove the person has received or read it."
+    },
+    "channel": {
+      "in_app": "In-app",
+      "email": "E-mail"
+    },
+    "confidence": {
+      "high": "High confidence",
+      "medium": "Medium confidence",
+      "low": "Low confidence — check",
+      "unknown": "Confidence unknown — check"
+    },
+    "unit": {
+      "minutes": "minutes",
+      "hours": "hours",
+      "days": "days",
+      "weeks": "weeks",
+      "months": "months"
+    },
+    "fieldType": {
+      "text": "Text",
+      "textarea": "Long text",
+      "number": "Number",
+      "date": "Date",
+      "select": "Dropdown",
+      "checkbox": "Checkbox",
+      "currency": "Currency amount",
+      "reference": "Reference"
+    },
+    "roles": {
+      "title": "Title",
+      "number": "Document number",
+      "person": "Person or company",
+      "identification": "Identification number",
+      "issue_date": "Issue date",
+      "expiry_date": "Expiry date",
+      "start_date": "Start date",
+      "end_date": "End date",
+      "renewal_date": "Renewal date",
+      "amount": "Amount",
+      "issuer": "Issuing authority"
+    },
+    "visibility": {
+      "office": "Whole office",
+      "restricted": "Restricted"
+    },
+    "tabs": {
+      "label": "Document sections",
+      "overview": "Overview",
+      "preview": "File",
+      "versions": "Versions",
+      "history": "History",
+      "reminders": "Reminders"
+    },
+    "nav": {
+      "list": "All documents"
+    },
+    "back": "Back to documents",
+    "notFound": "This document was not found or you do not have access to it.",
+    "loadFailed": "Could not load the data. Please try again.",
+    "saveFailed": "Could not save. Please try again.",
+    "saved": "Saved.",
+    "processing": "Reading the file…",
+    "version": "Version {{n}}",
+    "replaced": "The new file was uploaded and is being read. The document needs review again.",
+    "rereadQueued": "The file will be read again.",
+    "actions": {
+      "label": "Document actions",
+      "review": "Review",
+      "download": "Download",
+      "replace": "Replace file",
+      "reread": "Read again",
+      "startRenewal": "Start renewal",
+      "completeRenewal": "Complete renewal",
+      "archive": "Archive"
+    },
+    "archive": {
+      "hint": "An archived document cannot be changed and its reminders stop.",
+      "done": "The document was archived."
+    },
+    "delete": {
+      "message": "Delete \"{{title}}\"? It disappears from every list and its reminders are cancelled. The audit trail keeps the record."
+    },
+    "renewal": {
+      "title": "Complete the renewal",
+      "hint": "Enter the new dates. The expiry date must be later than the current one. Reminders restart from the new date.",
+      "startHint": "While a renewal is in progress the document's reminders pause.",
+      "reason": "Reason (optional)",
+      "started": "Renewal started. Reminders are paused.",
+      "done": "Renewal completed. Reminders now follow the new date."
+    },
+    "overview": {
+      "values": "Approved details",
+      "notApproved": "Nothing is approved yet. Review the document to confirm its details.",
+      "details": "About this document",
+      "owner": "Owner",
+      "visibility": "Who can open it",
+      "expiry": "Expiry date",
+      "approved": "Approved",
+      "created": "Uploaded"
+    },
+    "preview": {
+      "title": "Document preview",
+      "failed": "The file could not be shown. You may not have access to it.",
+      "prev": "Previous page",
+      "next": "Next page",
+      "page": "Page number",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "fit": "Fit width",
+      "pageN": "Page {{n}}"
+    },
+    "versions": {
+      "version": "Version",
+      "file": "File",
+      "size": "Size",
+      "by": "Uploaded by",
+      "at": "Uploaded",
+      "current": "Current"
+    },
+    "history": {
+      "events": "What happened",
+      "processing": "Processing",
+      "details": "Details",
+      "system": "System",
+      "action": {
+        "uploaded": "Uploaded",
+        "status": "Status changed",
+        "extracted": "File read",
+        "extraction_failed": "Reading failed",
+        "extraction_requested": "Read again requested",
+        "approved": "Approved",
+        "edited": "Edited",
+        "version_added": "New file version",
+        "previewed": "Previewed",
+        "downloaded": "Downloaded",
+        "deleted": "Deleted",
+        "type_changed": "Type changed",
+        "renewed": "Renewed",
+        "reminder_sent": "Reminder sent",
+        "reminder_escalated": "Reminder escalated",
+        "reminder_acknowledged": "Reminder acknowledged",
+        "reminder_retry": "Reminder retried",
+        "type_created": "Type created",
+        "type_updated": "Type updated",
+        "type_fields_updated": "Fields updated",
+        "reminder_rule_created": "Reminder rule created",
+        "reminder_rule_updated": "Reminder rule changed",
+        "reminder_rule_deleted": "Reminder rule deleted"
+      }
+    },
+    "list": {
+      "title": "Documents",
+      "filters": "Filters",
+      "search": "Search by title or number",
+      "any": "Any",
+      "status": "Status",
+      "type": "Type",
+      "owner": "Owner",
+      "department": "Department",
+      "expiryFrom": "Expires from",
+      "expiryTo": "Expires until",
+      "sort": "Sort",
+      "sortNewest": "Newest first",
+      "sortOldest": "Oldest first",
+      "sortExpiry": "Expiry date",
+      "sortTitle": "Title",
+      "name": "Document",
+      "empty": "No documents match your filters.",
+      "count": "{{total}} documents",
+      "paging": "Pages",
+      "prev": "Previous",
+      "next": "Next"
+    },
+    "upload": {
+      "title2": "Upload a PDF",
+      "button": "Upload",
+      "drop": "Drop a PDF here, or press to choose one",
+      "hint": "PDF only, up to {{mb}} MB. It is stored exactly as you send it and read automatically.",
+      "noAi": "AI reading is not configured on this server. The text of the PDF is read, but you will fill in the fields yourself.",
+      "title": "Title",
+      "type": "Document type",
+      "detect": "Detect automatically",
+      "me": "Me",
+      "department": "Department",
+      "employee": "Employee",
+      "reviewer": "Reviewer",
+      "duplicate": "A document with exactly this content is already stored.",
+      "duplicateAllow": "Upload it anyway",
+      "progress": "Upload progress",
+      "problem": {
+        "empty": "The file is empty.",
+        "tooLarge": "The file is too large.",
+        "extension": "Only PDF files are accepted.",
+        "signature": "The file is not a real PDF."
+      }
+    },
+    "dashboard": {
+      "title": "Smart documents",
+      "total": "Documents",
+      "awaitingReview": "Awaiting review",
+      "processing": "Being read",
+      "expiringSoon": "Expiring soon",
+      "expired": "Expired",
+      "failedExtraction": "Reading failed",
+      "upcomingReminders": "Upcoming reminders",
+      "failedReminders": "Failed reminders",
+      "from": "Uploaded from",
+      "to": "Uploaded until",
+      "reviewer": "Reviewer",
+      "upcomingExpiries": "Next expiries",
+      "recent": "Recent activity",
+      "noExpiries": "No upcoming expiry dates.",
+      "noActivity": "No activity yet.",
+      "daysLeft": "{{n}} days left"
+    },
+    "config": {
+      "title": "Some services are not set up on this server",
+      "noAi": "AI field reading is off (no API key). Text is still read; fields are filled by hand.",
+      "noOcr": "OCR is off: scanned pages are reported but their text is not read.",
+      "noMail": "E-mail is off: reminders are in-app only."
+    },
+    "review": {
+      "title": "Review: {{title}}",
+      "backToDocument": "Back to the document",
+      "neverAuto": "Proposed values are suggestions. Nothing is saved to the document until you approve.",
+      "processing": "The file is still being read. This page updates by itself.",
+      "noAi": "AI reading is not configured, so no values were proposed. Fill in the fields yourself.",
+      "needsOcr": "Some pages are scanned images and OCR is not configured, so their text was not read.",
+      "failed": "The file could not be read.",
+      "manualEntry": "Enter the details by hand",
+      "type": "Document type",
+      "reread": "Read again as this type",
+      "detected": "Detected as {{type}} ({{method}}).",
+      "method": {
+        "user": "your choice",
+        "ai": "AI",
+        "keywords": "keywords",
+        "none": "not detected"
+      },
+      "evidence": "Text on page {{page}}",
+      "draftSaved": "Draft saved {{at}}.",
+      "saveDraft": "Save draft",
+      "approve": "Approve details",
+      "fixErrors": "Fix the highlighted fields first.",
+      "notPending": "This document is not waiting for review."
+    },
+    "fields": {
+      "sensitive": "Sensitive",
+      "notFound": "Not found",
+      "masked": "Hidden: you may not see sensitive fields",
+      "accepted": "Accepted",
+      "edited": "Edited",
+      "rejected": "Rejected",
+      "accept": "Accept",
+      "reject": "Reject",
+      "source": "Show source (page {{page}})",
+      "currency": "Currency",
+      "nationalId": "The national ID must have 14 digits."
+    },
+    "reminders": {
+      "title": "Reminders",
+      "tab": {
+        "upcoming": "Upcoming",
+        "failed": "Failed",
+        "rules": "Rules",
+        "history": "Delivery history"
+      },
+      "cron": "The scheduler does not run inside the server. Run \"npm run docs:tick\" from cron.",
+      "inForce": "Rules in force for this document",
+      "noRules": "No reminder rules apply to this document.",
+      "scheduled": "Scheduled reminders",
+      "due": "Due",
+      "what": "Reminder",
+      "target": "For date",
+      "status": "Status",
+      "none": "Nothing here.",
+      "acknowledge": "Acknowledge",
+      "deliveries": "Who was told",
+      "noDeliveries": "Nothing has been sent yet.",
+      "when": "When",
+      "recipient": "Recipient",
+      "channel": "Channel",
+      "scope": {
+        "global": "Whole office",
+        "type": "Document type",
+        "document": "This document"
+      },
+      "offset": {
+        "before": "{{n}} {{unit}} before",
+        "after": "{{n}} {{unit}} after"
+      }
+    },
+    "rules": {
+      "new": "New reminder rule",
+      "edit": "Change reminder rule",
+      "name": "Name",
+      "description": "Description",
+      "active": "Active",
+      "scope": "Applies to",
+      "dateField": "Counted from",
+      "mode": "With other rules",
+      "modeAdd": "Add to them",
+      "modeOverride": "Replace wider rules",
+      "timing": "When to remind",
+      "amount": "Amount",
+      "unit": "Unit",
+      "direction": "Direction",
+      "before": "Before the date",
+      "after": "After the date",
+      "addTiming": "Add another timing",
+      "time": "Time of day",
+      "timezone": "Time zone",
+      "recurring": "Repeat",
+      "every": "Every",
+      "max": "At most (times)",
+      "repeats": "repeats every {{n}} {{unit}}",
+      "recipients": "Who to tell",
+      "owner": "Document owner",
+      "manager": "Their manager",
+      "users": "People",
+      "roles": "Roles",
+      "channels": "How to tell them",
+      "noMail": "E-mail is not configured on this server, so e-mail reminders will be recorded as not sent.",
+      "escalation": "If nobody reacts",
+      "escalate": "Escalate if not acknowledged",
+      "escHours": "After (hours)",
+      "subject": "Subject",
+      "subjectDefault": "Reminder: {title}",
+      "message": "Message",
+      "placeholders": "You can use",
+      "none": "No rules yet.",
+      "deleteMessage": "Delete the rule \"{{name}}\"? Its scheduled reminders are cancelled."
+    },
+    "types": {
+      "title": "Document types",
+      "new": "New document type",
+      "inactive": "Inactive",
+      "label": "Name",
+      "labelAr": "Name (Arabic)",
+      "soonDays": "\"Expiring soon\" days",
+      "keywords": "Keywords",
+      "keywordsHint": "Words that help recognise this type when AI is not available, separated by commas.",
+      "fields": "Fields",
+      "fieldsHint": "These fields build the review form and tell the reader what to look for. A field you stop using is switched off, never deleted, so approved values are kept.",
+      "key": "Key",
+      "fieldLabel": "Label",
+      "fieldType": "Type",
+      "role": "Meaning",
+      "required": "Required",
+      "options": "Options, separated by commas",
+      "refKind": "Refers to",
+      "up": "Move up",
+      "down": "Move down",
+      "addField": "Add field",
+      "saveFields": "Save fields",
+      "pick": "Choose a type to see its fields.",
+      "keyHint": "Lower-case letters, digits and underscores, starting with a letter.",
+      "keyUsed": "This key is already used."
     }
   }
 }

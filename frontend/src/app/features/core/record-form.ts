@@ -115,7 +115,11 @@ export class RecordForm {
   protected readonly confirmDelete = signal(false);
   /** The client scripts of this type, running in their own sandbox (see client-script-runtime.ts). */
   protected readonly scripts = signal<FormScripts | null>(null);
-  protected readonly notes = signal<string[]>([]);
+  /** Messages from the client scripts (replaced on each run) and from the server's scripts after a save (kept across the reload). */
+  private readonly scriptNotes = signal<string[]>([]);
+  private readonly serverNotes = signal<string[]>([]);
+  private carry: string[] = [];
+  protected readonly notes = computed(() => [...this.serverNotes(), ...this.scriptNotes()]);
   protected readonly scriptErrors = signal<string[]>([]);
   protected readonly fields = computed(() => visibleFields(this.meta()?.fields ?? []));
   /** The person may manage this type and, when a workflow governs it, the record is in a state that allows changes. */
@@ -137,7 +141,9 @@ export class RecordForm {
           this.meta.set(meta);
           this.record.set(record);
           this.form.set(this.groupFor(meta, record));
-          this.notes.set([]);
+          this.serverNotes.set(this.carry);
+          this.carry = [];
+          this.scriptNotes.set([]);
           this.scriptErrors.set([]);
           this.scriptList = null;
           this.startScripts();
@@ -156,7 +162,7 @@ export class RecordForm {
   protected onChanged(r: DocRecordView): void {
     this.record.set(r);
     this.form.set(this.groupFor(this.meta()!, r));
-    this.notes.set(r.messages ?? []);
+    this.serverNotes.set(r.messages ?? []);
     this.startScripts();
   }
 
@@ -193,14 +199,14 @@ export class RecordForm {
 
   private runEvent(event: string) {
     const r = this.scripts()?.run(event);
-    if (r && (r.messages.length || event === 'onload' || event === 'refresh')) this.notes.set(r.messages);
+    if (r && (r.messages.length || event === 'onload' || event === 'refresh')) this.scriptNotes.set(r.messages);
     return r;
   }
 
   protected clickButton(id: number): void {
     const r = this.scripts()?.click(id);
     if (!r) return;
-    this.notes.set(r.messages);
+    this.scriptNotes.set(r.messages);
     this.scriptErrors.set(r.errors);
   }
 
@@ -216,7 +222,7 @@ export class RecordForm {
     this.scriptErrors.set([]);
     // scripts first: they may fill in values, mark fields required, or refuse the save
     const check = this.scripts()?.run('validate');
-    if (check?.errors.length) { this.scriptErrors.set(check.errors); this.notes.set(check.messages); return; }
+    if (check?.errors.length) { this.scriptErrors.set(check.errors); this.scriptNotes.set(check.messages); return; }
     this.scripts()?.run('before_save');
     f.markAllAsTouched();
     if (f.invalid) return;
@@ -230,7 +236,8 @@ export class RecordForm {
       next: (r) => {
         this.saving.set(false);
         this.record.set(r);
-        this.notes.set(r.messages ?? []);
+        this.serverNotes.set(r.messages ?? []);
+        this.carry = r.messages ?? []; // the page reloads on the saved record; the messages must still be there
         void this.router.navigate(['/app/records', this.type, r.name]);
       },
       error: (e) => {

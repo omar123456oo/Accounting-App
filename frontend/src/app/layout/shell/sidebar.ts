@@ -17,7 +17,7 @@ import { NAV_ITEMS } from './nav.config';
             <li class="nav-item mt-3 px-3 pb-1 heading" role="presentation">{{ item.heading | translate }}</li>
           }
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: item.route === '/app' }">
+            <a class="nav-link" [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: item.route === '/app' || item.route === '/app/smart-documents' }">
               @if (item.icon) {
                 <i class="fa-solid fa-{{ item.icon }} fa-fw me-2 nav-icon" aria-hidden="true"></i>
               }

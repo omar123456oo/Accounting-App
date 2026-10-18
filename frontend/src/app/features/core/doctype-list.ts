@@ -5,6 +5,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { apiErrorMessage } from '../../core/http/api-errors';
 import { ConfirmDialog } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { FieldError } from '../../shared/components/field-error/field-error';
+import { AuthService } from '../../core/auth/auth.service';
 import { Modal } from '../../shared/components/modal/modal';
 import { PageHeader } from '../../shared/components/page-header/page-header';
 import { CoreApiService } from './core-api.service';
@@ -50,6 +51,7 @@ export const TYPE_PERMISSIONS: readonly string[] = [
                   <td class="text-end text-nowrap">
                     <a class="btn btn-outline-secondary btn-sm" [routerLink]="['/app/doctypes', t.name, 'customize']">{{ 'core.docTypes.customize' | translate }}<span class="visually-hidden"> {{ t.label }}</span></a>
                     @if (t.isCustom) {
+                      @if (auth.can('developer.scripts')) { <a class="btn btn-outline-secondary btn-sm ms-1" [routerLink]="['/app/doctypes', t.name, 'scripts']">{{ 'core.docTypes.scripts' | translate }}<span class="visually-hidden"> {{ t.label }}</span></a> }
                       <a class="btn btn-outline-secondary btn-sm ms-1" [routerLink]="['/app/doctypes', t.name, 'workflow']">{{ 'core.docTypes.workflow' | translate }}<span class="visually-hidden"> {{ t.label }}</span></a>
                       <a class="btn btn-outline-secondary btn-sm ms-1" [routerLink]="['/app/records', t.name]">{{ 'core.docTypes.records' | translate }}<span class="visually-hidden"> {{ t.label }}</span></a>
                       <button type="button" class="btn btn-outline-danger btn-sm ms-1" (click)="toDelete.set(t)">{{ 'common.delete' | translate }}<span class="visually-hidden"> {{ t.label }}</span></button>
@@ -126,6 +128,7 @@ export class DocTypeList {
   private readonly api = inject(CoreApiService);
   private readonly fb = inject(FormBuilder).nonNullable;
   private readonly translate = inject(TranslateService);
+  protected readonly auth = inject(AuthService);
   protected readonly permissions = TYPE_PERMISSIONS;
 
   protected readonly types = signal<DocTypeSummary[] | null>(null);

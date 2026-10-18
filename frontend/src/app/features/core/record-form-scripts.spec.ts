@@ -6,6 +6,7 @@ import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../core/auth/auth.service';
+import { ClientScriptRuntime } from './client-script-runtime';
 import { DocTypeMeta } from './core.models';
 import { RecordForm } from './record-form';
 
@@ -18,11 +19,11 @@ const tick = (ms = 0) => new Promise((r) => setTimeout(r, ms));
 const developer = { user: () => ({ id: 'u1', name: 'Dev', permissions: ['developer.scripts'] }), can: (p: string) => p === 'developer.scripts' };
 
 async function render(codes: string[], auth?: unknown) {
-  const providers: Array<Provider | EnvironmentProviders> = [provideHttpClient(), provideHttpClientTesting(), provideTranslateService(), provideRouter([{ path: 'records/:doctype/:name', component: RecordForm }]), ...(auth ? [{ provide: AuthService, useValue: auth }] : [])];
+  const providers: Array<Provider | EnvironmentProviders> = [provideHttpClient(), provideHttpClientTesting(), provideTranslateService(), provideRouter([{ path: 'app/records/:doctype/:name', component: RecordForm }]), ...(auth ? [{ provide: AuthService, useValue: auth }] : [])];
   TestBed.configureTestingModule({ providers });
   const http = TestBed.inject(HttpTestingController);
   const harness = await RouterTestingHarness.create();
-  const nav = harness.navigateByUrl('records/asset/new', RecordForm);
+  const nav = harness.navigateByUrl('app/records/asset/new', RecordForm);
   await tick();
   http.expectOne(`${T}/meta/asset`).flush({ data: META });
   await nav;
@@ -36,6 +37,9 @@ async function render(codes: string[], auth?: unknown) {
 }
 
 describe('Record form with client scripts', () => {
+  // load the script engine once, so the cold start does not depend on how busy the machine is
+  beforeAll(async () => { (await ClientScriptRuntime.create([])).dispose(); }, 60000);
+
   it('lets a script hide a field, mark another required and show a message', async () => {
     const { el } = await render(['frm.on("refresh", () => { frm.toggle("notes", false); frm.set_required("amount"); frm.msg("Remember the quote"); });']);
     expect(el().querySelector('#f-notes')).toBeNull();
@@ -66,6 +70,22 @@ describe('Record form with client scripts', () => {
     post.flush({ data: { name: 'ASSET-000001', title: 'CHAIRS', data: { title: 'CHAIRS' } }, messages: ['Saved by the server script'] });
     harness.detectChanges();
     expect(el().textContent).toContain('Saved by the server script');
+  });
+
+  it('keeps what the server\'s scripts said when the page reloads on the saved record', async () => {
+    const { http, harness, el, type, submit } = await render([]);
+    type('#f-title', 'abc');
+    submit();
+    http.expectOne(`${T}/records/asset`).flush({ data: { name: 'ASSET-000001', title: 'ABC', data: { title: 'ABC' } }, messages: ['checked by guard'] });
+    await tick(20);
+    // the router now loads the saved record: the form is rebuilt from it
+    http.expectOne(`${T}/meta/asset`).flush({ data: META });
+    http.expectOne(`${T}/records/asset/ASSET-000001`).flush({ data: { name: 'ASSET-000001', title: 'ABC', data: { title: 'ABC' } } });
+    await tick(20);
+    http.expectOne(`${T}/scripts/client/asset`).flush({ data: [] });
+    harness.detectChanges();
+    expect(el().textContent).toContain('checked by guard');
+    expect((el().querySelector('#f-title') as HTMLInputElement).value).toBe('ABC');
   });
 
   it('shows a button a script adds and runs it', async () => {

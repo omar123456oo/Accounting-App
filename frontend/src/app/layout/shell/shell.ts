@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ModuleTips } from '../../shared/components/module-tips/module-tips';
 import { Header } from './header';
 import { Sidebar } from './sidebar';
 
 /** Sidebar | (header over content). Plain flex row, so the sidebar lands at inline-start in both directions. */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, Header, Sidebar],
+  imports: [RouterOutlet, Header, Sidebar, ModuleTips],
   styleUrl: './shell.scss',
   template: `
     <div class="shell">
@@ -14,6 +15,7 @@ import { Sidebar } from './sidebar';
       <div class="shell-main">
         <app-header />
         <main class="p-3 p-lg-4" id="main-content" tabindex="-1">
+          <app-module-tips />
           <router-outlet />
         </main>
       </div>

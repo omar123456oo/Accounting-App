@@ -9,3 +9,8 @@ vendor/
 /backend/.phpunit.result.cache
 /frontend/test-results/
 /backend-mongo/dist/
+
+# Smart documents: uploaded originals
+/backend-mongo/storage/
+
+/backend-mongo/.devdata/

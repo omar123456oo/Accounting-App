@@ -27,6 +27,7 @@
     "@ngx-translate/http-loader": "^18.0.0",
     "bootstrap": "^5.3.8",
     "decimal.js": "^10.6.0",
+    "pdfjs-dist": "^4.10.38",
     "quickjs-emscripten": "^0.32.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

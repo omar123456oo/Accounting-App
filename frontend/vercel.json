@@ -1,0 +1,7 @@
+{
+  "framework": null,
+  "installCommand": "npm ci",
+  "buildCommand": "npx ng build --configuration demo",
+  "outputDirectory": "dist/frontend/browser",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

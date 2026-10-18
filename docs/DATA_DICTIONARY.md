@@ -15,7 +15,7 @@ generated_by: "scripts/docs/scan.mjs"
 > Scope: Mongoose models in `backend-mongo`. Field types are shown as written in the schema.
 
 
-**30 models.** Every tenant collection carries `organizationId` (see `backend-mongo/src/db/tenant.ts`); a row `...x` is a spread of shared fields defined in the same file.
+**40 models.** Every tenant collection carries `organizationId` (see `backend-mongo/src/db/tenant.ts`); a row `...x` is a spread of shared fields defined in the same file.
 
 ## AuditChainHead
 
@@ -191,6 +191,127 @@ Indexes:
 
 - `{ organizationId: 1, doctype: 1 }, { unique: true }`
 
+## DocDelivery
+
+Source: `backend-mongo/src/docs/models.ts:142`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| jobId | ref('DocReminderJob') | no |  |
+| documentId | ref('DocDocument') | no |  |
+| userId |  | yes |  |
+| channel | String | yes | ['in_app', 'email'] |
+| status | String | yes | ['submitted', 'failed', 'skipped'] |
+| providerMessageId | String | no |  |
+| to | String | no |  |
+| subject | String | no |  |
+| error | String | no |  |
+| attempts | Number | no |  |
+| idempotencyKey | String | yes |  |
+
+Indexes:
+
+- `{ idempotencyKey: 1 }, { unique: true }`
+- `{ organizationId: 1, createdAt: -1 }`
+- `{ organizationId: 1, userId: 1, createdAt: -1 }`
+
+## DocDocument
+
+Source: `backend-mongo/src/docs/models.ts:38`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| typeKey | String | yes |  |
+| typeChosen | Boolean | no |  |
+| title | String | yes |  |
+| number | String | no |  |
+| status | String | no | DOC_STATUSES |
+| extractionStatus | String | no | EXTRACTION_STATUSES |
+| reminderStatus | String | no | REMINDER_STATUSES |
+| visibility | String | no | ['office', 'restricted'] |
+| ownerId | ref('User') | no |  |
+| employeeId | ref('Employee') | no |  |
+| departmentId | ref('Department') | no |  |
+| reviewerId | ref('User') | no |  |
+| related |  | no |  |
+| values | Schema.Types.Mixed | no |  |
+| expiryDate | String | no |  |
+| startDate | String | no |  |
+| endDate | String | no |  |
+| renewalDate | String | no |  |
+| currentVersion | Number | no |  |
+| contentHash | String | yes |  |
+| approvedAt | Date | no |  |
+| approvedBy | ref('User') | no |  |
+| renewalStartedAt | Date | no |  |
+| archivedAt | Date | no |  |
+| deletedAt | Date | no |  |
+| createdBy | ref('User') | no |  |
+
+Indexes:
+
+- `{ organizationId: 1, status: 1, createdAt: -1 }`
+- `{ organizationId: 1, deletedAt: 1, typeKey: 1 }`
+- `{ organizationId: 1, expiryDate: 1 }`
+- `{ organizationId: 1, contentHash: 1 }`
+- `{ organizationId: 1, employeeId: 1 }`
+- `{ organizationId: 1, departmentId: 1 }`
+- `{ organizationId: 1, ownerId: 1 }`
+- `{ organizationId: 1, title: 'text', number: 'text' }`
+
+## DocExtraction
+
+Source: `backend-mongo/src/docs/models.ts:81`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| documentId |  | yes |  |
+| versionId | ref('DocVersion') | no |  |
+| versionNumber | Number | no |  |
+| status | String | no | EXTRACTION_STATUSES |
+| provider |  | no |  |
+| steps | [step] | no |  |
+| pages | [page] | no |  |
+| detectedType |  | no |  |
+| fields | [extField] | no |  |
+| notes | [String] | no |  |
+| error | String | no |  |
+| draft | Schema.Types.Mixed | no |  |
+| draftSavedAt | Date | no |  |
+| draftBy | ref('User') | no |  |
+| corrections | [new Schema({ key: String, proposed: Schema.Types.Mixed, approved: Schema.Types.Mixed, by: | no |  |
+| approvedAt | Date | no |  |
+
+Indexes:
+
+- `{ organizationId: 1, documentId: 1, createdAt: -1 }`
+
+## DocJob
+
+Source: `backend-mongo/src/docs/models.ts:96`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| kind | String | no | ['extract'] |
+| documentId | ref('DocDocument') | no |  |
+| versionId | ref('DocVersion') | no |  |
+| status | String | no | ['queued', 'running', 'succeeded', 'failed'] |
+| attempts | Number | no |  |
+| maxAttempts | Number | no |  |
+| runAfter | Date | no |  |
+| lockedUntil | Date | no |  |
+| lastError | String | no |  |
+| finishedAt | Date | no |  |
+
+Indexes:
+
+- `{ status: 1, runAfter: 1 }`
+- `{ organizationId: 1, documentId: 1 }`
+
 ## DocRecord
 
 Source: `backend-mongo/src/core/models.ts:36`
@@ -212,6 +333,69 @@ Indexes:
 
 - `{ organizationId: 1, doctype: 1, name: 1 }, { unique: true }`
 
+## DocReminderJob
+
+Source: `backend-mongo/src/docs/models.ts:128`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| documentId |  | yes |  |
+| ruleId |  | yes |  |
+| kind | String | no | ['reminder', 'escalation'] |
+| targetDate | String | yes |  |
+| label | String | no |  |
+| dueAt | Date | yes |  |
+| status | String | no | ['scheduled', 'processing', 'sent', 'failed', 'cancelled', 'skipped'] |
+| attempts | Number | no |  |
+| maxAttempts | Number | no |  |
+| lockedUntil | Date | no |  |
+| lastError | String | no |  |
+| reason | String | no |  |
+| sentAt | Date | no |  |
+| acknowledgedAt | Date | no |  |
+| acknowledgedBy | ref('User') | no |  |
+| parentJobId | ref('DocReminderJob') | no |  |
+| idempotencyKey | String | yes |  |
+
+Indexes:
+
+- `{ idempotencyKey: 1 }, { unique: true }`
+- `{ status: 1, dueAt: 1 }`
+- `{ organizationId: 1, documentId: 1, status: 1 }`
+- `{ organizationId: 1, status: 1, dueAt: 1 }`
+
+## DocReminderRule
+
+Source: `backend-mongo/src/docs/models.ts:109`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| scope | String | yes | ['global', 'type', 'document'] |
+| typeKey | String | no |  |
+| documentId | ref('DocDocument') | no |  |
+| mode | String | no | ['add', 'override'] |
+| name | String | yes |  |
+| description | String | no |  |
+| dateField | String | yes |  |
+| offsets | [offset] | no |  |
+| recurring |  | no |  |
+| time | String | no |  |
+| timezone | String | no |  |
+| recipients | recipients | no |  |
+| channels |  | no |  |
+| escalation |  | no |  |
+| subject | String | no |  |
+| message | String | no |  |
+| active | Boolean | no |  |
+| createdBy | ref('User') | no |  |
+
+Indexes:
+
+- `{ organizationId: 1, scope: 1, typeKey: 1 }`
+- `{ organizationId: 1, documentId: 1 }`
+
 ## DocType
 
 Source: `backend-mongo/src/core/models.ts:17`
@@ -231,6 +415,28 @@ Source: `backend-mongo/src/core/models.ts:17`
 Indexes:
 
 - `{ organizationId: 1, name: 1 }, { unique: true }`
+
+## DocVersion
+
+Source: `backend-mongo/src/docs/models.ts:64`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| documentId |  | yes |  |
+| version | Number | yes |  |
+| storageKey | String | yes |  |
+| fileName | String | yes |  |
+| mimeType | String | no |  |
+| sizeBytes | Number | yes |  |
+| sha256 | String | yes |  |
+| pageCount | Number | no |  |
+| uploadedBy | ref('User') | no |  |
+| reason | String | no |  |
+
+Indexes:
+
+- `{ organizationId: 1, documentId: 1, version: 1 }, { unique: true }`
 
 ## Employee
 
@@ -446,15 +652,17 @@ Source: `backend-mongo/src/core/workflow.models.ts:30`
 |---|---|---|---|
 | organizationId | org | no |  |
 | userId | Schema.Types.ObjectId | yes |  |
-| kind | String | yes | ['workflow', 'escalation'] |
+| kind | String | yes | ['workflow', 'escalation', 'document_reminder', 'document'] |
 | title | String | yes |  |
 | body | String | no |  |
 | link | String | no |  |
 | readAt | Date | no |  |
+| idempotencyKey | String | no |  |
 
 Indexes:
 
 - `{ organizationId: 1, userId: 1, createdAt: -1 }`
+- `{ idempotencyKey: 1 }, { unique: true, partialFilterExpression: { idempotencyKey: { $type: 'string' } } }`
 
 ## Organization
 
@@ -509,6 +717,55 @@ Indexes:
 
 - `{ organizationId: 1, name: 1 }, { unique: true }`
 
+## Script
+
+Source: `backend-mongo/src/core/script.models.ts:13`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| doctype | String | yes |  |
+| kind | String | yes | SCRIPT_KINDS |
+| name | String | yes |  |
+| event | String | no | [...SERVER_EVENTS, null] |
+| code | String | yes |  |
+| enabled | Boolean | no |  |
+| order | Number | no |  |
+| description | String | no |  |
+| version | Number | no |  |
+| createdBy | Schema.Types.ObjectId | no |  |
+| updatedBy | Schema.Types.ObjectId | no |  |
+
+Indexes:
+
+- `{ organizationId: 1, doctype: 1, kind: 1, name: 1 }, { unique: true }`
+- `{ organizationId: 1, doctype: 1, kind: 1, event: 1, enabled: 1 }`
+
+## ScriptLog
+
+Source: `backend-mongo/src/core/script.models.ts:33`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| scriptId | Schema.Types.ObjectId | yes |  |
+| name | String | no |  |
+| doctype | String | no |  |
+| event | String | no |  |
+| record | String | no |  |
+| userId | Schema.Types.ObjectId | no |  |
+| ok | Boolean | yes |  |
+| kind | String | no |  |
+| message | String | no |  |
+| durationMs | Number | no |  |
+| logs | [String] | no |  |
+| messages | [String] | no |  |
+| createdAt | Date | no |  |
+
+Indexes:
+
+- `{ organizationId: 1, scriptId: 1, createdAt: -1 }`
+
 ## Session
 
 Source: `backend-mongo/src/models/session.ts:4`
@@ -522,6 +779,27 @@ Source: `backend-mongo/src/models/session.ts:4`
 | userAgent | String | no |  |
 | lastActivityAt | Date | no |  |
 | expiresAt | Date | yes |  |
+
+## SmartDocType
+
+Source: `backend-mongo/src/docs/models.ts:29`
+
+| Field | Type | Required | Allowed values |
+|---|---|---|---|
+| organizationId | org | no |  |
+| key | String | yes |  |
+| label | String | yes |  |
+| labelAr | String | no |  |
+| category | String | no |  |
+| fields | [fieldDef] | no |  |
+| keywords | [String] | no |  |
+| expiringSoonDays | Number | no |  |
+| active | Boolean | no |  |
+| builtin | Boolean | no |  |
+
+Indexes:
+
+- `{ organizationId: 1, key: 1 }, { unique: true }`
 
 ## User
 

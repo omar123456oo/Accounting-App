@@ -5,6 +5,7 @@ import '../hr/leave.models.js';
 import '../core/models.js';
 import '../core/workflow.models.js';
 import '../core/script.models.js';
+import '../docs/models.js';
 
 /** Creates collections and builds every declared index. Run on deploy (npm run db:indexes). */
 export async function syncAllIndexes(): Promise<void> {

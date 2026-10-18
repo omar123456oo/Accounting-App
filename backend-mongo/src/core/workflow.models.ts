@@ -28,10 +28,13 @@ delegation.index({ organizationId: 1, toUserId: 1 });
 delegation.index({ organizationId: 1, fromUserId: 1 });
 
 const notification = new Schema({
-  organizationId: org, userId: { type: Schema.Types.ObjectId, required: true }, kind: { type: String, enum: ['workflow', 'escalation'], required: true },
+  organizationId: org, userId: { type: Schema.Types.ObjectId, required: true }, kind: { type: String, enum: ['workflow', 'escalation', 'document_reminder', 'document'], required: true },
   title: { type: String, required: true }, body: String, link: String, readAt: Date,
+  /** Set by senders that must not repeat (document reminders). */
+  idempotencyKey: String,
 }, { timestamps: true });
 notification.index({ organizationId: 1, userId: 1, createdAt: -1 });
+notification.index({ idempotencyKey: 1 }, { unique: true, partialFilterExpression: { idempotencyKey: { $type: 'string' } } });
 
 export const Workflow = model('Workflow', workflow);
 export const Delegation = model('Delegation', delegation);

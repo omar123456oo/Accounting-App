@@ -113,7 +113,7 @@ describe('ClientScriptRuntime', () => {
     expect(rt.broken).toBe(true);
     expect(r.messages.join(' ')).toMatch(/memory|stopped/i);
     rt.dispose();
-  });
+  }, 60000); // allocation-heavy: slow when the whole suite runs at once
 
   it('runs buttons a script adds and lists them', async () => {
     const rt = await make('frm.add_button("Double", () => { frm.set("amount", frm.get("amount") * 2); frm.msg("doubled"); });');

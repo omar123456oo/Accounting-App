@@ -93,6 +93,17 @@ Status: all of these run on the in-memory mock API. Document upload from the por
 
 Notes: figures are computed live from current records in the browser (the lists are read page by page, 100 at a time), so very large offices will want server-side aggregation later. Ratios divide by zero safely and show a dash. Every chart prints its values and has a screen-reader table; colour is never the only signal.
 
+## Smart documents
+
+PDF reading, review and reminders run on the real backend (`backend-mongo`). Set them up in `backend-mongo/.env`; every service is optional and the screens say what is off. Full list and operating notes: [module guide](modules/smart-documents/README.md).
+
+- **Permissions:** `documents.download`, `documents.edit`, `documents.archive`, `documents.delete`, `documents.manage` (types, fields, reminder rules; sees restricted documents) and `documents.sensitive` are new. Run `npm run db:sync-roles` once after upgrading so existing offices receive them, then review who holds them.
+- **AI:** set `ANTHROPIC_API_KEY`. Only page text and field names are sent, never the file. `DOCS_AI_REDACT_SENSITIVE=true` also keeps sensitive fields and long numbers away from the provider.
+- **OCR:** `DOCS_OCR_PROVIDER=tesseract` for scanned pages (language data is downloaded once).
+- **E-mail:** set `SMTP_HOST` (and credentials). Without it, e-mail reminders are logged as not sent.
+- **Scheduler:** runs inside the API by default. For cron use `DOCS_SCHEDULER=false` and run `npm run docs:tick` every minute.
+- **Files:** back up `DOCS_STORAGE_DIR` together with the database.
+
 ## Not in Phase 1
 
 Password reset and invitation e-mails, the user and role management screens, client records, ledgers, invoicing, tax and payroll.

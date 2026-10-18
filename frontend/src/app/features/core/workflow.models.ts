@@ -30,4 +30,4 @@ export interface InboxItem {
   actions: WorkflowAction[]; since: string; route: string;
 }
 export interface Delegation { id: string; toUserId: string; toName: string | null; startDate: string; endDate: string }
-export interface AppNotification { id: string; kind: 'workflow' | 'escalation'; title: string; body: string | null; link: string | null; readAt: string | null; createdAt: string }
+export interface AppNotification { id: string; kind: 'workflow' | 'escalation' | 'document_reminder' | 'document'; title: string; body: string | null; link: string | null; readAt: string | null; createdAt: string }
